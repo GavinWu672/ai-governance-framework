@@ -321,8 +321,31 @@ def main():
                 print(warning)
 
     elif args.plan:
-        plan = janitor.create_archive_plan()
-        print(plan)
+        if args.format == 'json':
+            line_count, status = janitor.check_hot_memory_status()
+            archivable = janitor.analyze_archivable_content()
+            recommendation_map = {
+                "EMERGENCY": "stop_and_manual_review",
+                "CRITICAL": "execute_cleanup_now",
+                "WARNING": "cleanup_at_next_break",
+                "SAFE": "no_action_needed",
+            }
+            print(json.dumps({
+                "status": status,
+                "line_count": line_count,
+                "soft_limit": janitor.HOT_MEMORY_SOFT_LIMIT,
+                "hard_limit": janitor.HOT_MEMORY_HARD_LIMIT,
+                "critical": janitor.HOT_MEMORY_CRITICAL,
+                "archivable": {
+                    "completed_tasks": len(archivable["completed_tasks"]),
+                    "obsolete_decisions": len(archivable["obsolete_decisions"]),
+                    "archived_references": len(archivable["archived_references"]),
+                },
+                "recommendation": recommendation_map.get(status, "unknown"),
+            }, ensure_ascii=False))
+        else:
+            plan = janitor.create_archive_plan()
+            print(plan)
 
     elif args.execute:
         result = janitor.execute_cleanup(dry_run=args.dry_run)
