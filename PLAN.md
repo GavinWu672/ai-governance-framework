@@ -4,7 +4,7 @@
 > **技術棧**: Markdown / Python / Bash
 > **複雜度**: L2
 > **預計工期**: 2026/03 ~ 2026/06
-> **最後更新**: 2026-03-05
+> **最後更新**: 2026-03-06
 > **Owner**: GavinWu
 > **Freshness**: Sprint (7d)
 
@@ -33,10 +33,10 @@
 ├─ [✓] Phase A: 框架基礎建立       (2026/03/05 完成)
 ├─ [✓] Phase B: 可採用性基礎        (2026/03/05 完成)
 ├─ [✓] Phase C: 工具強化            (2026/03/05 完成)
-└─ [⏳] Phase D: 整合成熟           (待開始，預計 2026/06/30)
+└─ [🔄] Phase D: 整合成熟           (進行中，預計 2026/06/30)
 ```
 
-**當前 Phase**: **Phase C — 工具強化**
+**當前 Phase**: **Phase D — 整合成熟**
 
 ---
 
@@ -99,14 +99,14 @@
 
 ---
 
-### Phase D: 整合成熟 (待開始 ⏳)
+### Phase D: 整合成熟 (進行中 🔄)
 
 **目標**: 定義同步策略，讓框架能在團隊環境落地
 
 **任務清單**:
 ```
-├─ [⏳] D1. Linear 同步策略文件（PLAN vs Linear 誰為準、衝突解法）
-├─ [⏳] D2. CI/CD 整合範例（GitHub Actions）
+├─ [✓] D1. Linear 同步策略文件（PLAN vs Linear 誰為準、衝突解法）  (2026/03/05 完成)
+├─ [⏳] D2. GitHub Actions + GitLab CI 實際 YAML 設定檔
 └─ [⏳] D3. 第二個平台整合（Jira 或 Notion）
 ```
 
@@ -160,11 +160,11 @@ Phase B Gate 全部通過 ✅ → 進入 Phase C
 - [x] C1. 工具輸出 --format json ✓ 2026/03/05
 - [x] C2. memory_janitor 單元測試 ✓ 2026/03/05
 - [x] C3. linear_integrator 錯誤處理強化 ✓ 2026/03/05
-- [ ] D1. Linear 同步策略文件
+- [x] D1. Linear 同步策略文件 ✓ 2026/03/05
 
 ### 低優先 (P2)
 - [x] C4. Git hook 一鍵安裝 ✓ 2026/03/05
-- [ ] D2. GitHub Actions CI 範例
+- [ ] D2. GitHub Actions + GitLab CI 範例（實際 YAML 設定檔）
 - [ ] D3. Jira / Notion 整合
 
 ---
@@ -184,7 +184,7 @@ Phase B Gate 全部通過 ✅ → 進入 Phase C
 **AI 在實作任何功能前，必須確認**:
 
 1. ✅ 這項任務在「本週聚焦」或「下一步」中嗎?
-2. ✅ 是否符合當前 Phase B 的範圍（可採用性基礎）?
+2. ✅ 是否符合當前 Phase D 的範圍（整合成熟）?
 3. ✅ 是否在「不要做」清單中?
 
 **如果不符合上述條件**:
@@ -229,7 +229,7 @@ Phase B Gate 全部通過 ✅ → 進入 Phase C
 | ID | 問題 | 嚴重程度 | 狀態 | 負責人 |
 |---|---|---|---|---|
 | BUG-001 | memory_janitor --execute 為移動而非複製+pointer，audit trail 有洞 | P0 | ✅ 已修 (B3) | GavinWu |
-| BUG-002 | Linear 整合無 source of truth 定義，有雙主系統風險 | P1 | ⏳ 待修 | GavinWu |
+| BUG-002 | Linear 整合無 source of truth 定義，有雙主系統風險 | P1 | ✅ 已修 (C3, docs/linear-source-of-truth.md) | GavinWu |
 | BUG-003 | 記憶壓力只靠行數，單一指標有被規避的風險 | P2 | ⏳ 待評估 | GavinWu |
 
 ---
