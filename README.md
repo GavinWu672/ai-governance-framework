@@ -153,6 +153,23 @@ hot/cold     ness    validator Linear/Notion
 
 ## 🚀 快速開始
 
+### 🟢 最小可用版（新手入口，5 分鐘）
+
+如果你只想快速試試效果，不想一次部署 8 大法典：
+
+```bash
+git clone https://github.com/GavinWu672/ai-governance-framework.git
+cp ai-governance-framework/examples/starter-pack/SYSTEM_PROMPT.md  /your/project/
+cp ai-governance-framework/examples/starter-pack/PLAN.md           /your/project/
+cp ai-governance-framework/governance_tools/memory_janitor.py      /your/project/
+```
+
+填寫 `PLAN.md` → 告訴 AI 讀 `SYSTEM_PROMPT.md` → 5 分鐘跑起來。
+
+詳見 **[examples/starter-pack/README.md](examples/starter-pack/README.md)** ⭐
+
+---
+
 ### 1. 克隆專案
 
 ```bash
@@ -391,6 +408,10 @@ ai-governance-framework/
 │   └── LIMITATIONS.md           ← 框架邊界與誠實評估 ⚠️
 │
 ├── examples/                    ← 示範專案 ⭐ 新手必看
+│   ├── starter-pack/           ← 3 文件最小可用版 ⭐ 新手入口
+│   │   ├── SYSTEM_PROMPT.md    ← 簡化版（2 欄位 Contract）
+│   │   ├── PLAN.md             ← 可填入範本
+│   │   └── README.md           ← 5 分鐘 quickstart
 │   ├── todo-app-demo/          ← 15 分鐘體感示範
 │   │   ├── PLAN.md             ← 已填好的計畫範本
 │   │   └── DEMO_LOG.md         ← AI 對話示範紀錄
@@ -420,7 +441,8 @@ ai-governance-framework/
 
 ### 示範
 
-- **[examples/todo-app-demo/DEMO_LOG.md](examples/todo-app-demo/DEMO_LOG.md)** ⭐ - 15 分鐘體感示範（新手必看！）
+- **[examples/starter-pack/](examples/starter-pack/)** ⭐ - **新手入口**：3 文件最小可用版，5 分鐘開始（認知負擔最低）
+- **[examples/todo-app-demo/DEMO_LOG.md](examples/todo-app-demo/DEMO_LOG.md)** - 15 分鐘體感示範（完整框架）
 - **[examples/todo-app-demo/PLAN.md](examples/todo-app-demo/PLAN.md)** - 已填好的 PLAN.md 範本
 - **[examples/chaos-demo/](examples/chaos-demo/)** 💥 - AI 亂改架構 vs 治理攔截（架構破壞 before/after）
 
