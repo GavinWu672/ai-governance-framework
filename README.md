@@ -10,9 +10,12 @@
 
 ## 🎯 這是什麼?
 
-一套完整的 **AI 協作治理框架**，基於「**建築師轉型理論**」，讓 AI 從「被動執行」升級為「主動協作」。
+**AI 在長期專案中會遺忘、漂移、破壞架構、做錯優先級。**
+這個框架提供一套結構化的文件規範 + 自動化工具，讓 AI 在整個專案週期保持**上下文連續性**。
 
-### 核心問題
+> 詳見 [四個 AI 結構性問題](#-四個-ai-結構性問題) — 每個問題對應一個解法與工具。
+
+### 有無治理的差異
 
 ```diff
 - ❌ 沒有治理:
@@ -388,9 +391,11 @@ ai-governance-framework/
 │   └── LIMITATIONS.md           ← 框架邊界與誠實評估 ⚠️
 │
 ├── examples/                    ← 示範專案 ⭐ 新手必看
-│   └── todo-app-demo/          ← 15 分鐘體感示範
-│       ├── PLAN.md             ← 已填好的計畫範本
-│       └── DEMO_LOG.md         ← AI 對話示範紀錄
+│   ├── todo-app-demo/          ← 15 分鐘體感示範
+│   │   ├── PLAN.md             ← 已填好的計畫範本
+│   │   └── DEMO_LOG.md         ← AI 對話示範紀錄
+│   └── chaos-demo/             ← AI 架構破壞 vs 治理攔截 💥
+│       └── README.md           ← before/after 對比腳本
 │
 ├── scripts/                     ← 工具腳本
 │   ├── install-hooks.sh        ← Git hooks 一鍵安裝 ⭐
@@ -417,6 +422,7 @@ ai-governance-framework/
 
 - **[examples/todo-app-demo/DEMO_LOG.md](examples/todo-app-demo/DEMO_LOG.md)** ⭐ - 15 分鐘體感示範（新手必看！）
 - **[examples/todo-app-demo/PLAN.md](examples/todo-app-demo/PLAN.md)** - 已填好的 PLAN.md 範本
+- **[examples/chaos-demo/](examples/chaos-demo/)** 💥 - AI 亂改架構 vs 治理攔截（架構破壞 before/after）
 
 ### 整合指南
 
