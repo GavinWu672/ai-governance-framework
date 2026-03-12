@@ -1,161 +1,108 @@
-# AI Governance Framework
+﻿# AI Governance Framework
 
-> 從「餵指令」到「定規則」— 讓 AI 不再每次都重頭理解你的專案
-
+> 敺今?誘???閬???霈?AI 銝?瘥活?賡??剔?閫????獢?
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Version](https://img.shields.io/badge/version-1.0.0--alpha-orange.svg)](https://github.com/GavinWu672/ai-governance-framework)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
 ---
 
-## 🎯 這是什麼?
+## ? ?隞暻?
 
-**AI 在長期專案中會遺忘、漂移、破壞架構、做錯優先級。**
-這個框架提供一套結構化的文件規範 + 自動化工具，讓 AI 在整個專案週期保持**上下文連續性**。
-
-> 詳見 [四個 AI 結構性問題](#-四個-ai-結構性問題) — 每個問題對應一個解法與工具。
-
-### 有無治理的差異
-
+**AI ?券??獢葉?敹?蝘颯憯瑽??臬????*
+???嗆?靘?憟?瑽???隞嗉?蝭?+ ?芸??極?瘀?霈?AI ?冽??獢望?靽?**銝??????*??
+> 閰唾? [??AI 蝯??批?憿(#-??ai-蝯??批?憿? ??瘥?憿????圾瘜?撌亙??
+### ?瘝餌??榆??
 ```diff
-- ❌ 沒有治理:
--    你: 幫我加個功能
--    AI: 好的 (立刻做，可能打亂計畫)
--    → AI 不知道優先級
--    → AI 會過早優化
--    → 對話越長越失控
+- ??瘝?瘝餌?:
+-    雿? 撟急?????-    AI: 憟賜? (蝡???航??閮)
+-    ??AI 銝???
+-    ??AI ???拙??-    ??撠店頞頞仃??
++ ???祥??
++    雿? 撟急?????+    AI: ????PLAN.md ?祇梁璅 A??
++        ???賭??冽??桐葉??隤踵閮??
++    ??AI 銝餃?蝣箄??芸?蝝?+    ??AI ?曉??萄?閮??嚗?撘瑕?瑁?嚗?+    ??AI 撱箄降銝?甇?```
 
-+ ✅ 有治理:
-+    你: 幫我加個功能
-+    AI: 我看到 PLAN.md 本週目標是 A、B、C
-+        這個功能不在清單中。要調整計畫嗎?
-+    → AI 主動確認優先級
-+    → AI 傾向遵守計畫邊界（非強制執行）
-+    → AI 建議下一步
-```
-
-> ⚠️ **注意**: 以上行為依賴 AI 讀取並遵從治理文件，屬於「指導性治理（guidance-based）」。
-> 若需技術強制執行（commit 擋截、CI gate），請搭配 Git hook + contract_validator（見 [Plan Freshness 整合](#-plan-freshness--planmd-新鮮度檢查工具)）。
-
+> ?? **瘜冽?**: 隞乩?銵靘陷 AI 霈?蒂?萄?瘝餌??辣嚗惇?潦?撠扳祥??guidance-based嚗?> ?仿??銵撥?嗅銵?commit ??I gate嚗?隢??Git hook + contract_validator嚗? [Plan Freshness ?游?](#-plan-freshness--planmd-?圈悅摨行炎?亙極??嚗?
 ---
 
-## 🏗️ 建築師轉型理論
+## ??儭?撱箇?撣怨???隢?
+**?詨?憿?**:
 
-**核心類比**:
-
-| 軟體開發 | 建築工地 | 治理文件 |
+| 頠?? | 撱箇?撌亙 | 瘝餌??辣 |
 |---------|---------|---------|
-| 代碼 (Code) | 磚塊與水泥 | — |
-| 架構 (Architecture) | 樑柱與地基 | ARCHITECTURE.md |
-| AI Agent | 數位工頭 | — |
-| 治理文件 | 施工規範書 | 8 大法典 |
+| 隞?Ⅳ (Code) | 蝤??偌瘜?| ??|
+| ?嗆? (Architecture) | 璅???| ARCHITECTURE.md |
+| AI Agent | ?訾?撌仿 | ??|
+| 瘝餌??辣 | ?賢極閬???| 8 憭扳???|
 
-> **價值主張**:  
-> AI 的出現，不是為了取代工程師，  
-> 而是為了讓工程師專注於「架構設計」，  
-> 重新拿回屬於建築師的尊嚴。
-
+> **?孵潔蜓撘?*:  
+> AI ??橘?銝?箔??誨撌亦?撣恬?  
+> ??箔?霈極蝔葦撠釣?潦瑽身閮?  
+> ??踹?撅祆撱箇?撣怎?撠??
 ---
 
-## 📦 8 大法典 (完整治理架構)
+## ? 8 憭扳???(摰瘝餌??嗆?)
 
 ```
-🧠 意識層
-  └─ SYSTEM_PROMPT.md     — AI 的身份與禁忌
+?? ??撅?  ?? SYSTEM_PROMPT.md     ??AI ?澈隞質?蝳?
 
-📋 規劃層
-  └─ PLAN.md              — 專案施工計畫 (今天蓋哪層樓) ⭐ 核心
+?? 閬?撅?  ?? PLAN.md              ??撠??賢極閮 (隞予?撅斗?) 潃??詨?
 
-⚙️ 執行層
-  ├─ AGENT.md             — 任務執行流程
-  ├─ ARCHITECTURE.md      — 架構紅線 (承重牆)
-  └─ NATIVE-INTEROP.md    — 跨平台規範
+?? ?瑁?撅?  ?? AGENT.md             ??隞餃??瑁?瘚?
+  ?? ARCHITECTURE.md      ???嗆?蝝? (?輸???
+  ?? NATIVE-INTEROP.md    ??頝典像?啗?蝭?
+???釭撅?  ?? REVIEW_CRITERIA.md   ??隞?Ⅳ撖拇璅?
+  ?? TESTING.md           ??皜祈岫蝑
 
-✅ 品質層
-  ├─ REVIEW_CRITERIA.md   — 代碼審查標準
-  └─ TESTING.md           — 測試策略
-
-🛑 安全閥
-  └─ HUMAN-OVERSIGHT.md   — 強制停機機制
+?? 摰??  ?? HUMAN-OVERSIGHT.md   ??撘瑕??璈
 ```
 
-### 建築類比對照表
-
-| 治理文件 | 建築工地 | 作用 |
+### 撱箇?憿?撠銵?
+| 瘝餌??辣 | 撱箇?撌亙 | 雿 |
 |---------|---------|------|
-| SYSTEM_PROMPT.md | 建築師資格證 | 誰有資格指揮工頭? |
-| **PLAN.md** | **施工計畫表** | **今天蓋哪層樓?** ⭐ |
-| ARCHITECTURE.md | 建築設計圖 | 承重牆在哪? 不能動! |
-| AGENT.md | 施工規範書 | 怎麼砌磚? 流程是什麼? |
-| REVIEW_CRITERIA.md | 品質驗收標準 | 磚砌得夠直嗎? |
-| HUMAN-OVERSIGHT.md | 緊急停工令 | 發現問題立刻停! |
-| TESTING.md | 工地安全檢查 | 怎麼驗收? |
-| NATIVE-INTEROP.md | 材料規格 | 水泥、磚塊的標準 |
+| SYSTEM_PROMPT.md | 撱箇?撣怨??潸? | 隤唳?鞈?撌仿? |
+| **PLAN.md** | **?賢極閮銵?* | **隞予?撅斗??** 潃?|
+| ARCHITECTURE.md | 撱箇?閮剛???| ?輸???? 銝?? |
+| AGENT.md | ?賢極閬???| ?獐??? 瘚??臭?暻? |
+| REVIEW_CRITERIA.md | ?釭撽璅? | 蝤?敺??游?? |
+| HUMAN-OVERSIGHT.md | 蝺亙?撌乩誘 | ?潛??蝡?? |
+| TESTING.md | 撌亙摰瑼Ｘ | ?獐撽? |
+| NATIVE-INTEROP.md | ??閬 | 瘞湔野??憛?璅? |
 
 ---
 
-## 🧩 四個 AI 結構性問題
-
-AI coding 工具的核心限制不是智力，而是**上下文連續性（context continuity）**。
-沒有穩定的專案上下文，AI 協作品質會隨對話時間線性下降。
-
-| 問題 | 症狀 | 框架解法 | 工具 |
+## ?妝 ??AI 蝯??批?憿?
+AI coding 撌亙?敹??嗡??舀???**銝?????改?context continuity嚗?*??瘝?蝛拙???獢?銝?嚗I ???釭?撠店??蝺找???
+| ?? | ?? | 獢閫?? | 撌亙 |
 |------|------|---------|------|
-| **記憶消失** | 每次 session 重新理解專案，前次決策消失 | Memory System | `memory_janitor.py` |
-| **狀態漂移** | AI 不知道現在在哪個 Phase，做了計畫外的事 | State Engine | `PLAN.md` + `plan_freshness.py` |
-| **架構失真** | 局部修改逐漸累積，破壞整體架構設計 | Architecture Guardrails | `ARCHITECTURE.md` + `contract_validator.py` |
-| **任務錯位** | AI 不知道下一步，隨當下需求漂移 | Alignment Engine | `PLAN.md 本週聚焦` + Linear/Notion 同步 |
+| **閮瘨仃** | 瘥活 session ??圾撠?嚗?甈⊥捱蝑?憭?| Memory System | `memory_janitor.py` |
+| **???蝘?* | AI 銝??典?芸?Phase嚗?鈭??怠??? | State Engine | `PLAN.md` + `plan_freshness.py` |
+| **?嗆?憭梁?** | 撅?其耨?寥撓蝝舐?嚗憯擃瑽身閮?| Architecture Guardrails | `ARCHITECTURE.md` + `contract_validator.py` |
+| **隞餃??臭?** | AI 銝??銝甇伐??函銝?瘙?蝘?| Alignment Engine | `PLAN.md ?祇梯??圳 + Linear/Notion ?郊 |
 
-> 本框架的核心作用：**restore project context continuity for AI**
+> ?祆??嗥??詨?雿嚗?*restore project context continuity for AI**
 
 ---
 
-## 🗺️ 系統架構
+## ?儭?蝟餌絞?嗆?
 
 ```
-╔═══════════════════════════════════════════════╗
-║             Human Architect                  ║
-║        定義規範 · 監督 · 架構決策              ║
-╚═══════════════════════╤═══════════════════════╝
-                        │
-╔═══════════════════════▼═══════════════════════╗
-║        Governance Layer (8 大法典)            ║
-║  SYSTEM_PROMPT · AGENT · ARCHITECTURE         ║
-║  OVERSIGHT · REVIEW · TESTING · PLAN          ║
-╚═══════════════════════╤═══════════════════════╝
-                        │ guidance-based
-╔═══════════════════════▼═══════════════════════╗
-║               AI Agent                       ║
-║         (Claude Code · Cursor · etc.)         ║
-╚═╤════════════╤══════╤═══════════╤═════════════╝
-  │            │      │           │
-  ▼            ▼      ▼           ▼
-Memory       State  Guard-     Alignment
+????????????????????????????????????????????????????            Human Architect                  ????       摰儔閬? 繚 ?? 繚 ?嗆?瘙箇?              ???????????????????????????手?????????????????????????                        ???????????????????????????潑???????????????????????????       Governance Layer (8 憭扳???            ???? SYSTEM_PROMPT 繚 AGENT 繚 ARCHITECTURE         ???? OVERSIGHT 繚 REVIEW 繚 TESTING 繚 PLAN          ???????????????????????????手?????????????????????????                        ??guidance-based
+?????????????????????????潑???????????????????????????              AI Agent                       ????        (Claude Code 繚 Cursor 繚 etc.)         ?????手???????????????????手????????????手???????????????  ??           ??     ??          ??  ??           ??     ??          ??Memory       State  Guard-     Alignment
 System       Engine rails      Engine
-──────────   ─────  ─────────  ──────────
-記憶消失      狀態漂移 架構失真   任務錯位
-memory_      PLAN.md ARCH.md   PLAN 本週
-janitor      fresh-  contract_ 聚焦 ·
+??????????   ?????  ?????????  ??????????
+閮瘨仃      ???蝘??嗆?憭梁?   隞餃??臭?
+memory_      PLAN.md ARCH.md   PLAN ?祇?janitor      fresh-  contract_ ? 繚
 hot/cold     ness    validator Linear/Notion
-  │            │      │           │
-  └────────────┴──────┴───────────┘
-                        │
-╔═══════════════════════▼═══════════════════════╗
-║           Automation Layer                   ║
-║   CI · Git Hooks · verify_phase_gates.sh     ║
-╚═══════════════════════════════════════════════╝
-```
+  ??           ??     ??          ??  ??????????????氯???????氯?????????????                        ???????????????????????????潑???????????????????????????          Automation Layer                   ????  CI 繚 Git Hooks 繚 verify_phase_gates.sh     ????????????????????????????????????????????????????```
 
-> ⚠️ **注意**: AI 遵守治理文件屬「指導性配合」，非技術強制執行。
-> 詳見 [LIMITATIONS.md](docs/LIMITATIONS.md)。
-
+> ?? **瘜冽?**: AI ?萄?瘝餌??辣撅研?撠折?????銵撥?嗅銵?> 閰唾? [LIMITATIONS.md](docs/LIMITATIONS.md)??
 ---
 
-## 🚀 快速開始
-
-### 🟢 最小可用版（新手入口，5 分鐘）
-
-如果你只想快速試試效果，不想一次部署 8 大法典：
+## ?? 敹恍?憪?
+### ? ?撠?函?嚗????5 ??嚗?
+憒?雿?喳翰?岫閰行???銝銝甈⊿蝵?8 憭扳??賂?
 
 ```bash
 git clone https://github.com/GavinWu672/ai-governance-framework.git
@@ -164,383 +111,302 @@ cp ai-governance-framework/examples/starter-pack/PLAN.md           /your/project
 cp ai-governance-framework/governance_tools/memory_janitor.py      /your/project/
 ```
 
-填寫 `PLAN.md` → 告訴 AI 讀 `SYSTEM_PROMPT.md` → 5 分鐘跑起來。
-
-詳見 **[examples/starter-pack/README.md](examples/starter-pack/README.md)** ⭐
-
+憛怠神 `PLAN.md` ???迄 AI 霈 `SYSTEM_PROMPT.md` ??5 ??頝絲靘?
+閰唾? **[examples/starter-pack/README.md](examples/starter-pack/README.md)** 潃?
 ---
 
-### 1. 克隆專案
+### 1. ??撠?
 
 ```bash
 git clone https://github.com/GavinWu672/ai-governance-framework.git
 cd ai-governance-framework
 ```
 
-### 2. 部署到你的專案
-
+### 2. ?函蔡?唬???獢?
 ```bash
-# 使用部署腳本 (推薦)
-# 自動複製治理文件 + 生成 PLAN.md 模板 + 建立 memory/ 目錄結構
+# 雿輻?函蔡?單 (?刻)
+# ?芸?銴ˊ瘝餌??辣 + ?? PLAN.md 璅⊥ + 撱箇? memory/ ?桅?蝯?
 ./deploy_to_memory.sh /path/to/your/project
 
-# 或手動複製
-cp -r governance /path/to/your/project/
+# ????鋆?cp -r governance /path/to/your/project/
 cp -r governance_tools /path/to/your/project/
 ```
 
-部署後目標專案結構：
+?函蔡敺璅?獢?瑽?
 
 ```
 your-project/
-├── PLAN.md              ← 自動生成的模板，填寫後即可使用 ⭐
-├── .governance-state.yaml  ← 由 state_generator.py 生成（可選）
-├── governance/          ← 8 大法典
-├── governance_tools/    ← 自動化工具
-└── memory/              ← 建議手動建立，供 AI 記憶使用
-    ├── 00_master_plan.md
-    ├── 01_active_task.md
-    ├── 02_tech_stack.md
-    ├── 03_knowledge_base.md
-    ├── 04_review_log.md  ← AI reviewer 的完整審查紀錄
-    └── archive/          ← memory_janitor 歸檔目錄
-        ├── manifest.json         ← 所有歸檔操作的 audit trail
-        └── active_task_*.md      ← 歸檔的完整記憶快照
+??? PLAN.md              ???芸????芋?選?憛怠神敺?臭蝙??潃???? .governance-state.yaml  ????state_generator.py ??嚗?賂?
+??? governance/          ??8 憭扳?????? governance_tools/    ???芸??極????? memory/              ??撱箄降??撱箇?嚗? AI 閮雿輻
+    ??? 00_master_plan.md
+    ??? 01_active_task.md
+    ??? 02_tech_stack.md
+    ??? 03_knowledge_base.md
+    ??? 04_review_log.md  ??AI reviewer ???游祟?亦???    ??? archive/          ??memory_janitor 甇豢??桅?
+        ??? manifest.json         ????飛瑼?雿? audit trail
+        ??? active_task_*.md      ??甇豢????渲??嗅翰??```
+
+### 3. ?迄 AI 霈?祥??隞?
+**蝚砌?甈∪?閰?*:
+```
+隢霈 governance/ ?桅?銝???祥??隞塚?
+銝虫???SYSTEM_PROMPT.md 禮2 ??憪?瘚??瑁?嚗?
+??Header Verification: 蝣箄? LANG / LEVEL / SCOPE
+??Memory Sync: 霈??PLAN.md ??memory/ ?桅?
+??Bounded Context: 摰???祆活隞餃??痊隞餌?????Dynamic Loading Declaration: 摰???祆活?頛?芯?瘝餌??辣
 ```
 
-### 3. 告訴 AI 讀取治理文件
+> **瘜冽?**: SYSTEM_PROMPT.md 禮2 ???瘙?AI 霈??PLAN.md??> ??PLAN.md 銝??剁?AI ?郎?蒂閬??遣蝡?
+### 4. 憛怠神雿? PLAN.md
 
-**第一次對話**:
-```
-請閱讀 governance/ 目錄下的所有治理文件，
-並依照 SYSTEM_PROMPT.md §2 的初始化流程執行：
-
-① Header Verification: 確認 LANG / LEVEL / SCOPE
-② Memory Sync: 讀取 PLAN.md 和 memory/ 目錄
-③ Bounded Context: 宣告本次任務的責任範圍
-④ Dynamic Loading Declaration: 宣告本次需載入哪些治理文件
-```
-
-> **注意**: SYSTEM_PROMPT.md §2 會自動要求 AI 讀取 PLAN.md。
-> 若 PLAN.md 不存在，AI 會警告並要求先建立。
-
-### 4. 填寫你的 PLAN.md
-
-部署腳本已自動生成 `PLAN.md` 模板，只需填寫專案資訊：
-
+?函蔡?單撌脰????`PLAN.md` 璅⊥嚗?憛怠神撠?鞈?嚗?
 ```bash
-# 開啟並編輯模板
-# 必填欄位: 專案目標、當前 Phase、本週聚焦、AI 協作規則
-code PLAN.md   # 或使用任意編輯器
+# ??銝衣楊頛舀芋??# 敹‵甈?: 撠??格????Phase??梯??艾I ??閬?
+code PLAN.md   # ?蝙?其遙?楊頛臬
 ```
 
-格式規範請參考 [governance/PLAN.md](governance/PLAN.md)。
-
+?澆?閬?隢???[governance/PLAN.md](governance/PLAN.md)??
 ---
 
-## 🎬 15 分鐘體感示範
+## ? 15 ??擃?蝷箇?
 
-**最快上手方式**: 閱讀 `examples/todo-app-demo/DEMO_LOG.md`，看完整的 AI 對話紀錄。
-
+**?敹思??撘?*: ?梯? `examples/todo-app-demo/DEMO_LOG.md`嚗?摰??AI 撠店蝝??
 ```bash
-# 直接閱讀示範
+# ?湔?梯?蝷箇?
 cat examples/todo-app-demo/DEMO_LOG.md
 ```
 
-### 示範內容
+### 蝷箇??批捆
 
-| 場景 | 無治理結果 | 有治理結果 |
+| ?湔 | ?⊥祥????| ?祥????|
 |------|----------|----------|
-| 請求計畫外功能（登入） | ❌ AI 直接開始做 JWT | ✅ AI 提出 3 個選項讓你決定 |
-| 請求計畫內功能（CRUD） | AI 可能做也可能偏離 | ✅ AI 確認在計畫中才開始 |
-| 任務完成後 | AI 等你下指令 | ✅ AI 主動推進下一個 Sprint 任務 |
+| 隢?閮憭??踝??餃嚗?| ??AI ?湔????JWT | ??AI ? 3 ???雿捱摰?|
+| 隢?閮?批??踝?CRUD嚗?| AI ?航???航? | ??AI 蝣箄??刻??思葉??憪?|
+| 隞餃?摰?敺?| AI 蝑?銝?隞?| ??AI 銝餃??券脖?銝??Sprint 隞餃? |
 
-> 📂 **[examples/todo-app-demo/](examples/todo-app-demo/)** — 包含已填好的 PLAN.md 範本
+> ?? **[examples/todo-app-demo/](examples/todo-app-demo/)** ???撌脣‵憟賜? PLAN.md 蝭
 
 ---
 
-## 💡 PLAN.md — 最重要的文件
-
-**PLAN.md** 是治理架構的核心，定義了「AI 今天該做什麼」。
-
-### 為什麼需要 PLAN.md?
+## ? PLAN.md ???????隞?
+**PLAN.md** ?舀祥?瑽??詨?嚗?蝢拐??I 隞予閰脣?隞暻潦?
+### ?箔?暻潮?閬?PLAN.md?
 
 ```
-沒有 PLAN.md = 工頭不知道今天該蓋哪層樓
+瘝? PLAN.md = 撌仿銝??憭抵府?撅斗?
 
-有了 PLAN.md:
-  ✅ AI 知道「當前階段」是什麼
-  ✅ AI 知道「本週目標」vs「待辦清單」
-  ✅ AI 會主動提醒「這不在計畫中」
-  ✅ AI 能建議「下一步該做什麼」
-```
+?? PLAN.md:
+  ??AI ?仿????畾萸隞暻?  ??AI ?仿???梁璅s??颲行??柴?  ??AI ?蜓?????刻??思葉??  ??AI ?賢遣霅啜?銝甇亥府??暻潦?```
 
-### 核心結構
+### ?詨?蝯?
 
 ```markdown
 # PLAN.md
 
-## 📋 專案目標
-[一句話 + Bounded Context]
+## ?? 撠??格?
+[銝?亥店 + Bounded Context]
 
-## 🏗️ 當前階段
-├─ [✓] Phase A: 基礎架構 (完成)
-├─ [🔄] Phase B: 核心功能 (進行中)
-└─ [⏳] Phase C: 整合測試 (待開始)
+## ??儭??嗅??挾
+?? [? Phase A: ?箇??嗆? (摰?)
+?? [??] Phase B: ?詨?? (?脰?銝?
+?? [?設 Phase C: ?游?皜祈岫 (敺?憪?
 
-## 🔥 本週聚焦
-- [ ] 任務 1 (4h)
-- [ ] 任務 2 (6h)
-- [ ] 任務 3 (4h)
+## ? ?祇梯???- [ ] 隞餃? 1 (4h)
+- [ ] 隞餃? 2 (6h)
+- [ ] 隞餃? 3 (4h)
 
-## 🚫 不要做 (Anti-Goals)
-❌ Phase B 禁止:
-- 不要提前優化效能 (Phase C 才做)
-- 不要實作連線池
+## ? 銝???(Anti-Goals)
+??Phase B 蝳迫:
+- 銝????芸?? (Phase C ??)
+- 銝?撖虫????瘙?
+## ?? AI ??閬?
+AI 撖虫?隞颱????敹?蝣箄?:
+1. ???具?梯??艾葉??
+2. ???具?閬????桐葉??
+3. ??憒??賭?蝚血?嚗岷??西矽?渲???```
 
-## 🤖 AI 協作規則
-AI 實作任何功能前，必須確認:
-1. ✅ 在「本週聚焦」中嗎?
-2. ✅ 在「不要做」清單中嗎?
-3. ✅ 如果都不符合，詢問是否調整計畫
+### PLAN.md 撖阡?獢?
+
+#### ?湔 1: AI 銝餃?蝣箄??芸?蝝?潃?潃?潃?
+```
+User: 撟急???閮?蝣澆???
+AI: ????PLAN.md ?祇梯??行:
+    - 摰?雿輻???    - 撖虫??箸 CRUD
+    - ?游?蝚砌???API
+    
+    ??閮?蝣潦??冽??桐葉??    
+    ?賊?:
+    A) ????梁璅?????閮?蝣?    B) 隤踵閮嚗?敹?撖Ⅳ??祇梁璅?    
+    雿???雿???
 ```
 
-### PLAN.md 實際案例
-
-#### 場景 1: AI 主動確認優先級 ⭐⭐⭐⭐⭐
-
+**?孵?*: AI 銝餃????芸?蝝??脫迫閮憭望! ??
+#### ?湔 2: AI ?脫迫??芸? 潃?潃?潃?
 ```
-User: 幫我加個忘記密碼功能
-
-AI: 我看到 PLAN.md 本週聚焦是:
-    - 完成使用者登入
-    - 實作基本 CRUD
-    - 整合第三方 API
+User: 撟急??芸?銝銝???
+AI: ?炎?乩? PLAN.md嚗??畾菜?hase B: ?詨????    
+    Phase B ??閬????桐葉??
+    ??銝????芸?? (Phase C ??)
     
-    「忘記密碼」不在清單中。
+    撱箄降:
+    - 憒?????湧?敶梢?嚗隞亥???    - 憒??芣?單????撱箄降????Phase B Gate
     
-    選項:
-    A) 先完成本週目標，再處理忘記密碼
-    B) 調整計畫，將忘記密碼加入本週目標
-    
-    你希望如何處理?
+    雿Ⅱ摰??曉?芸????
 ```
 
-**價值**: AI 主動提醒優先級，防止計畫失控! ✅
-
-#### 場景 2: AI 防止過早優化 ⭐⭐⭐⭐⭐
-
+**?孵?*: AI ?脫迫??芸?嚗摰??潮?畾? ??
+#### ?湔 3: AI 銝餃?撱箄降銝?甇?潃?潃?潃?
 ```
-User: 幫我優化一下效能
-
-AI: 我檢查了 PLAN.md，當前階段是「Phase B: 核心功能」。
+User: ?餃???鈭?
+AI: 憭芸末鈭? ?? PLAN.md ??銝甇乓:
+    - 撖虫??箸鞈? CRUD
+    - ?游?蝚砌???API
     
-    Phase B 的「不要做」清單中有:
-    ❌ 不要提前優化效能 (Phase C 才做)
-    
-    建議:
-    - 如果效能問題嚴重影響開發，可以處理
-    - 如果只是想提前優化，建議先完成 Phase B Gate
-    
-    你確定要現在優化效能嗎?
+    ?遣霅啣?撖虫? CRUD嚗??箏??臬蝷??賬?    
+    閬???撖虫? User 鞈???CRUD ??
 ```
 
-**價值**: AI 防止過早優化，遵守開發階段! ✅
-
-#### 場景 3: AI 主動建議下一步 ⭐⭐⭐⭐⭐
-
-```
-User: 登入功能做完了
-
-AI: 太好了! 我看 PLAN.md 的「下一步」是:
-    - 實作基本資料 CRUD
-    - 整合第三方 API
-    
-    我建議先實作 CRUD，因為它是基礎功能。
-    
-    要我開始實作 User 資料的 CRUD 嗎?
-```
-
-**價值**: AI 主動推進專案，不需要你每次想下一步! ✅
-
+**?孵?*: AI 銝餃??券脣?獢?銝?閬?瘥活?喃?銝甇? ??
 ---
 
-## 🛠️ 專案結構
+## ??儭?撠?蝯?
 
 ```
 ai-governance-framework/
-├── README.md                    ← 你正在看的檔案
-├── LICENSE                      ← MIT 授權
-├── CONTRIBUTING.md              ← 貢獻指南
-├── PLAN.md                      ← 本專案的開發計畫 ⭐
-├── .governance-state.yaml       ← PLAN.md 的機器可讀萃取版 (auto-generated)
-├── .github/workflows/
-│   └── governance.yml           ← GitHub Actions CI ⭐
-├── .gitlab-ci.yml               ← GitLab CI ⭐
-├── deploy_to_memory.sh          ← 部署腳本
-│
-├── governance/                  ← 8 大法典
-│   ├── SYSTEM_PROMPT.md        ← AI 身份與禁忌
-│   ├── PLAN.md                 ← 專案規劃治理規範 ⭐ 核心
-│   ├── AGENT.md                ← 任務執行流程
-│   ├── ARCHITECTURE.md         ← 架構紅線 (承重牆)
-│   ├── REVIEW_CRITERIA.md      ← 代碼審查標準
-│   ├── HUMAN-OVERSIGHT.md      ← 強制停機機制
-│   ├── TESTING.md              ← 測試策略
-│   ├── NATIVE-INTEROP.md       ← 跨平台規範
-│   └── 02_workflow.md          ← AI 協作工作流程
-│
-├── governance_tools/            ← 輔助工具
-│   ├── README.md               ← 工具說明
-│   ├── contract_validator.py   ← AI 合規驗證工具 ⭐
-│   ├── plan_freshness.py       ← PLAN.md 新鮮度檢查 ⭐
-│   ├── state_generator.py      ← PLAN.md → .governance-state.yaml ⭐
-│   ├── memory_janitor.py       ← 記憶掃除工具
-│   ├── linear_integrator.py   ← Linear 任務同步工具
-│   └── notion_integrator.py   ← Notion 任務同步工具
-│
-├── docs/                        ← 文件與教學
-│   ├── INTEGRATION_GUIDE.md    ← 整合指南
-│   ├── architecture-theory.md  ← 建築師轉型理論
-│   ├── governance-vs-prompting.md ← 治理 vs Prompting
-│   ├── linear-source-of-truth.md ← Linear 同步策略
-│   ├── notion-source-of-truth.md ← Notion 同步策略
-│   └── LIMITATIONS.md           ← 框架邊界與誠實評估 ⚠️
-│
-├── examples/                    ← 示範專案 ⭐ 新手必看
-│   ├── starter-pack/           ← 最小可用版 ⭐ 新手入口（多工具）
-│   │   ├── SYSTEM_PROMPT.md    ← 治理規則 master
-│   │   ├── PLAN.md             ← 可填入範本
-│   │   ├── CLAUDE.md           ← Claude Code adapter
-│   │   ├── GEMINI.md           ← Gemini Code Assist adapter
-│   │   ├── .github/
-│   │   │   └── copilot-instructions.md ← GitHub Copilot adapter
-│   │   ├── demo.md             ← before/after 對話示範 ⭐
-│   │   ├── README.md           ← 5 分鐘 quickstart
-│   │   └── memory/
-│   │       └── 01_active_task.md ← 預建狀態文件
-│   ├── todo-app-demo/          ← 15 分鐘體感示範
-│   │   ├── PLAN.md             ← 已填好的計畫範本
-│   │   └── DEMO_LOG.md         ← AI 對話示範紀錄
-│   └── chaos-demo/             ← AI 架構破壞 vs 治理攔截 💥
-│       └── README.md           ← before/after 對比腳本
-│
-├── scripts/                     ← 工具腳本
-│   ├── install-hooks.sh        ← Git hooks 一鍵安裝 ⭐
-│   └── hooks/                  ← hook 原始檔
-│       ├── pre-commit          ← PLAN.md freshness 擋截
-│       └── pre-push            ← AI 回覆快照驗證
-│
-└── archive/                     ← 記憶歸檔區 (由 memory_janitor 使用)
+??? README.md                    ??雿迤?函???獢???? LICENSE                      ??MIT ??
+??? CONTRIBUTING.md              ??鞎Ｙ??
+??? PLAN.md                      ???砍?獢??閮 潃???? .governance-state.yaml       ??PLAN.md ???典霈????(auto-generated)
+??? .github/workflows/
+??  ??? governance.yml           ??GitHub Actions CI 潃???? .gitlab-ci.yml               ??GitLab CI 潃???? deploy_to_memory.sh          ???函蔡?單
+????? governance/                  ??8 憭扳?????  ??? SYSTEM_PROMPT.md        ??AI 頨思遢??敹???  ??? PLAN.md                 ??撠?閬?瘝餌?閬? 潃??詨?
+??  ??? AGENT.md                ??隞餃??瑁?瘚?
+??  ??? ARCHITECTURE.md         ???嗆?蝝? (?輸???
+??  ??? REVIEW_CRITERIA.md      ??隞?Ⅳ撖拇璅?
+??  ??? HUMAN-OVERSIGHT.md      ??撘瑕??璈
+??  ??? TESTING.md              ??皜祈岫蝑
+??  ??? NATIVE-INTEROP.md       ??頝典像?啗?蝭???  ??? 02_workflow.md          ??AI ??撌乩?瘚?
+????? governance_tools/            ??頛撌亙
+??  ??? README.md               ??撌亙隤芣?
+??  ??? contract_validator.py   ??AI ??撽?撌亙 潃???  ??? plan_freshness.py       ??PLAN.md ?圈悅摨行炎??潃???  ??? state_generator.py      ??PLAN.md ??.governance-state.yaml 潃???  ??? memory_janitor.py       ??閮?撌亙
+??  ??? linear_integrator.py   ??Linear 隞餃??郊撌亙
+??  ??? notion_integrator.py   ??Notion 隞餃??郊撌亙
+????? docs/                        ???辣??摮???  ??? INTEGRATION_GUIDE.md    ???游???
+??  ??? architecture-theory.md  ??撱箇?撣怨???隢???  ??? governance-vs-prompting.md ??瘝餌? vs Prompting
+??  ??? linear-source-of-truth.md ??Linear ?郊蝑
+??  ??? notion-source-of-truth.md ??Notion ?郊蝑
+??  ??? LIMITATIONS.md           ??獢????撖西?隡???
+????? examples/                    ??蝷箇?撠? 潃??唳?敹?
+??  ??? starter-pack/           ???撠?函? 潃??唳??亙嚗?撌亙嚗???  ??  ??? SYSTEM_PROMPT.md    ??瘝餌?閬? master
+??  ??  ??? PLAN.md             ???臬‵?亦?????  ??  ??? CLAUDE.md           ??Claude Code adapter
+??  ??  ??? GEMINI.md           ??Gemini Code Assist adapter
+??  ??  ??? .github/
+??  ??  ??  ??? copilot-instructions.md ??GitHub Copilot adapter
+??  ??  ??? demo.md             ??before/after 撠店蝷箇? 潃???  ??  ??? README.md           ??5 ?? quickstart
+??  ??  ??? memory/
+??  ??      ??? 01_active_task.md ???遣???隞???  ??? todo-app-demo/          ??15 ??擃?蝷箇?
+??  ??  ??? PLAN.md             ??撌脣‵憟賜?閮蝭
+??  ??  ??? DEMO_LOG.md         ??AI 撠店蝷箇?蝝????  ??? chaos-demo/             ??AI ?嗆??游? vs 瘝餌?? ?
+??      ??? README.md           ??before/after 撠??單
+????? scripts/                     ??撌亙?單
+??  ??? install-hooks.sh        ??Git hooks 銝?萄?鋆?潃???  ??? hooks/                  ??hook ??瑼???      ??? pre-commit          ??PLAN.md freshness ?
+??      ??? pre-push            ??AI ??敹怎撽?
+????? archive/                     ??閮甇豢?? (??memory_janitor 雿輻)
 ```
 
 ---
 
-## 📚 文件導覽
+## ?? ?辣撠汗
 
-### 核心文件 (必讀)
+### ?詨??辣 (敹?)
 
-- **[PLAN.md](governance/PLAN.md)** ⭐ - 專案規劃治理規範 (最重要!)
-- **[SYSTEM_PROMPT.md](governance/SYSTEM_PROMPT.md)** - AI 身份定義
-- **[AGENT.md](governance/AGENT.md)** - 任務執行流程
-- **[ARCHITECTURE.md](governance/ARCHITECTURE.md)** - 架構紅線
-- **[HUMAN-OVERSIGHT.md](governance/HUMAN-OVERSIGHT.md)** - 強制停機
+- **[PLAN.md](governance/PLAN.md)** 潃?- 撠?閬?瘝餌?閬? (???!)
+- **[SYSTEM_PROMPT.md](governance/SYSTEM_PROMPT.md)** - AI 頨思遢摰儔
+- **[AGENT.md](governance/AGENT.md)** - 隞餃??瑁?瘚?
+- **[ARCHITECTURE.md](governance/ARCHITECTURE.md)** - ?嗆?蝝?
+- **[HUMAN-OVERSIGHT.md](governance/HUMAN-OVERSIGHT.md)** - 撘瑕??
 
-### 示範
+### 蝷箇?
 
-- **[examples/starter-pack/](examples/starter-pack/)** ⭐ - **新手入口**：3 文件最小可用版，5 分鐘開始（認知負擔最低）
-- **[examples/todo-app-demo/DEMO_LOG.md](examples/todo-app-demo/DEMO_LOG.md)** - 15 分鐘體感示範（完整框架）
-- **[examples/todo-app-demo/PLAN.md](examples/todo-app-demo/PLAN.md)** - 已填好的 PLAN.md 範本
-- **[examples/chaos-demo/](examples/chaos-demo/)** 💥 - AI 亂改架構 vs 治理攔截（架構破壞 before/after）
+- **[examples/starter-pack/](examples/starter-pack/)** 潃?- **?唳??亙**嚗? ?辣?撠?函?嚗? ????嚗??亥???雿?
+- **[examples/todo-app-demo/DEMO_LOG.md](examples/todo-app-demo/DEMO_LOG.md)** - 15 ??擃?蝷箇?嚗??湔??塚?
+- **[examples/todo-app-demo/PLAN.md](examples/todo-app-demo/PLAN.md)** - 撌脣‵憟賜? PLAN.md 蝭
+- **[examples/chaos-demo/](examples/chaos-demo/)** ? - AI 鈭?嗆? vs 瘝餌??嚗瑽憯?before/after嚗?
+### ?游???
 
-### 整合指南
+- **[?游???](docs/INTEGRATION_GUIDE.md)** - 憒??游??啁??獢?
+### 撱嗡撓?梯?
 
-- **[整合指南](docs/INTEGRATION_GUIDE.md)** - 如何整合到現有專案
+- **[撱箇?撣怨???隢(docs/architecture-theory.md)** - 敺蝤極?啣遣蝭葦
+- **[瘝餌? vs Prompting](docs/governance-vs-prompting.md)** - ?箔?暻潭祥?? Prompt ??
+- **[Linear ?郊蝑](docs/linear-source-of-truth.md)** - PLAN.md vs Linear 隤啁皞?- **[Notion ?郊蝑](docs/notion-source-of-truth.md)** - PLAN.md vs Notion 隤啁皞?- **[LIMITATIONS.md](docs/LIMITATIONS.md)** ?? - 獢???歇?仿??嗉?隤祕閰摯嚗?霈嚗?
+### 撌亙
 
-### 延伸閱讀
+- **[deploy_to_memory.sh](deploy_to_memory.sh)** - ?函蔡?單
+- **[scripts/install-hooks.sh](scripts/install-hooks.sh)** 潃?- Git hooks 銝?萄?鋆?CRITICAL ??commit嚗?- **[CI/CD ?游???](#-cicd-?游?--github-actions--gitlab-ci)** 潃?- GitHub Actions & GitLab CI 蝭?嚗極?瑞??YAML 銝?嚗?- **[contract_validator.py](governance_tools/contract_validator.py)** 潃?- AI ??撽?撌亙
+- **[plan_freshness.py](governance_tools/plan_freshness.py)** 潃?- PLAN.md ?圈悅摨行炎?亙極??- **[state_generator.py](governance_tools/state_generator.py)** 潃?- PLAN.md ??machine-readable state
+- **[memory_janitor.py](governance_tools/memory_janitor.py)** - 閮?嚗opy+pointer+manifest嚗?- **[linear_integrator.py](governance_tools/linear_integrator.py)** - Linear 隞餃??郊
+- **[notion_integrator.py](governance_tools/notion_integrator.py)** - Notion 隞餃??郊
+- **[governance_tools/](governance_tools/)** - 頛撌亙??
+---
 
-- **[建築師轉型理論](docs/architecture-theory.md)** - 從搬磚工到建築師
-- **[治理 vs Prompting](docs/governance-vs-prompting.md)** - 為什麼治理比 Prompt 重要
-- **[Linear 同步策略](docs/linear-source-of-truth.md)** - PLAN.md vs Linear 誰為準
-- **[Notion 同步策略](docs/notion-source-of-truth.md)** - PLAN.md vs Notion 誰為準
-- **[LIMITATIONS.md](docs/LIMITATIONS.md)** ⚠️ - 框架邊界、已知限制與誠實評估（必讀）
+## ?? 鞎Ｙ
 
-### 工具
+甇∟?鞎Ｙ! 
 
-- **[deploy_to_memory.sh](deploy_to_memory.sh)** - 部署腳本
-- **[scripts/install-hooks.sh](scripts/install-hooks.sh)** ⭐ - Git hooks 一鍵安裝（CRITICAL 擋 commit）
-- **[CI/CD 整合指南](#-cicd-整合--github-actions--gitlab-ci)** ⭐ - GitHub Actions & GitLab CI 範例（工具相同，YAML 不同）
-- **[contract_validator.py](governance_tools/contract_validator.py)** ⭐ - AI 合規驗證工具
-- **[plan_freshness.py](governance_tools/plan_freshness.py)** ⭐ - PLAN.md 新鮮度檢查工具
-- **[state_generator.py](governance_tools/state_generator.py)** ⭐ - PLAN.md → machine-readable state
-- **[memory_janitor.py](governance_tools/memory_janitor.py)** - 記憶掃除（copy+pointer+manifest）
-- **[linear_integrator.py](governance_tools/linear_integrator.py)** - Linear 任務同步
-- **[notion_integrator.py](governance_tools/notion_integrator.py)** - Notion 任務同步
-- **[governance_tools/](governance_tools/)** - 輔助工具集
+### 鞎Ｙ?孵?
+
+- ?? [???](https://github.com/GavinWu672/ai-governance-framework/issues)
+- ? [撱箄降?啣??稽(https://github.com/GavinWu672/ai-governance-framework/issues)
+- ?? ?孵??辣
+- ? [?澈雿?獢?](https://github.com/GavinWu672/ai-governance-framework/discussions)
+
+### 鞎Ｙ??
+
+1. Fork ??獢?2. 撱箇?雿? feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit 雿?霈 (`git commit -m 'Add some AmazingFeature'`)
+4. Push ??branch (`git push origin feature/AmazingFeature`)
+5. ?? Pull Request
 
 ---
 
-## 🤝 貢獻
+## ?? Contract Validator ??AI ??撽?撌亙
 
-歡迎貢獻! 
-
-### 貢獻方式
-
-- 🐛 [回報問題](https://github.com/GavinWu672/ai-governance-framework/issues)
-- 💡 [建議新功能](https://github.com/GavinWu672/ai-governance-framework/issues)
-- 📝 改善文件
-- 🎯 [分享你的案例](https://github.com/GavinWu672/ai-governance-framework/discussions)
-
-### 貢獻指南
-
-1. Fork 這個專案
-2. 建立你的 feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit 你的變更 (`git commit -m 'Add some AmazingFeature'`)
-4. Push 到 branch (`git push origin feature/AmazingFeature`)
-5. 開啟 Pull Request
-
----
-
-## 🔍 Contract Validator — AI 合規驗證工具
-
-`governance_tools/contract_validator.py` 可機器驗證 AI 回覆是否包含合規的 `[Governance Contract]` 區塊（由 SYSTEM_PROMPT.md §2 ⑦ 定義）。
-
-### 用法
+`governance_tools/contract_validator.py` ?舀??券?霅?AI ???臬?????`[Governance Contract]` ?憛???SYSTEM_PROMPT.md 禮2 ??摰儔嚗?
+### ?冽?
 
 ```bash
-# 從檔案驗證
-python governance_tools/contract_validator.py --file response.txt
+# 敺?獢?霅?python governance_tools/contract_validator.py --file response.txt
 
-# 從 stdin 驗證
-echo "<AI 回覆>" | python governance_tools/contract_validator.py
+# 敺?stdin 撽?
+echo "<AI ??>" | python governance_tools/contract_validator.py
 
-# JSON 輸出（接 CI / 自動化）
+# JSON 頛詨嚗 CI / ?芸???
 python governance_tools/contract_validator.py --file response.txt --format json
 ```
 
-### 退出碼
+### ??箇Ⅳ
 
-| 退出碼 | 意義 |
+| ??箇Ⅳ | ?儔 |
 |--------|------|
-| `0` | ✅ 合規 — 區塊存在且所有欄位通過驗證 |
-| `1` | ❌ 不合規 — 區塊存在但有欄位錯誤 |
-| `2` | 🚨 找不到 `[Governance Contract]` 區塊 |
+| `0` | ???? ???憛??其????雿?撽? |
+| `1` | ??銝?閬????憛??其???雿隤?|
+| `2` | ? ?曆???`[Governance Contract]` ?憛?|
 
-### 驗證欄位
+### 撽?甈?
 
-| 欄位 | 必填 | 合法值 |
+| 甈? | 敹‵ | ????|
 |------|------|--------|
-| `LANG` | ✅ | `C++`, `C#`, `ObjC`, `Swift`, `JS` |
-| `LEVEL` | ✅ | `L0`, `L1`, `L2` |
-| `SCOPE` | ✅ | `feature`, `refactor`, `bugfix`, `I/O`, `tooling`, `review` |
-| `LOADED` | ✅ | 必須包含 `SYSTEM_PROMPT` 和 `HUMAN-OVERSIGHT` |
-| `CONTEXT` | ✅ | 需含 `—` 分隔符與 `NOT:` 子句 |
-| `PRESSURE` | ✅ | `SAFE`, `WARNING`, `CRITICAL`, `EMERGENCY` |
-| `PLAN` | ⚠️ | 若專案有 PLAN.md 則為必填（缺失時為警告） |
-| `AGENT_ID` | 選填 | 多 agent 情境下的身份識別（如 `coder-01`） |
-| `SESSION` | 選填* | 當 AGENT_ID 存在時**必填**，格式 `YYYY-MM-DD-NN` |
+| `LANG` | ??| `C++`, `C#`, `ObjC`, `Swift`, `JS` |
+| `LEVEL` | ??| `L0`, `L1`, `L2` |
+| `SCOPE` | ??| `feature`, `refactor`, `bugfix`, `I/O`, `tooling`, `review` |
+| `LOADED` | ??| 敹?? `SYSTEM_PROMPT` ??`HUMAN-OVERSIGHT` |
+| `CONTEXT` | ??| ???`? ??蝚西? `NOT:` 摮 |
+| `PRESSURE` | ??| `SAFE`, `WARNING`, `CRITICAL`, `EMERGENCY` |
+| `PLAN` | ?? | ?亙?獢? PLAN.md ?敹‵嚗撩憭望??箄郎?? |
+| `AGENT_ID` | ?詨‵ | 憭?agent ??銝?頨思遢霅嚗? `coder-01`嚗?|
+| `SESSION` | ?詨‵* | ??AGENT_ID 摮??*敹‵**嚗撘?`YYYY-MM-DD-NN` |
 
-### 合規的 AI 回覆範例
+### ????AI ??蝭?
 
 ````
 ```
@@ -550,52 +416,44 @@ LEVEL    = L1
 SCOPE    = feature
 PLAN     = Phase B - Sprint 1 - B1
 LOADED   = SYSTEM_PROMPT, HUMAN-OVERSIGHT, AGENT, ARCHITECTURE
-CONTEXT  = UserService — 負責: 登入邏輯; NOT: 資料庫連線、UI 渲染
+CONTEXT  = UserService ??鞎痊: ?餃?摩; NOT: 鞈?摨恍???I 皜脫?
 PRESSURE = SAFE (42/200)
-AGENT_ID = coder-01          ← multi-agent 時填寫
-SESSION  = 2026-03-05-01     ← AGENT_ID 存在時必填
-```
+AGENT_ID = coder-01          ??multi-agent ?‵撖?SESSION  = 2026-03-05-01     ??AGENT_ID 摮??憛?```
 ````
 
 ---
 
-## 📅 Plan Freshness — PLAN.md 新鮮度檢查工具
-
-`governance_tools/plan_freshness.py` 偵測 PLAN.md 是否在有效期內，避免計畫悄悄失效。
-
-### PLAN.md 必填 header 欄位
+## ?? Plan Freshness ??PLAN.md ?圈悅摨行炎?亙極??
+`governance_tools/plan_freshness.py` ?菜葫 PLAN.md ?臬?冽????改??踹?閮??憭望???
+### PLAN.md 敹‵ header 甈?
 
 ```markdown
-> **最後更新**: 2026-03-05   ← 每次修改 PLAN.md 時更新
-> **Owner**: GavinWu
-> **Freshness**: Sprint (7d)  ← policy: Sprint(7d) / Phase(30d) / Custom(Nd)
+> **?敺??*: 2026-03-05   ??瘥活靽格 PLAN.md ???> **Owner**: GavinWu
+> **Freshness**: Sprint (7d)  ??policy: Sprint(7d) / Phase(30d) / Custom(Nd)
 ```
 
-### 用法
+### ?冽?
 
 ```bash
-# 檢查當前目錄的 PLAN.md
+# 瑼Ｘ?嗅??桅???PLAN.md
 python governance_tools/plan_freshness.py
 
-# 指定路徑
+# ??頝臬?
 python governance_tools/plan_freshness.py --file /path/to/PLAN.md
 
-# JSON 輸出（接 CI）
-python governance_tools/plan_freshness.py --format json
+# JSON 頛詨嚗 CI嚗?python governance_tools/plan_freshness.py --format json
 
-# Override threshold（不管 policy 設定）
-python governance_tools/plan_freshness.py --threshold 14
+# Override threshold嚗?蝞?policy 閮剖?嚗?python governance_tools/plan_freshness.py --threshold 14
 ```
 
-### 退出碼與狀態
-
-| 退出碼 | 狀態 | 條件 |
+### ??箇Ⅳ????
+| ??箇Ⅳ | ???| 璇辣 |
 |--------|------|------|
-| `0` | ✅ FRESH | 距今 ≤ threshold |
-| `1` | ⚠️ STALE | threshold < 距今 ≤ 2× threshold |
-| `2` | 🔴 CRITICAL | 距今 > 2× threshold，或欄位缺失 |
+| `0` | ??FRESH | 頝? ??threshold |
+| `1` | ?? STALE | threshold < 頝? ??2? threshold |
+| `2` | ? CRITICAL | 頝? > 2? threshold嚗?甈?蝻箏仃 |
 
-### 整合到 Git hook（選用）
+### ?游???Git hook嚗?剁?
 
 ```bash
 # .git/hooks/pre-commit
@@ -605,55 +463,46 @@ echo "$OUTPUT" | python3 -c "
 import sys, json
 r = json.load(sys.stdin)
 if r['status'] == 'CRITICAL':
-    print(f\"🔴 PLAN.md 嚴重過期 ({r['days_since_update']}d)，請更新後再 commit\")
+    print(f\"? PLAN.md ?湧??? ({r['days_since_update']}d)嚗??湔敺? commit\")
     sys.exit(1)
 elif r['status'] == 'STALE':
-    print(f\"⚠️  PLAN.md 已 {r['days_since_update']}d 未更新，建議更新\")
+    print(f\"??  PLAN.md 撌?{r['days_since_update']}d ?芣?堆?撱箄降?湔\")
 "
 ```
 
 ---
 
-## 🪝 Git Hooks — 技術強制執行
-
-`scripts/install-hooks.sh` 一鍵安裝 Git hooks，讓 PLAN.md 過期成為 **commit 前的技術閘門**（不只是警告）。
-
-> 💡 **CI/CD 平台相容性**: 所有 governance_tools 均為純 Python 腳本，具備標準 exit code 與 `--format json` 輸出，可直接整合到任何 CI 系統，包括 **GitHub Actions** 和 **GitLab CI**。詳見 [CI/CD 整合](#-cicd-整合--github-actions--gitlab-ci)。
-
-### 安裝
+## ?? Git Hooks ???銵撥?嗅銵?
+`scripts/install-hooks.sh` 銝?萄?鋆?Git hooks嚗? PLAN.md ??? **commit ???銵??**嚗??芣霅血?嚗?
+> ? **CI/CD 撟喳?詨捆??*: ???governance_tools ?蝝?Python ?單嚗??皞?exit code ??`--format json` 頛詨嚗?湔?游??唬遙雿?CI 蝟餌絞嚗???**GitHub Actions** ??**GitLab CI**?底閬?[CI/CD ?游?](#-cicd-?游?--github-actions--gitlab-ci)??
+### 摰?
 
 ```bash
-# 安裝到當前 repo
+# 摰??啁??repo
 bash scripts/install-hooks.sh
 
-# 安裝到其他專案（已部署框架的 repo）
-bash scripts/install-hooks.sh --target /path/to/your/project
+# 摰??啣隞?獢?撌脤蝵脫??嗥? repo嚗?bash scripts/install-hooks.sh --target /path/to/your/project
 
-# 模擬執行（不實際修改）
-bash scripts/install-hooks.sh --dry-run
+# 璅⊥?瑁?嚗?撖阡?靽格嚗?bash scripts/install-hooks.sh --dry-run
 ```
 
-### 行為
+### 銵
 
-| Hook | 觸發時機 | 行為 |
+| Hook | 閫貊?? | 銵 |
 |------|---------|------|
-| `pre-commit` | 每次 `git commit` | PLAN.md CRITICAL → **擋截**；STALE → 警告 |
-| `pre-push` | 每次 `git push` | AI 回覆快照驗證（目前為警告模式） |
+| `pre-commit` | 瘥活 `git commit` | PLAN.md CRITICAL ??**?**嚗TALE ??霅血? |
+| `pre-push` | 瘥活 `git push` | AI ??敹怎撽?嚗?霅血?璅∪?嚗?|
 
-### 擋截範例
+### ?蝭?
 
 ```
-🔴 [governance] PLAN.md 嚴重過期：已 16d 未更新（臨界值: 14d）
-   計畫可能已失效，請更新後再 commit：
-
-   1. 更新 PLAN.md 的「最後更新」欄位（格式: YYYY-MM-DD）
-   2. 更新「本週聚焦」或「變更歷史」
-   3. git add PLAN.md && git commit
+? [governance] PLAN.md ?湧???嚗歇 16d ?芣?堆??函??? 14d嚗?   閮?航撌脣仃??隢?啣???commit嚗?
+   1. ?湔 PLAN.md ??敺?啜?雿??澆?: YYYY-MM-DD嚗?   2. ?湔??梯??艾????湔風?脯?   3. git add PLAN.md && git commit
 ```
 
-> 如需跳過（不建議）：`git commit --no-verify`
+> 憒?頝喲?嚗?撱箄降嚗?`git commit --no-verify`
 
-### 解除安裝
+### 閫?摰?
 
 ```bash
 rm .git/hooks/pre-commit .git/hooks/pre-push
@@ -661,65 +510,56 @@ rm .git/hooks/pre-commit .git/hooks/pre-push
 
 ---
 
-## 🔁 CI/CD 整合 — GitHub Actions & GitLab CI
+## ?? CI/CD ?游? ??GitHub Actions & GitLab CI
 
-governance_tools 的設計原則：**純 Python + exit code + `--format json`**，意味著它們可以無縫插入任何 CI 系統，**不需要修改工具本身**，只需寫對應平台的 YAML。
-
-> 📄 **實際設定檔已就緒**:
+governance_tools ?身閮???**蝝?Python + exit code + `--format json`**嚗??唾?摰隞亦蝮急??乩遙雿?CI 蝟餌絞嚗?*銝?閬耨?孵極?瑟頨?*嚗?撖怠??像?啁? YAML??
+> ?? **撖阡?閮剖?瑼歇撠梁?**:
 > - GitHub Actions: [`.github/workflows/governance.yml`](.github/workflows/governance.yml)
 > - GitLab CI: [`.gitlab-ci.yml`](.gitlab-ci.yml)
 >
-> 直接 fork 使用，或複製到你的專案即可。
+> ?湔 fork 雿輻嚗?銴ˊ?唬???獢?胯?
+### 撌亙 ??CI 撠???
 
-### 工具 ↔ CI 對應關係
-
-| 工具 | exit 0 | exit 非 0 | CI 行為 |
+| 撌亙 | exit 0 | exit ??0 | CI 銵 |
 |------|--------|-----------|---------|
-| `plan_freshness.py` | FRESH/STALE | CRITICAL | **擋截** pipeline（需更新 PLAN.md） |
-| `memory_janitor.py --check` | SAFE～CRITICAL | EMERGENCY | **警告**（advisory，不擋截） |
+| `plan_freshness.py` | FRESH/STALE | CRITICAL | **?** pipeline嚗??湔 PLAN.md嚗?|
+| `memory_janitor.py --check` | SAFE嚚RITICAL | EMERGENCY | **霅血?**嚗dvisory嚗??嚗?|
 
-### Job 設計原則
+### Job 閮剛???
 
 ```
-plan-freshness    → 必要 gate（CRITICAL 擋截）
-memory-pressure   → 建議性監控（allow_failure / continue-on-error）
-```
+plan-freshness    ??敹? gate嚗RITICAL ?嚗?memory-pressure   ??撱箄降?抒?改?allow_failure / continue-on-error嚗?```
 
-### 平台差異對照（邏輯完全相同）
+### 撟喳撌桃撠嚗?頛臬??函??
 
-| 設定點 | GitHub Actions | GitLab CI |
+| 閮剖?暺?| GitHub Actions | GitLab CI |
 |--------|---------------|-----------|
-| 觸發條件 | `on: push / pull_request` | `rules: if push / merge_request_event` |
-| 執行環境 | `runs-on: ubuntu-latest` | `image: python:3.11-slim` |
-| 指令區塊 | `steps: - run:` | `script:` |
-| 允許失敗 | `continue-on-error: true` | `allow_failure: true` |
-| CI 標注 | `::error::` / `::warning::` | 純文字輸出 |
+| 閫貊璇辣 | `on: push / pull_request` | `rules: if push / merge_request_event` |
+| ?瑁??啣? | `runs-on: ubuntu-latest` | `image: python:3.11-slim` |
+| ?誘?憛?| `steps: - run:` | `script:` |
+| ?迂憭望? | `continue-on-error: true` | `allow_failure: true` |
+| CI 璅釣 | `::error::` / `::warning::` | 蝝?摮撓??|
 
-> **重點**: `plan_freshness.py`、`memory_janitor.py` 工具本身在兩個平台**完全相同**，不需要任何修改。
-
+> **??**: `plan_freshness.py`?memory_janitor.py` 撌亙?祈澈?典?像??*摰?詨?**嚗??閬遙雿耨?嫘?
 ---
 
-## ⚙️ State Generator — Machine-readable 狀態
-
-`governance_tools/state_generator.py` 將 PLAN.md 萃取為 `.governance-state.yaml`，解決工具難以 parse markdown 的問題（control-plane / data-plane 分離）。
-
-### 用法
+## ?? State Generator ??Machine-readable ???
+`governance_tools/state_generator.py` 撠?PLAN.md ????`.governance-state.yaml`嚗圾瘙箏極?琿隞?parse markdown ??憿?control-plane / data-plane ?嚗?
+### ?冽?
 
 ```bash
-# 生成 .governance-state.yaml（從當前目錄 PLAN.md）
-python governance_tools/state_generator.py
+# ?? .governance-state.yaml嚗??嗅??桅? PLAN.md嚗?python governance_tools/state_generator.py
 
-# 指定路徑
+# ??頝臬?
 python governance_tools/state_generator.py --plan PLAN.md --output .governance-state.yaml
 
-# 只輸出到 stdout（不寫檔）
-python governance_tools/state_generator.py --dry-run
+# ?芾撓?箏 stdout嚗?撖急?嚗?python governance_tools/state_generator.py --dry-run
 
-# JSON 格式輸出
+# JSON ?澆?頛詨
 python governance_tools/state_generator.py --format json
 ```
 
-### .governance-state.yaml 結構
+### .governance-state.yaml 蝯?
 
 ```yaml
 generated_at: "2026-03-05T07:24:19.873223+00:00"
@@ -730,8 +570,7 @@ project:
   freshness_policy: Sprint (7d)
 current_phase:
   id: PhaseB
-  name: 可採用性基礎
-gate_status:
+  name: ?舀?冽批蝷?gate_status:
   PhaseA: passed
   PhaseB: in_progress
   PhaseC: pending
@@ -744,163 +583,142 @@ freshness:
   days_since_update: 0
 ```
 
-> ⚠️ **注意**: 每次更新 PLAN.md 後，執行 `state_generator.py` 重新生成。勿手動編輯此檔。
-
+> ?? **瘜冽?**: 瘥活?湔 PLAN.md 敺??瑁? `state_generator.py` ??????蝺刻摩甇斗???
 ---
 
-## 🧹 Memory Janitor — 記憶掃除工具
+## ?完 Memory Janitor ??閮?撌亙
 
-`governance_tools/memory_janitor.py` 監控 `memory/01_active_task.md` 的行數壓力，並在超過閾值時執行安全歸檔（**copy + pointer + manifest**，不破壞 audit trail）。
+`governance_tools/memory_janitor.py` ?? `memory/01_active_task.md` ???詨???銝血頞??曉潭??瑁?摰甇豢?嚗?*copy + pointer + manifest**嚗??游? audit trail嚗?
+### 憯?蝑?
 
-### 壓力等級
-
-| 等級 | 行數 | 行為 |
+| 蝑? | 銵 | 銵 |
 |------|------|------|
-| SAFE | ≤ 150 | 無動作 |
-| WARNING | 151–180 | 警告訊息 |
-| CRITICAL | 181–200 | 建議執行掃除 |
-| EMERGENCY | > 200 | 強制停止，立即掃除 |
+| SAFE | ??150 | ?∪?雿?|
+| WARNING | 151??80 | 霅血?閮 |
+| CRITICAL | 181??00 | 撱箄降?瑁?? |
+| EMERGENCY | > 200 | 撘瑕?迫嚗??單???|
 
-### 用法
+### ?冽?
 
 ```bash
-# 檢查目前狀態
-python governance_tools/memory_janitor.py --memory-root ./memory --check
+# 瑼Ｘ?桀????python governance_tools/memory_janitor.py --memory-root ./memory --check
 
-# JSON 輸出（接 CI）
-python governance_tools/memory_janitor.py --memory-root ./memory --check --format json
+# JSON 頛詨嚗 CI嚗?python governance_tools/memory_janitor.py --memory-root ./memory --check --format json
 
-# 模擬掃除（顯示將執行的操作）
+# 璅⊥?嚗＊蝷箏??瑁???雿?
 python governance_tools/memory_janitor.py --memory-root ./memory --execute --dry-run
 
-# 執行實際掃除（copy + pointer + manifest）
-python governance_tools/memory_janitor.py --memory-root ./memory --execute
+# ?瑁?撖阡??嚗opy + pointer + manifest嚗?python governance_tools/memory_janitor.py --memory-root ./memory --execute
 
-# 查看歸檔清單
+# ?亦?甇豢?皜
 python governance_tools/memory_janitor.py --memory-root ./memory --manifest
 ```
 
-### 掃除後的檔案結構
+### ?敺?瑼?蝯?
 
-**執行前**:
+**?瑁???*:
 ```
-memory/01_active_task.md  ← 185 行（CRITICAL）
-```
+memory/01_active_task.md  ??185 銵?CRITICAL嚗?```
 
-**執行後**:
+**?瑁?敺?*:
 ```
-memory/01_active_task.md  ← 截短版（pointer + header + Next Steps）
-memory/archive/
-  ├── active_task_20260305_150000.md  ← 完整備份（185 行）
-  └── manifest.json  ← {"archives": [{timestamp, archive_file, original_lines, ...}]}
+memory/01_active_task.md  ???芰??pointer + header + Next Steps嚗?memory/archive/
+  ??? active_task_20260305_150000.md  ??摰?遢嚗?85 銵?
+  ??? manifest.json  ??{"archives": [{timestamp, archive_file, original_lines, ...}]}
 ```
 
-`01_active_task.md` 頂部會插入 pointer 區塊：
+`01_active_task.md` ?????pointer ?憛?
 
 ```markdown
 <!-- ARCHIVED: active_task_20260305_150000.md (2026-03-05 15:00:00) -->
-> **[歸檔紀錄]** 2026-03-05 15:00:00 — 本檔案已歸檔至 `archive/active_task_20260305_150000.md`
-> 歸檔原因: 記憶壓力 CRITICAL（原始 185 行）
+> **[甇豢?蝝?** 2026-03-05 15:00:00 ???祆?獢歇甇豢???`archive/active_task_20260305_150000.md`
+> 甇豢???: 閮憯? CRITICAL嚗?憪?185 銵?
 ```
 
 ---
 
-## 💬 常見問題 (FAQ)
+## ? 撣貉??? (FAQ)
 
-### Q: 這個框架適合我的專案嗎?
+### Q: ???園????獢??
 
-**適合** ✅:
-- 複雜專案 (多 Phase 開發)
-- 團隊協作 (需要同步優先級)
-- 長期專案 (需要階段管理)
-- AI 協作開發 (想讓 AI 主動協作)
+**?拙?** ??
+- 銴?撠? (憭?Phase ?)
+- ???? (?閬?甇亙??)
+- ?瑟?撠? (?閬?畾萇恣??
+- AI ??? (?唾? AI 銝餃???)
 
-**不適合** ❌:
-- 一次性腳本 (過度設計)
-- 超簡單專案 (L1 以下)
+**銝??* ??
+- 銝甈⊥扯??(?漲閮剛?)
+- 頞陛?桀?獢?(L1 隞乩?)
 
-### Q: PLAN.md 放哪裡?
+### Q: PLAN.md ?曉鋆?
 
-**專案根目錄**，與 README.md 同層:
+**撠??寧??*嚗? README.md ?惜:
 
 ```
 myproject/
-├── README.md
-├── PLAN.md          ← 這裡
-├── governance/      ← 8 大法典
-└── src/
+??? README.md
+??? PLAN.md          ???ㄐ
+??? governance/      ??8 憭扳?????? src/
 ```
 
-### Q: 多久更新一次 PLAN.md?
+### Q: 憭??湔銝甈?PLAN.md?
 
-- **本週聚焦**: 每週更新 (Sprint)
-- **當前階段**: 每 Phase 更新
-- **變更歷史**: 每次修改都記錄
+- **?祇梯???*: 瘥望??(Sprint)
+- **?嗅??挾**: 瘥?Phase ?湔
+- **霈甇瑕**: 瘥活靽格?質???
+### Q: 憒?撽? AI ?迤蝣箏?憪??
 
-### Q: 如何驗證 AI 有正確初始化?
-
-使用 Contract Validator 機器驗證：
-
+雿輻 Contract Validator 璈撽?嚗?
 ```bash
-# 1. 將 AI 的回覆存成檔案
-# 2. 執行驗證
+# 1. 撠?AI ??閬???獢?# 2. ?瑁?撽?
 python governance_tools/contract_validator.py --file ai_response.txt
 
-# 輸出範例:
-# ✅ 合規
-# 或
-# ❌ 不合規 — 2 個錯誤:
-#    • LOADED 缺少必要文件: ['HUMAN-OVERSIGHT']
-#    • CONTEXT 缺少 'NOT:' 子句
+# 頛詨蝭?:
+# ????
+# ??# ??銝?閬???2 ?隤?
+#    ??LOADED 蝻箏?敹??辣: ['HUMAN-OVERSIGHT']
+#    ??CONTEXT 蝻箏? 'NOT:' 摮
 ```
 
-驗證失敗時，要求 AI 重新執行 SYSTEM_PROMPT.md §2 初始化流程。
+撽?憭望???閬? AI ??瑁? SYSTEM_PROMPT.md 禮2 ????蝔?
+### Q: AI 銝摰?PLAN.md ?獐颲?
 
-### Q: AI 不遵守 PLAN.md 怎麼辦?
+1. 蝣箄? AI ????`governance/SYSTEM_PROMPT.md`嚗????瘙? PLAN.md嚗?2. 瑼Ｘ PLAN.md ?澆??臬蝚血? [閬?](governance/PLAN.md)
+3. ?Ⅱ?迄 AI:???萄? PLAN.md ??AI ??閬? 禮3.7??
+### Q: 04_review_log.md ?臭?暻?
 
-1. 確認 AI 有讀取 `governance/SYSTEM_PROMPT.md`（它會自動要求讀 PLAN.md）
-2. 檢查 PLAN.md 格式是否符合 [規範](governance/PLAN.md)
-3. 明確告訴 AI:「請遵守 PLAN.md 的 AI 協作規則 §3.7」
+??AI ?遙 reviewer嚗SCOPE = review`嚗?嚗祟?亦???撖怠 `memory/04_review_log.md`????獢摰??audit trail嚗???甈?review ??verdict??曉?憿?瘝餌??辣撘??`memory/01_active_task.md` ?芣?閮?銝銵?閬??踹?頞? 200 銵??嗚?
+### Q: ?府敺??隞園?憪?
 
-### Q: 04_review_log.md 是什麼?
+**?刻??**:
+1. ?? ?梯???README
+2. ?? ?梯? [PLAN.md](governance/PLAN.md) 閬?
+3. ?? ?瑁? `deploy_to_memory.sh /path/to/your/project`
+4. ?? 蝺刻摩?芸?????PLAN.md嚗‵撖怠?獢?閮?5. ?? ?冽郊撽?3 ??憪??內閰?憪洵銝甈∪?閰?
+---
 
-當 AI 擔任 reviewer（`SCOPE = review`）時，審查結果會寫入 `memory/04_review_log.md`。
-這個檔案是完整的 audit trail，記錄每次 review 的 verdict、發現問題與治理文件引用。
-`memory/01_active_task.md` 只會記錄一行摘要，避免超過 200 行限制。
+## ?? 撱嗡撓?梯?
 
-### Q: 我該從哪個文件開始?
+### ???箇?
 
-**推薦順序**:
-1. 📖 閱讀本 README
-2. 📋 閱讀 [PLAN.md](governance/PLAN.md) 規範
-3. 🚀 執行 `deploy_to_memory.sh /path/to/your/project`
-4. ✍️ 編輯自動生成的 PLAN.md，填寫專案資訊
-5. 🤖 用步驟 3 的初始化提示詞開始第一次對話
+- [撱箇?撣怨???隢(docs/architecture-theory.md) - 敺蝤極?啣遣蝭葦
+- [瘝餌? vs Prompting](docs/governance-vs-prompting.md) - ?箔?暻潭祥?? Prompt ??
+
+### 撖西???
+
+- [PLAN.md 摰??](governance/PLAN.md) - 撠?閬?瘝餌?閬?
+- [?游??暹?撠?](docs/INTEGRATION_GUIDE.md) - 憒??游??啁?極雿?蝔?
+### ?賊?鞈?
+
+- [Claude.ai 摰?辣](https://docs.claude.com)
+- [Prompt Engineering ?雿喳祕頦(https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview)
 
 ---
 
-## 📖 延伸閱讀
+## ?? ??
 
-### 理論基礎
-
-- [建築師轉型理論](docs/architecture-theory.md) - 從搬磚工到建築師
-- [治理 vs Prompting](docs/governance-vs-prompting.md) - 為什麼治理比 Prompt 重要
-
-### 實踐指南
-
-- [PLAN.md 完整指南](governance/PLAN.md) - 專案規劃治理規範
-- [整合現有專案](docs/INTEGRATION_GUIDE.md) - 如何整合到現有工作流程
-
-### 相關資源
-
-- [Claude.ai 官方文件](https://docs.claude.com)
-- [Prompt Engineering 最佳實踐](https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview)
-
----
-
-## 📄 授權
-
-本專案採用 MIT 授權條款 - 查看 [LICENSE](LICENSE) 了解詳情
+?砍?獢??MIT ??璇狡 - ?亦? [LICENSE](LICENSE) 鈭圾閰單?
 
 ```
 MIT License
@@ -912,60 +730,56 @@ Permission is hereby granted, free of charge...
 
 ---
 
-## 🙏 致謝
+## ?? ?渲?
 
-- 感謝所有在開發過程中提供反饋的朋友們
-- 靈感來源: Domain-Driven Design, Test-Driven Development
-- 建築師類比: 致敬所有真正的建築師與工程師
-
+- ???????銝剜?靘?擖?????- ??靘?: Domain-Driven Design, Test-Driven Development
+- 撱箇?撣恍?瘥? ?湔???甇??撱箇?撣怨?撌亦?撣?
 ---
 
-## 📧 聯絡
+## ? ?舐窗
 
-- **作者**: GavinWu (吳瑞益)
+- **雿?*: GavinWu (?喟???
 - **GitHub**: [@GavinWu672](https://github.com/GavinWu672)
-- **Discussions**: [專案討論區](https://github.com/GavinWu672/ai-governance-framework/discussions)
-- **Issues**: [問題追蹤](https://github.com/GavinWu672/ai-governance-framework/issues)
+- **Discussions**: [撠?閮??](https://github.com/GavinWu672/ai-governance-framework/discussions)
+- **Issues**: [??餈質馱](https://github.com/GavinWu672/ai-governance-framework/issues)
 
 ---
 
-## 🌟 Star History
+## ?? Star History
 
-如果這個專案對你有幫助，請給個 Star ⭐
-
+憒???獢?雿?撟怠嚗?蝯血?Star 潃?
 [![Star History Chart](https://api.star-history.com/svg?repos=GavinWu672/ai-governance-framework&type=Date)](https://star-history.com/#GavinWu672/ai-governance-framework&Date)
 
 ---
 
-## 📌 快速連結
+## ?? 敹恍??
 
-- [🚀 快速開始](#-快速開始)
-- [📦 8 大法典](#-8-大法典-完整治理架構)
-- [💡 PLAN.md 說明](#-planmd--最重要的文件)
-- [🔍 Contract Validator](#-contract-validator--ai-合規驗證工具)
-- [📅 Plan Freshness](#-plan-freshness--planmd-新鮮度檢查工具)
-- [⚙️ State Generator](#%EF%B8%8F-state-generator--machine-readable-狀態)
-- [🔁 CI/CD 整合](#-cicd-整合--github-actions--gitlab-ci)
-- [🛠️ 專案結構](#%EF%B8%8F-專案結構)
-- [🤝 貢獻指南](#-貢獻)
-- [💬 常見問題](#-常見問題-faq)
+- [?? 敹恍?憪(#-敹恍?憪?
+- [? 8 憭扳??窟(#-8-憭扳???摰瘝餌??嗆?)
+- [? PLAN.md 隤芣?](#-planmd--?????隞?
+- [?? Contract Validator](#-contract-validator--ai-??撽?撌亙)
+- [?? Plan Freshness](#-plan-freshness--planmd-?圈悅摨行炎?亙極??
+- [?? State Generator](#%EF%B8%8F-state-generator--machine-readable-???
+- [?? CI/CD ?游?](#-cicd-?游?--github-actions--gitlab-ci)
+- [??儭?撠?蝯?](#%EF%B8%8F-撠?蝯?)
+- [?? 鞎Ｙ??](#-鞎Ｙ)
+- [? 撣貉???](#-撣貉???-faq)
 
 ---
 
-**從今天開始，定義你的底線 — 包括「今天該做什麼」** 🏗️
-
+**敺?憭拚?憪?摰儔雿?摨? ?????憭抵府??暻潦?* ??儭?
 ---
 
 <p align="center">
-Made with ❤️ by <a href="https://github.com/GavinWu672">GavinWu</a>
+Made with ?歹? by <a href="https://github.com/GavinWu672">GavinWu</a>
 </p>
 ---
 
-## Runtime Governance Update
+## 執行時治理總覽
 
-The framework now includes a first runtime-governance slice in addition to static docs and CI gates.
+這個框架現在除了靜態治理文件與 CI gate，也已經有一條可執行的 runtime governance 路徑。
 
-New contract fields:
+核心 Governance Contract 欄位：
 
 ```text
 RULES       = <comma-separated rule packs>
@@ -974,20 +788,124 @@ OVERSIGHT   = <auto|review-required|human-approval>
 MEMORY_MODE = <stateless|candidate|durable>
 ```
 
-New entrypoints:
+### 架構總覽 (Runtime Architecture)
+
+```mermaid
+flowchart TB
+    A["AI 工具<br/>AI Tools<br/>Claude / Codex / Gemini"]
+
+    subgraph B["適配層 Adapter Layer"]
+        B1["事件正規化<br/>normalize_event"]
+        B2["工具適配器<br/>tool adapters"]
+    end
+
+    subgraph C["執行時治理層 Runtime Governance"]
+        C1["事件分派<br/>dispatcher"]
+        C2["任務前檢查<br/>pre_task_check"]
+        C3["任務後檢查<br/>post_task_check"]
+    end
+
+    subgraph D["規則包 Rule Packs"]
+        D1["common"]
+        D2["python"]
+        D3["cpp"]
+    end
+
+    subgraph E["Session 生命週期 Session Lifecycle"]
+        E1["收尾檢查<br/>session_end"]
+        E2["快照與摘要<br/>snapshot / summary"]
+    end
+
+    subgraph F["記憶管線 Memory Pipeline"]
+        F1["候選記憶<br/>candidate memory"]
+        F2["內容整理<br/>memory_curator"]
+        F3["升級策略<br/>promotion_policy"]
+    end
+
+    G["專案長期記憶<br/>Durable Project Memory<br/>memory/ facts / decisions / tasks"]
+
+    A --> B1
+    A --> B2
+    B1 --> C1
+    B2 --> C1
+    C1 --> C2
+    C1 --> C3
+    C2 --> D
+    C3 --> D
+    C3 --> E1
+    E1 --> E2
+    E2 --> F1
+    F1 --> F2
+    F2 --> F3
+    F3 --> G
+```
+
+這張圖用來快速理解系統分層：
+
+- AI 工具先經過 adapter，把原生事件轉成共用格式
+- runtime governance 依據 rule packs 執行前後檢查
+- session end 收斂本次任務的 artifacts
+- memory pipeline 決定哪些內容可以進入 durable project memory
+
+### 任務治理流程 (Runtime Flow)
+
+```mermaid
+flowchart TD
+    A["任務開始<br/>Task Start"]
+    B["事件正規化<br/>Normalize Event"]
+    C["任務前檢查<br/>Pre Task Check<br/>plan freshness / rule validation"]
+    D["AI 執行任務<br/>Task Execution"]
+    E["任務後檢查<br/>Post Task Check<br/>runtime checks / rule violations"]
+    F["Session 收尾<br/>Session End"]
+    G["建立快照與摘要<br/>Create Snapshot / Summary<br/>contract / event log / checks"]
+    H["內容整理<br/>Memory Curator"]
+    I["升級策略判斷<br/>Promotion Policy"]
+    J["自動升級<br/>AUTO_PROMOTE"]
+    K["需人工審核<br/>REVIEW_REQUIRED"]
+    L["不升級<br/>DO_NOT_PROMOTE"]
+    M["更新長期記憶<br/>Durable Memory Update"]
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> H
+    H --> I
+    I --> J
+    I --> K
+    I --> L
+    J --> M
+```
+
+這張圖用來說明一次任務怎麼被治理：
+
+- 先驗證 plan 狀態、rule packs 與 runtime contract
+- 任務完成後執行 post-task 檢查
+- `session_end` 產生 snapshot、summary 與 runtime artifacts
+- `memory_curator` 先去噪與分類，再交給 `promotion_policy` 判斷是否可升級為 durable memory
+
+快速入口 (Key Entrypoints)：
 
 ```bash
-python governance_tools/state_generator.py --rules common,python --risk medium --oversight review-required --memory-mode candidate
-python runtime_hooks/core/pre_task_check.py --rules common,python --risk high --oversight review-required
+python governance_tools/state_generator.py --rules common,python,cpp --risk medium --oversight review-required --memory-mode candidate
+python runtime_hooks/core/pre_task_check.py --rules common,python,cpp --risk high --oversight review-required
 python runtime_hooks/core/post_task_check.py --file ai_response.txt --risk medium --oversight review-required
 python runtime_hooks/adapters/claude_code/normalize_event.py --event-type pre_task --file claude_event.json
 python runtime_hooks/adapters/codex/normalize_event.py --event-type post_task --file codex_event.json
 python runtime_hooks/adapters/gemini/normalize_event.py --event-type pre_task --file gemini_event.json
 python runtime_hooks/dispatcher.py --file shared_event.json
 python memory_pipeline/session_snapshot.py --memory-root memory --task "Runtime governance" --summary "Captured a candidate snapshot"
+python memory_pipeline/memory_curator.py --candidate-file artifacts/runtime/candidates/<session_id>.json --output artifacts/runtime/curated/<session_id>.json
 python memory_pipeline/memory_promoter.py --memory-root memory --candidate-file memory/candidates/session_*.json --approved-by reviewer-01
+python runtime_hooks/core/session_end.py --project-root . --session-id 2026-03-12-01 --runtime-contract-file contract.json --checks-file checks.json --event-log-file event_log.json --response-file ai_response.txt
 ```
 
-The runtime layer is now multi-harness: Claude Code, Codex, and Gemini all normalize native payloads into the same shared event contract before governance checks run. Shared dispatcher-ready examples live under `runtime_hooks/examples/shared/`.
+目前 runtime layer 已支援多種 AI 工具：Claude Code、Codex、Gemini 都會先把 native payload 正規化成同一個 shared event contract，再進入 governance checks。可直接參考 `runtime_hooks/examples/shared/` 裡的 shared examples。
 
-See `docs/runtime-governance-update.md`, `runtime_hooks/event_contract.md`, and `runtime_hooks/examples/` for the current runtime schema, dispatcher, and native payload examples.
+更多細節可看：
+
+- `docs/runtime-governance-update.md`
+- `runtime_hooks/event_contract.md`
+- `runtime_hooks/examples/`
