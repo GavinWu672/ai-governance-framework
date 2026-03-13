@@ -119,6 +119,18 @@ def parse_backlog_counts(text: str) -> dict:
     return counts
 
 
+def _proposal_guidance(impact_preview: dict | None) -> dict | None:
+    if not impact_preview:
+        return None
+    return {
+        "recommended_risk": impact_preview.get("recommended_risk"),
+        "recommended_oversight": impact_preview.get("recommended_oversight"),
+        "expected_validators": impact_preview.get("expected_validators", []) or [],
+        "required_evidence": impact_preview.get("required_evidence", []) or [],
+        "concerns": impact_preview.get("concerns", []) or [],
+    }
+
+
 def generate_state(
     plan_path: Path,
     rules: str = "common",
@@ -185,6 +197,7 @@ def generate_state(
         "suggested_rules_preview": suggestions.get("suggested_rules_preview", []),
         "rule_pack_suggestions": suggestions,
         "architecture_impact_preview": impact_preview,
+        "proposal_guidance": _proposal_guidance(impact_preview),
         "rule_packs": describe_rule_selection(requested_rules),
         "active_rules": load_rule_content(requested_rules),
     }

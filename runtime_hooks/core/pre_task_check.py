@@ -155,6 +155,12 @@ def format_human_result(result: dict) -> str:
         concerns = impact_preview.get("concerns") or []
         if concerns:
             lines.append(f"impact_concerns={','.join(concerns)}")
+        validators = impact_preview.get("expected_validators") or []
+        if validators:
+            lines.append(f"impact_validators={','.join(validators)}")
+        evidence = impact_preview.get("required_evidence") or []
+        if evidence:
+            lines.append(f"impact_evidence={','.join(evidence)}")
     for warning in result["warnings"]:
         lines.append(f"warning: {warning}")
     for error in result["errors"]:

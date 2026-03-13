@@ -221,3 +221,7 @@ def test_generate_state_can_include_architecture_impact_preview(local_tmp_dir, m
     assert preview["recommended_oversight"] == "human-approval"
     assert "public-api-review" in preview["required_evidence"]
     assert "application" in preview["touched_layers"]
+    guidance = state["proposal_guidance"]
+    assert guidance["recommended_risk"] == "high"
+    assert "public_api_diff_checker" in guidance["expected_validators"]
+    assert "public-api-review" in guidance["required_evidence"]

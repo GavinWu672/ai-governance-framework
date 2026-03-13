@@ -117,6 +117,8 @@ Platform packs:
 - `pre_task_check --format human` 現在也會直接印出 `suggested_rules_preview=...`
 - `pre_task_check.py` / `state_generator.py` 現在都可附帶 `architecture_impact_preview`
   - 當 proposal 顯示風險高於目前 contract 時，只會給 advisory warning，不會自動改 `RULES` / `RISK` / `OVERSIGHT`
+  - 兩者現在也會補出 proposal guidance，例如 `expected_validators` / `required_evidence`
+- `pre_task_check --format human` 現在也會直接印出 `impact_validators=...` 與 `impact_evidence=...`
 - `session_end.py` / `memory_curator.py` 現在也會保留 `architecture_impact_preview`
   - proposal-time concerns 與 expected evidence 會進 summary / curated artifacts，形成 audit trail
 - `post_task_check --format human` 現在也會直接印出 evidence summary，例如 `public_api_ok=...`、`failure_completeness_ok=...`
