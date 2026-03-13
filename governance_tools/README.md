@@ -306,6 +306,7 @@ Architecture impact estimation:
 - the report now includes `touched_layers`, `boundary_risk`, `expected_validators`, `required_evidence`, and recommended `risk` / `oversight`
 - use `--format human` when the estimator is meant to guide an operator or AI before implementation, rather than feed JSON into another tool
 - `state_generator.py` can include this same preview with `--impact-before/--impact-after`, keeping proposal context advisory rather than auto-mutating the runtime contract
+- `change_proposal_builder.py` packages task text, rule suggestions, and architecture impact into a single proposal artifact for humans, AI agents, or review tooling
 - it recommends evidence, risk, and oversight, but does not act as a policy engine or auto-decision maker
 
 Kernel-driver governance:
