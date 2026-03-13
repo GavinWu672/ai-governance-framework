@@ -34,6 +34,8 @@ def test_rule_pack_suggester_detects_csharp_and_avalonia():
     assert any(item["name"] == "csharp" for item in result["language_packs"])
     assert any(item["name"] == "avalonia" for item in result["framework_packs"])
     assert result["suggested_rules_preview"] == ["common", "csharp", "avalonia"]
+    assert result["suggested_skills"] == ["code-style", "governance-runtime"]
+    assert result["suggested_agent"] == "advanced-agent"
 
 
 def test_rule_pack_suggester_detects_swift():
@@ -44,6 +46,18 @@ def test_rule_pack_suggester_detects_swift():
     result = suggest_rule_packs(root)
 
     assert any(item["name"] == "swift" for item in result["language_packs"])
+
+
+def test_rule_pack_suggester_recommends_python_agent_and_cli_skill():
+    root = _reset_fixture("python_cli")
+    _write(root / "tool.py", "print('ok')")
+
+    result = suggest_rule_packs(root, task_text="Improve CLI human output for governance command")
+
+    assert any(item["name"] == "python" for item in result["language_packs"])
+    assert "python" in result["suggested_skills"]
+    assert "human-readable-cli" in result["suggested_skills"]
+    assert result["suggested_agent"] == "cli-agent"
 
 
 def test_rule_pack_suggester_scope_is_advisory_only():

@@ -130,6 +130,8 @@ def run_pre_task_check(
             "memory_mode": memory_mode,
         },
         "suggested_rules_preview": rule_pack_suggestions.get("suggested_rules_preview", []),
+        "suggested_skills": rule_pack_suggestions.get("suggested_skills", []),
+        "suggested_agent": rule_pack_suggestions.get("suggested_agent"),
         "rule_pack_suggestions": rule_pack_suggestions,
         "architecture_impact_preview": impact_preview,
         "rule_packs": rule_packs,
@@ -148,6 +150,12 @@ def format_human_result(result: dict) -> str:
     preview = result.get("suggested_rules_preview") or []
     if preview:
         lines.append(f"suggested_rules_preview={','.join(preview)}")
+    suggested_skills = result.get("suggested_skills") or []
+    if suggested_skills:
+        lines.append(f"suggested_skills={','.join(suggested_skills)}")
+    suggested_agent = result.get("suggested_agent")
+    if suggested_agent:
+        lines.append(f"suggested_agent={suggested_agent}")
     impact_preview = result.get("architecture_impact_preview") or {}
     if impact_preview:
         lines.append(f"impact_risk={impact_preview.get('recommended_risk')}")

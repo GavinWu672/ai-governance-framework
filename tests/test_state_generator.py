@@ -58,6 +58,8 @@ def test_generate_state_includes_runtime_contract(local_tmp_dir, monkeypatch):
     assert state["active_rules"]["valid"] is True
     assert state["active_rules"]["active_rules"][0]["files"]
     assert "rule_pack_suggestions" in state
+    assert state["suggested_skills"] == ["code-style", "governance-runtime"]
+    assert state["suggested_agent"] == "advanced-agent"
 
 
 def test_generate_state_missing_plan_returns_error(local_tmp_dir):
@@ -181,6 +183,8 @@ def test_generate_state_includes_advisory_rule_pack_suggestions_without_mutating
     assert "csharp" in suggested
     assert "avalonia" in suggested
     assert state["suggested_rules_preview"] == ["common", "csharp", "avalonia", "refactor"]
+    assert state["suggested_skills"] == ["code-style", "governance-runtime"]
+    assert state["suggested_agent"] == "advanced-agent"
     scope_suggestions = state["rule_pack_suggestions"]["scope_packs"]
     assert any(item["name"] == "refactor" and item["advisory_only"] is True for item in scope_suggestions)
 

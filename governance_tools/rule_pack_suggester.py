@@ -40,6 +40,24 @@ SCOPE_SIGNAL_PATTERNS = {
     ],
 }
 
+SKILL_SIGNAL_PATTERNS = {
+    "human-readable-cli": [
+        r"\bcli\b",
+        r"--format human",
+        r"\bhuman output\b",
+        r"\bcommand[- ]line\b",
+        r"\bdeveloper-facing\b",
+    ],
+    "governance-runtime": [
+        r"\bgovernance\b",
+        r"\bruntime\b",
+        r"\bvalidator\b",
+        r"\bevidence\b",
+        r"\baudit\b",
+        r"\bhook\b",
+    ],
+}
+
 
 def _iter_files(project_root: Path) -> list[Path]:
     return [path for path in project_root.rglob("*") if path.is_file() and ".git" not in path.parts]
@@ -115,6 +133,31 @@ def _suggest_scope(task_text: str) -> list[dict]:
     return suggestions
 
 
+def _suggest_skills(language_packs: list[dict], framework_packs: list[dict], task_text: str) -> list[str]:
+    skills = ["code-style", "governance-runtime"]
+
+    if any(item["name"] == "python" for item in language_packs):
+        skills.append("python")
+
+    matched_cli = [pattern for pattern in SKILL_SIGNAL_PATTERNS["human-readable-cli"] if re.search(pattern, task_text, re.IGNORECASE)]
+    if matched_cli:
+        skills.append("human-readable-cli")
+
+    deduped = []
+    for item in skills:
+        if item not in deduped:
+            deduped.append(item)
+    return deduped
+
+
+def _suggest_agent(language_packs: list[dict], suggested_skills: list[str], task_text: str) -> str:
+    if "human-readable-cli" in suggested_skills:
+        return "cli-agent"
+    if any(item["name"] == "python" for item in language_packs):
+        return "python-agent"
+    return "advanced-agent"
+
+
 def _suggested_rules_preview(
     language_packs: list[dict],
     framework_packs: list[dict],
@@ -134,18 +177,23 @@ def suggest_rule_packs(project_root: Path, task_text: str = "") -> dict:
     language_packs = _detect_languages(files, project_root)
     framework_packs = _detect_frameworks(files, project_root)
     scope_packs = _suggest_scope(task_text)
+    suggested_skills = _suggest_skills(language_packs, framework_packs, task_text)
+    suggested_agent = _suggest_agent(language_packs, suggested_skills, task_text)
 
     return {
         "project_root": str(project_root),
         "language_packs": language_packs,
         "framework_packs": framework_packs,
         "scope_packs": scope_packs,
+        "suggested_skills": suggested_skills,
+        "suggested_agent": suggested_agent,
         "suggested_rules": ["common"] + [item["name"] for item in language_packs + framework_packs],
         "suggested_rules_preview": _suggested_rules_preview(language_packs, framework_packs, scope_packs),
         "notes": [
             "language/framework packs are auto-suggested from repository signals",
             "scope packs are advisory only and should be confirmed by the contract or human reviewer",
             "suggested_rules_preview includes advisory scope packs for convenience, but does not mutate the contract",
+            "suggested_skills and suggested_agent are advisory only and do not auto-activate agent behavior",
         ],
     }
 
@@ -164,6 +212,8 @@ def main() -> None:
     else:
         print("suggested_rules=" + ",".join(result["suggested_rules"]))
         print("suggested_rules_preview=" + ",".join(result["suggested_rules_preview"]))
+        print("suggested_skills=" + ",".join(result["suggested_skills"]))
+        print("suggested_agent=" + result["suggested_agent"])
         for group in ("language_packs", "framework_packs", "scope_packs"):
             for item in result[group]:
                 advisory = " advisory-only" if item.get("advisory_only") else ""

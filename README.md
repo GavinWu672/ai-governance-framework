@@ -121,7 +121,9 @@ Platform packs:
 - `pre_task_check.py` 現在也會暴露同樣的 advisory suggestions，讓 runtime 入口與 state view 對齊
 - 當高信心 language/framework suggestion 未被載入時，`pre_task_check.py` 會給 advisory warning，但不會自動改 contract
 - `rule_pack_suggester.py` / `state_generator.py` / `pre_task_check.py` 現在都會提供 `suggested_rules_preview`，方便直接採用建議規則串
+- `rule_pack_suggester.py` / `state_generator.py` / `pre_task_check.py` 現在也會提供 advisory `suggested_skills` 與 `suggested_agent`
 - `pre_task_check --format human` 現在也會直接印出 `suggested_rules_preview=...`
+  - 同時也會直接印出 `suggested_skills=...` 與 `suggested_agent=...`
 - `pre_task_check.py` / `state_generator.py` 現在都可附帶 `architecture_impact_preview`
   - 當 proposal 顯示風險高於目前 contract 時，只會給 advisory warning，不會自動改 `RULES` / `RISK` / `OVERSIGHT`
   - 兩者現在也會補出 proposal guidance，例如 `expected_validators` / `required_evidence`

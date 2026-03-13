@@ -195,6 +195,8 @@ def generate_state(
             "memory_mode": memory_mode,
         },
         "suggested_rules_preview": suggestions.get("suggested_rules_preview", []),
+        "suggested_skills": suggestions.get("suggested_skills", []),
+        "suggested_agent": suggestions.get("suggested_agent"),
         "rule_pack_suggestions": suggestions,
         "architecture_impact_preview": impact_preview,
         "proposal_guidance": _proposal_guidance(impact_preview),

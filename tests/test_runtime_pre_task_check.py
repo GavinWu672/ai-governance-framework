@@ -153,6 +153,8 @@ def test_pre_task_check_exposes_advisory_rule_pack_suggestions(local_tmp_dir, mo
     assert "csharp" in result["rule_pack_suggestions"]["suggested_rules"]
     assert "avalonia" in result["rule_pack_suggestions"]["suggested_rules"]
     assert result["suggested_rules_preview"] == ["common", "csharp", "avalonia", "refactor"]
+    assert result["suggested_skills"] == ["code-style", "governance-runtime"]
+    assert result["suggested_agent"] == "advanced-agent"
     assert any(
         item["name"] == "refactor" and item["advisory_only"] is True
         for item in result["rule_pack_suggestions"]["scope_packs"]
@@ -201,6 +203,8 @@ def test_pre_task_check_human_output_includes_suggested_rules_preview(local_tmp_
 
     output = pre_task_check.format_human_result(result)
     assert "suggested_rules_preview=common,csharp,avalonia,refactor" in output
+    assert "suggested_skills=code-style,governance-runtime" in output
+    assert "suggested_agent=advanced-agent" in output
 
 
 def test_pre_task_check_includes_architecture_impact_preview(local_tmp_dir, monkeypatch):
