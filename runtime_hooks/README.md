@@ -49,6 +49,8 @@ Active rule injection:
 - when a high-confidence suggestion is missing from the active contract, `pre_task_check.py` emits advisory warnings without mutating `RULES`
 - `suggested_rules_preview` is included to reduce operator friction when adopting the suggested pack set
 - human output from `pre_task_check.py` now prints `suggested_rules_preview=...` directly
+- `pre_task_check.py` can now attach `architecture_impact_preview` when `--impact-before/--impact-after` files are supplied
+- if the impact preview recommends stricter `risk` or `oversight`, `pre_task_check.py` emits advisory warnings but does not mutate the contract
 
 Test-result handoff:
 

@@ -183,3 +183,41 @@ def test_generate_state_includes_advisory_rule_pack_suggestions_without_mutating
     assert state["suggested_rules_preview"] == ["common", "csharp", "avalonia", "refactor"]
     scope_suggestions = state["rule_pack_suggestions"]["scope_packs"]
     assert any(item["name"] == "refactor" and item["advisory_only"] is True for item in scope_suggestions)
+
+
+def test_generate_state_can_include_architecture_impact_preview(local_tmp_dir, monkeypatch):
+    monkeypatch.setattr(state_generator, "check_freshness", lambda _: _FreshnessStub())
+
+    plan = local_tmp_dir / "PLAN.md"
+    plan.write_text(
+        "> **Owner**: Tester\n"
+        "> **Freshness**: Sprint (7d)\n"
+        "\n"
+        "[>] Phase A : Refactor service boundary\n",
+        encoding="utf-8",
+    )
+
+    before_file = local_tmp_dir / "application" / "before.cs"
+    after_file = local_tmp_dir / "application" / "after.cs"
+    before_file.parent.mkdir(parents=True, exist_ok=True)
+    before_file.write_text("public class Service { public int Run() => 1; }\n", encoding="utf-8")
+    after_file.write_text(
+        "public class Service { public int Run() => 1; public int Ping() => 0; }\n",
+        encoding="utf-8",
+    )
+
+    state = state_generator.generate_state(
+        plan,
+        rules="common,refactor",
+        risk="medium",
+        oversight="review-required",
+        memory_mode="candidate",
+        impact_before_files=[before_file],
+        impact_after_files=[after_file],
+    )
+
+    preview = state["architecture_impact_preview"]
+    assert preview["recommended_risk"] == "high"
+    assert preview["recommended_oversight"] == "human-approval"
+    assert "public-api-review" in preview["required_evidence"]
+    assert "application" in preview["touched_layers"]

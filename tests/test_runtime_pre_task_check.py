@@ -201,3 +201,33 @@ def test_pre_task_check_human_output_includes_suggested_rules_preview(local_tmp_
 
     output = pre_task_check.format_human_result(result)
     assert "suggested_rules_preview=common,csharp,avalonia,refactor" in output
+
+
+def test_pre_task_check_includes_architecture_impact_preview(local_tmp_dir, monkeypatch):
+    monkeypatch.setattr(pre_task_check, "check_freshness", lambda _: _FreshnessStub())
+    (local_tmp_dir / "PLAN.md").write_text("> **Owner**: Tester\n", encoding="utf-8")
+
+    before_file = local_tmp_dir / "application" / "before.cs"
+    after_file = local_tmp_dir / "application" / "after.cs"
+    before_file.parent.mkdir(parents=True, exist_ok=True)
+    before_file.write_text("public class Service { public int Run() => 1; }\n", encoding="utf-8")
+    after_file.write_text(
+        "public class Service { public int Run() => 1; public int Ping() => 0; }\n",
+        encoding="utf-8",
+    )
+
+    result = pre_task_check.run_pre_task_check(
+        local_tmp_dir,
+        rules="common,refactor",
+        risk="medium",
+        oversight="review-required",
+        memory_mode="candidate",
+        impact_before_files=[before_file],
+        impact_after_files=[after_file],
+    )
+
+    assert result["architecture_impact_preview"]["recommended_oversight"] == "human-approval"
+    assert "public_api_diff_checker" in result["architecture_impact_preview"]["expected_validators"]
+    output = pre_task_check.format_human_result(result)
+    assert "impact_risk=high" in output
+    assert any("Architecture impact preview recommends risk 'high'" in warning for warning in result["warnings"])

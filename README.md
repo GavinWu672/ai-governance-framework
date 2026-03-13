@@ -115,6 +115,8 @@ Platform packs:
 - 當高信心 language/framework suggestion 未被載入時，`pre_task_check.py` 會給 advisory warning，但不會自動改 contract
 - `rule_pack_suggester.py` / `state_generator.py` / `pre_task_check.py` 現在都會提供 `suggested_rules_preview`，方便直接採用建議規則串
 - `pre_task_check --format human` 現在也會直接印出 `suggested_rules_preview=...`
+- `pre_task_check.py` / `state_generator.py` 現在都可附帶 `architecture_impact_preview`
+  - 當 proposal 顯示風險高於目前 contract 時，只會給 advisory warning，不會自動改 `RULES` / `RISK` / `OVERSIGHT`
 - `post_task_check --format human` 現在也會直接印出 evidence summary，例如 `public_api_ok=...`、`failure_completeness_ok=...`
 - `architecture_impact_estimator.py` 現在可在 proposal 階段輸出結構化 `Governance Impact Report`
   - path-based layer heuristics (`touched_layers`, `boundary_risk`)
@@ -287,6 +289,7 @@ cp -r governance_tools /path/to/your/project/
 python governance_tools/contract_validator.py --file ai_response.txt
 python governance_tools/plan_freshness.py --plan PLAN.md
 python governance_tools/state_generator.py --rules common,python,cpp --risk medium --oversight review-required --memory-mode candidate
+python governance_tools/state_generator.py --rules common,refactor --impact-before before.cs --impact-after after.cs --format json
 python governance_tools/memory_janitor.py --memory-root ./memory --check
 python governance_tools/failure_test_validator.py --file test_names.json --format json
 python governance_tools/failure_completeness_validator.py --file checks.json --format json
@@ -301,6 +304,7 @@ python governance_tools/governance_auditor.py --format json
 
 ```bash
 python runtime_hooks/core/pre_task_check.py --rules common,python,cpp --risk high --oversight review-required
+python runtime_hooks/core/pre_task_check.py --rules common,refactor --risk medium --oversight review-required --impact-before before.cs --impact-after after.cs
 python runtime_hooks/core/post_task_check.py --file ai_response.txt --risk medium --oversight review-required --checks-file checks.json --api-before before.cs --api-after after.cs
 python runtime_hooks/dispatcher.py --file shared_event.json
 python runtime_hooks/core/session_end.py --project-root . --session-id 2026-03-12-01 --runtime-contract-file contract.json --checks-file checks.json --event-log-file event_log.json --response-file ai_response.txt

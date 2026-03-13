@@ -14,8 +14,13 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from governance_tools.plan_freshness import check_freshness
+from governance_tools.architecture_impact_estimator import estimate_architecture_impact
 from governance_tools.rule_pack_loader import describe_rule_selection, load_rule_content, parse_rule_list
 from governance_tools.rule_pack_suggester import suggest_rule_packs
+
+
+RISK_ORDER = {"low": 0, "medium": 1, "high": 2}
+OVERSIGHT_ORDER = {"auto": 0, "review-required": 1, "human-approval": 2}
 
 
 def _append_suggestion_warnings(warnings: list[str], requested_rules: list[str], suggestions: dict) -> None:
@@ -37,6 +42,34 @@ def _append_suggestion_warnings(warnings: list[str], requested_rules: list[str],
             warnings.append(f"Advisory scope pack '{item['name']}' is suggested by task text but not active; signals: {reason}")
 
 
+def _infer_scope(requested_rules: list[str], suggestions: dict) -> str:
+    if "refactor" in requested_rules:
+        return "refactor"
+    for item in suggestions.get("scope_packs", []):
+        if item.get("name") == "refactor":
+            return "refactor"
+    return "feature"
+
+
+def _append_impact_warnings(warnings: list[str], impact_preview: dict | None, risk: str, oversight: str) -> None:
+    if not impact_preview:
+        return
+
+    preview_risk = impact_preview.get("recommended_risk")
+    preview_oversight = impact_preview.get("recommended_oversight")
+
+    if preview_risk and RISK_ORDER.get(preview_risk, 0) > RISK_ORDER.get(risk, 0):
+        warnings.append(
+            f"Architecture impact preview recommends risk '{preview_risk}' but contract risk is '{risk}'"
+        )
+
+    if preview_oversight and OVERSIGHT_ORDER.get(preview_oversight, 0) > OVERSIGHT_ORDER.get(oversight, 0):
+        warnings.append(
+            "Architecture impact preview recommends "
+            f"oversight '{preview_oversight}' but contract oversight is '{oversight}'"
+        )
+
+
 def run_pre_task_check(
     project_root: Path,
     rules: str,
@@ -44,6 +77,8 @@ def run_pre_task_check(
     oversight: str,
     memory_mode: str,
     task_text: str = "",
+    impact_before_files: list[Path] | None = None,
+    impact_after_files: list[Path] | None = None,
 ) -> dict:
     plan_path = project_root / "PLAN.md"
     freshness = check_freshness(plan_path)
@@ -51,6 +86,9 @@ def run_pre_task_check(
     rule_packs = describe_rule_selection(requested_rules)
     active_rules = load_rule_content(requested_rules)
     rule_pack_suggestions = suggest_rule_packs(project_root, task_text=task_text)
+    impact_before_files = impact_before_files or []
+    impact_after_files = impact_after_files or []
+    impact_preview = None
 
     errors = []
     warnings = []
@@ -67,6 +105,14 @@ def run_pre_task_check(
         errors.append("High-risk tasks require oversight != auto")
 
     _append_suggestion_warnings(warnings, requested_rules, rule_pack_suggestions)
+    if impact_before_files or impact_after_files:
+        impact_preview = estimate_architecture_impact(
+            impact_before_files,
+            impact_after_files,
+            scope=_infer_scope(requested_rules, rule_pack_suggestions),
+            active_rules=requested_rules,
+        )
+        _append_impact_warnings(warnings, impact_preview, risk, oversight)
 
     return {
         "ok": len(errors) == 0,
@@ -85,6 +131,7 @@ def run_pre_task_check(
         },
         "suggested_rules_preview": rule_pack_suggestions.get("suggested_rules_preview", []),
         "rule_pack_suggestions": rule_pack_suggestions,
+        "architecture_impact_preview": impact_preview,
         "rule_packs": rule_packs,
         "active_rules": active_rules,
         "errors": errors,
@@ -101,6 +148,13 @@ def format_human_result(result: dict) -> str:
     preview = result.get("suggested_rules_preview") or []
     if preview:
         lines.append(f"suggested_rules_preview={','.join(preview)}")
+    impact_preview = result.get("architecture_impact_preview") or {}
+    if impact_preview:
+        lines.append(f"impact_risk={impact_preview.get('recommended_risk')}")
+        lines.append(f"impact_oversight={impact_preview.get('recommended_oversight')}")
+        concerns = impact_preview.get("concerns") or []
+        if concerns:
+            lines.append(f"impact_concerns={','.join(concerns)}")
     for warning in result["warnings"]:
         lines.append(f"warning: {warning}")
     for error in result["errors"]:
@@ -116,6 +170,8 @@ def main() -> None:
     parser.add_argument("--oversight", default="auto")
     parser.add_argument("--memory-mode", default="candidate")
     parser.add_argument("--task-text", default="")
+    parser.add_argument("--impact-before", action="append", default=[])
+    parser.add_argument("--impact-after", action="append", default=[])
     parser.add_argument("--format", choices=["human", "json"], default="human")
     args = parser.parse_args()
 
@@ -126,6 +182,8 @@ def main() -> None:
         oversight=args.oversight,
         memory_mode=args.memory_mode,
         task_text=args.task_text,
+        impact_before_files=[Path(path) for path in args.impact_before],
+        impact_after_files=[Path(path) for path in args.impact_after],
     )
 
     if args.format == "json":

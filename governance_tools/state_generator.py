@@ -16,6 +16,7 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from governance_tools.plan_freshness import check_freshness
+from governance_tools.architecture_impact_estimator import estimate_architecture_impact
 from governance_tools.rule_pack_loader import describe_rule_selection, load_rule_content, parse_rule_list
 from governance_tools.rule_pack_suggester import suggest_rule_packs
 
@@ -126,6 +127,8 @@ def generate_state(
     memory_mode: str = "candidate",
     project_root: Path | None = None,
     task_text: str | None = None,
+    impact_before_files: list[Path] | None = None,
+    impact_after_files: list[Path] | None = None,
 ) -> dict:
     if not plan_path.exists():
         return {
@@ -141,6 +144,18 @@ def generate_state(
     resolved_project_root = (project_root or plan_path.parent).resolve()
     effective_task_text = task_text if task_text is not None else (current_phase["name"] or current_phase["id"] or "")
     suggestions = suggest_rule_packs(resolved_project_root, task_text=effective_task_text)
+    impact_before_files = impact_before_files or []
+    impact_after_files = impact_after_files or []
+    impact_preview = None
+
+    if impact_before_files or impact_after_files:
+        scope = "refactor" if "refactor" in requested_rules else "feature"
+        impact_preview = estimate_architecture_impact(
+            impact_before_files,
+            impact_after_files,
+            scope=scope,
+            active_rules=requested_rules,
+        )
 
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -169,6 +184,7 @@ def generate_state(
         },
         "suggested_rules_preview": suggestions.get("suggested_rules_preview", []),
         "rule_pack_suggestions": suggestions,
+        "architecture_impact_preview": impact_preview,
         "rule_packs": describe_rule_selection(requested_rules),
         "active_rules": load_rule_content(requested_rules),
     }
@@ -186,6 +202,8 @@ def main() -> None:
     parser.add_argument("--memory-mode", default="candidate")
     parser.add_argument("--project-root")
     parser.add_argument("--task-text")
+    parser.add_argument("--impact-before", action="append", default=[])
+    parser.add_argument("--impact-after", action="append", default=[])
     args = parser.parse_args()
 
     state = generate_state(
@@ -196,6 +214,8 @@ def main() -> None:
         memory_mode=args.memory_mode,
         project_root=Path(args.project_root) if args.project_root else None,
         task_text=args.task_text,
+        impact_before_files=[Path(path) for path in args.impact_before],
+        impact_after_files=[Path(path) for path in args.impact_after],
     )
 
     if args.format == "json":
