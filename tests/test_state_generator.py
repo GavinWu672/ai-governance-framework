@@ -180,5 +180,6 @@ def test_generate_state_includes_advisory_rule_pack_suggestions_without_mutating
     assert "common" in suggested
     assert "csharp" in suggested
     assert "avalonia" in suggested
+    assert state["suggested_rules_preview"] == ["common", "csharp", "avalonia", "refactor"]
     scope_suggestions = state["rule_pack_suggestions"]["scope_packs"]
     assert any(item["name"] == "refactor" and item["advisory_only"] is True for item in scope_suggestions)

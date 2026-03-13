@@ -33,6 +33,7 @@ def test_rule_pack_suggester_detects_csharp_and_avalonia():
     assert "common" in result["suggested_rules"]
     assert any(item["name"] == "csharp" for item in result["language_packs"])
     assert any(item["name"] == "avalonia" for item in result["framework_packs"])
+    assert result["suggested_rules_preview"] == ["common", "csharp", "avalonia"]
 
 
 def test_rule_pack_suggester_detects_swift():
@@ -53,3 +54,4 @@ def test_rule_pack_suggester_scope_is_advisory_only():
 
     assert any(item["name"] == "refactor" for item in result["scope_packs"])
     assert all(item.get("advisory_only") is True for item in result["scope_packs"])
+    assert "refactor" in result["suggested_rules_preview"]

@@ -293,6 +293,7 @@ Rule-pack suggestion:
 - `rule_pack_suggester.py` suggests `language` and `framework` packs from repository signals
 - `scope` suggestions are advisory only and should be confirmed by the contract or a human reviewer
 - `state_generator.py` now includes these suggestions as `rule_pack_suggestions`, but does not mutate `runtime_contract.rules`
+- `suggested_rules_preview` provides a convenience preview such as `common,csharp,avalonia,refactor`, but remains advisory
 
 Public API diff:
 

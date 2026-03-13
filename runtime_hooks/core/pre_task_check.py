@@ -83,6 +83,7 @@ def run_pre_task_check(
             "oversight": oversight,
             "memory_mode": memory_mode,
         },
+        "suggested_rules_preview": rule_pack_suggestions.get("suggested_rules_preview", []),
         "rule_pack_suggestions": rule_pack_suggestions,
         "rule_packs": rule_packs,
         "active_rules": active_rules,

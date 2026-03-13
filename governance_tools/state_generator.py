@@ -167,6 +167,7 @@ def generate_state(
             "oversight": oversight,
             "memory_mode": memory_mode,
         },
+        "suggested_rules_preview": suggestions.get("suggested_rules_preview", []),
         "rule_pack_suggestions": suggestions,
         "rule_packs": describe_rule_selection(requested_rules),
         "active_rules": load_rule_content(requested_rules),

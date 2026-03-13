@@ -152,6 +152,7 @@ def test_pre_task_check_exposes_advisory_rule_pack_suggestions(local_tmp_dir, mo
     assert "rule_pack_suggestions" in result
     assert "csharp" in result["rule_pack_suggestions"]["suggested_rules"]
     assert "avalonia" in result["rule_pack_suggestions"]["suggested_rules"]
+    assert result["suggested_rules_preview"] == ["common", "csharp", "avalonia", "refactor"]
     assert any(
         item["name"] == "refactor" and item["advisory_only"] is True
         for item in result["rule_pack_suggestions"]["scope_packs"]

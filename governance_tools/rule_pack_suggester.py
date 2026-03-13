@@ -115,6 +115,20 @@ def _suggest_scope(task_text: str) -> list[dict]:
     return suggestions
 
 
+def _suggested_rules_preview(
+    language_packs: list[dict],
+    framework_packs: list[dict],
+    scope_packs: list[dict],
+) -> list[str]:
+    preview = ["common"]
+
+    for item in language_packs + framework_packs + scope_packs:
+        if item["name"] not in preview:
+            preview.append(item["name"])
+
+    return preview
+
+
 def suggest_rule_packs(project_root: Path, task_text: str = "") -> dict:
     files = _iter_files(project_root)
     language_packs = _detect_languages(files, project_root)
@@ -127,9 +141,11 @@ def suggest_rule_packs(project_root: Path, task_text: str = "") -> dict:
         "framework_packs": framework_packs,
         "scope_packs": scope_packs,
         "suggested_rules": ["common"] + [item["name"] for item in language_packs + framework_packs],
+        "suggested_rules_preview": _suggested_rules_preview(language_packs, framework_packs, scope_packs),
         "notes": [
             "language/framework packs are auto-suggested from repository signals",
             "scope packs are advisory only and should be confirmed by the contract or human reviewer",
+            "suggested_rules_preview includes advisory scope packs for convenience, but does not mutate the contract",
         ],
     }
 
@@ -147,6 +163,7 @@ def main() -> None:
         print(json.dumps(result, ensure_ascii=False, indent=2))
     else:
         print("suggested_rules=" + ",".join(result["suggested_rules"]))
+        print("suggested_rules_preview=" + ",".join(result["suggested_rules_preview"]))
         for group in ("language_packs", "framework_packs", "scope_packs"):
             for item in result[group]:
                 advisory = " advisory-only" if item.get("advisory_only") else ""
