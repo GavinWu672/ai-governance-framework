@@ -44,6 +44,7 @@ run_smoke() {
     "$PYTHON_CMD" runtime_hooks/smoke_test.py --harness gemini --event-type post_task
     "$PYTHON_CMD" runtime_hooks/smoke_test.py --event-type session_start --output artifacts/runtime/smoke/shared_session_start.txt --json-output artifacts/runtime/smoke/shared_session_start.json
     "$PYTHON_CMD" governance_tools/change_control_summary.py --session-start-file artifacts/runtime/smoke/shared_session_start.json --output artifacts/runtime/smoke/shared_change_control_summary.txt
+    "$PYTHON_CMD" governance_tools/change_control_index.py --artifacts-dir artifacts/runtime/smoke --output artifacts/runtime/smoke/INDEX.txt
 }
 
 run_pytest_suite() {

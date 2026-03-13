@@ -1,0 +1,19 @@
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from governance_tools.change_control_index import build_change_control_index
+
+
+def test_change_control_index_lists_generated_artifacts(tmp_path):
+    (tmp_path / "claude_change_control_summary.txt").write_text("summary", encoding="utf-8")
+    (tmp_path / "claude_session_start.txt").write_text("handoff", encoding="utf-8")
+    (tmp_path / "claude_session_start.json").write_text("{}", encoding="utf-8")
+
+    output = build_change_control_index(tmp_path)
+
+    assert "[change_control_index]" in output
+    assert "claude_change_control_summary.txt" in output
+    assert "claude_session_start.txt" in output
+    assert "claude_session_start.json" in output
