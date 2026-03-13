@@ -28,10 +28,13 @@ NORMALIZERS = {
 
 
 DEFAULT_EXAMPLES = {
+    ("claude_code", "session_start"): Path("runtime_hooks/examples/claude_code/session_start.native.json"),
     ("claude_code", "pre_task"): Path("runtime_hooks/examples/claude_code/pre_task.native.json"),
     ("claude_code", "post_task"): Path("runtime_hooks/examples/claude_code/post_task.native.json"),
+    ("codex", "session_start"): Path("runtime_hooks/examples/codex/session_start.native.json"),
     ("codex", "pre_task"): Path("runtime_hooks/examples/codex/pre_task.native.json"),
     ("codex", "post_task"): Path("runtime_hooks/examples/codex/post_task.native.json"),
+    ("gemini", "session_start"): Path("runtime_hooks/examples/gemini/session_start.native.json"),
     ("gemini", "pre_task"): Path("runtime_hooks/examples/gemini/pre_task.native.json"),
     ("gemini", "post_task"): Path("runtime_hooks/examples/gemini/post_task.native.json"),
 }
@@ -73,7 +76,7 @@ def main() -> None:
         )
     else:
         if not args.harness:
-            raise SystemExit("--harness is required for pre_task and post_task smoke flows")
+            raise SystemExit("--harness is required for harness-based smoke flows")
         envelope = run_smoke(
             harness=args.harness,
             event_type=args.event_type,

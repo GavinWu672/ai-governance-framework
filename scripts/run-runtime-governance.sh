@@ -32,10 +32,14 @@ PYTHON_CMD="python"
 command -v python >/dev/null 2>&1 || PYTHON_CMD="python3"
 
 run_smoke() {
+    "$PYTHON_CMD" runtime_hooks/smoke_test.py --harness claude_code --event-type session_start
     "$PYTHON_CMD" runtime_hooks/smoke_test.py --harness claude_code --event-type pre_task
     "$PYTHON_CMD" runtime_hooks/smoke_test.py --harness claude_code --event-type post_task
+    "$PYTHON_CMD" runtime_hooks/smoke_test.py --harness codex --event-type session_start
     "$PYTHON_CMD" runtime_hooks/smoke_test.py --harness codex --event-type post_task
+    "$PYTHON_CMD" runtime_hooks/smoke_test.py --harness gemini --event-type session_start
     "$PYTHON_CMD" runtime_hooks/smoke_test.py --harness gemini --event-type post_task
+    "$PYTHON_CMD" runtime_hooks/smoke_test.py --event-type session_start
 }
 
 run_pytest_suite() {

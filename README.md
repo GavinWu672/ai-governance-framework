@@ -400,8 +400,12 @@ python memory_pipeline/memory_promoter.py --memory-root memory --candidate-file 
 
 ```bash
 python runtime_hooks/smoke_test.py --harness claude_code --event-type pre_task
+python runtime_hooks/smoke_test.py --harness claude_code --event-type session_start
 python runtime_hooks/smoke_test.py --harness codex --event-type post_task
+python runtime_hooks/smoke_test.py --harness codex --event-type session_start
 python runtime_hooks/smoke_test.py --harness gemini --event-type post_task
+python runtime_hooks/smoke_test.py --harness gemini --event-type session_start
+python runtime_hooks/smoke_test.py --event-type session_start
 ```
 
 ### Shared Enforcement
