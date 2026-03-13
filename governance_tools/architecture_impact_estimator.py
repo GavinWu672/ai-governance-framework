@@ -13,6 +13,64 @@ from governance_tools.architecture_drift_checker import check_architecture_drift
 from governance_tools.public_api_diff_checker import check_public_api_diff
 
 
+LAYER_PATTERNS = {
+    "domain": ("domain", "model", "entity", "entities"),
+    "application": ("application", "app", "service", "services", "usecase", "usecases"),
+    "interface": ("interface", "interfaces", "api", "controller", "controllers", "adapter", "adapters"),
+    "infrastructure": ("infrastructure", "infra", "repository", "repositories", "persistence", "storage"),
+    "ui": ("ui", "view", "views", "viewmodel", "viewmodels", "screen", "screens"),
+    "platform": ("kernel", "driver", "kmdf", "wdm", "umdf", "native", "interop"),
+}
+
+
+def _detect_layers(paths: list[Path]) -> list[str]:
+    detected = []
+    for path in paths:
+        normalized = path.as_posix().lower()
+        parts = tuple(part for part in normalized.split("/") if part)
+        for layer, markers in LAYER_PATTERNS.items():
+            if any(marker in parts or f"/{marker}/" in normalized for marker in markers):
+                if layer not in detected:
+                    detected.append(layer)
+    return detected
+
+
+def _boundary_risk(active_rules: list[str], touched_layers: list[str], drift_result: dict) -> str:
+    if drift_result.get("errors"):
+        return "high"
+    if "kernel-driver" in active_rules:
+        return "high"
+    if len(touched_layers) >= 3:
+        return "medium"
+    if len(touched_layers) >= 2 or drift_result.get("warnings"):
+        return "medium"
+    return "low"
+
+
+def _expected_validators(active_rules: list[str], drift_result: dict, api_result: dict | None) -> list[str]:
+    validators = ["architecture_drift_checker"]
+
+    if api_result is not None:
+        validators.append("public_api_diff_checker")
+    if "refactor" in active_rules:
+        validators.append("refactor_evidence_validator")
+    if "kernel-driver" in active_rules:
+        validators.extend(
+            [
+                "driver_evidence_validator",
+                "test_result_ingestor",
+            ]
+        )
+    if drift_result.get("errors") or drift_result.get("warnings"):
+        validators.append("architecture_review")
+
+    deduped = []
+    for item in validators:
+        if item not in deduped:
+            deduped.append(item)
+    return deduped
+
+
 def _required_evidence(active_rules: list[str], drift_result: dict, api_result: dict | None) -> list[str]:
     evidence = ["architecture-review"]
 
@@ -68,6 +126,33 @@ def _recommended_controls(active_rules: list[str], drift_result: dict, api_resul
     }
 
 
+def _impact_report(
+    *,
+    scope: str,
+    active_rules: list[str],
+    touched_layers: list[str],
+    drift_result: dict,
+    api_result: dict | None,
+    required_evidence: list[str],
+    expected_validators: list[str],
+    recommended_risk: str,
+    recommended_oversight: str,
+    concerns: list[str],
+) -> dict:
+    return {
+        "scope": scope,
+        "active_rules": active_rules,
+        "touched_layers": touched_layers,
+        "boundary_risk": _boundary_risk(active_rules, touched_layers, drift_result),
+        "concerns": concerns,
+        "required_evidence": required_evidence,
+        "expected_validators": expected_validators,
+        "recommended_risk": recommended_risk,
+        "recommended_oversight": recommended_oversight,
+        "public_api_diff_present": api_result is not None,
+    }
+
+
 def estimate_architecture_impact(
     before_files: list[Path],
     after_files: list[Path],
@@ -76,14 +161,17 @@ def estimate_architecture_impact(
     active_rules: list[str] | None = None,
 ) -> dict:
     active_rules = active_rules or []
+    all_files = before_files + after_files
     drift_result = check_architecture_drift(before_files=before_files, after_files=after_files, scope=scope)
     api_result = check_public_api_diff(before_files, after_files) if any(
         path.suffix.lower() in {".cs", ".h", ".hpp", ".hh", ".hxx", ".cpp", ".cc", ".cxx", ".swift"}
-        for path in before_files + after_files
+        for path in all_files
     ) else None
+    touched_layers = _detect_layers(all_files)
 
     controls = _recommended_controls(active_rules, drift_result, api_result)
     required_evidence = _required_evidence(active_rules, drift_result, api_result)
+    expected_validators = _expected_validators(active_rules, drift_result, api_result)
 
     concerns = []
     if drift_result.get("errors"):
@@ -96,15 +184,32 @@ def estimate_architecture_impact(
         concerns.append("public-api-expansion-risk")
     if "kernel-driver" in active_rules:
         concerns.append("high-privilege-platform-risk")
+    if len(touched_layers) >= 2:
+        concerns.append("cross-layer-change-risk")
+
+    impact_report = _impact_report(
+        scope=scope,
+        active_rules=active_rules,
+        touched_layers=touched_layers,
+        drift_result=drift_result,
+        api_result=api_result,
+        required_evidence=required_evidence,
+        expected_validators=expected_validators,
+        concerns=concerns,
+        **controls,
+    )
 
     return {
         "ok": len(drift_result.get("errors", [])) == 0 and not (api_result and api_result.get("removed")),
         "scope": scope,
         "active_rules": active_rules,
+        "touched_layers": touched_layers,
+        "expected_validators": expected_validators,
         "drift_result": drift_result,
         "public_api_diff": api_result,
         "required_evidence": required_evidence,
         "concerns": concerns,
+        "impact_report": impact_report,
         **controls,
     }
 

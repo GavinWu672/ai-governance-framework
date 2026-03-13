@@ -302,7 +302,8 @@ Public API diff:
 
 Architecture impact estimation:
 
-- `architecture_impact_estimator.py` combines drift signals and public API diff into a proposal-time impact preview
+- `architecture_impact_estimator.py` combines drift signals and public API diff into a proposal-time `Governance Impact Report`
+- the report now includes `touched_layers`, `boundary_risk`, `expected_validators`, `required_evidence`, and recommended `risk` / `oversight`
 - it recommends evidence, risk, and oversight, but does not act as a policy engine or auto-decision maker
 
 Kernel-driver governance:
