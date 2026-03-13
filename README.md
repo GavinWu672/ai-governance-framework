@@ -62,6 +62,7 @@ AI 在長期專案裡常見的問題不是單次回答不夠聰明，而是：
 - `architecture_drift_checker.py`
 - `governance_auditor.py`
 - `change_proposal_builder.py`
+- `change_control_summary.py`
 
 ### 3. Runtime Governance
 
@@ -312,6 +313,7 @@ python governance_tools/failure_completeness_validator.py --file checks.json --f
 python governance_tools/public_api_diff_checker.py --before before.cs --after after.cs --format json
 python governance_tools/architecture_impact_estimator.py --before before.cs --after after.cs --rules common,refactor --scope refactor --format human
 python governance_tools/change_proposal_builder.py --project-root . --task-text "Refactor Avalonia boundary" --rules common,refactor --impact-before before.cs --impact-after after.cs --format human
+python governance_tools/change_control_summary.py --session-start-file session_start.json --session-end-file session_end_summary.json --format human
 python governance_tools/driver_evidence_validator.py --file checks.json --format json
 python governance_tools/refactor_evidence_validator.py --file checks.json --format json
 python governance_tools/rule_pack_suggester.py --project-root . --task "Refactor Avalonia view model boundary"
@@ -390,6 +392,16 @@ proposal_summary + runtime checks + impact preview
 session_end.py
         ↓
 summary artifact + curated artifact
+```
+
+Change-control summary flow:
+
+```text
+session_start context + session_end summary
+        ↓
+change_control_summary.py
+        ↓
+reviewable change-control summary
 ```
 
 ### Adapters
