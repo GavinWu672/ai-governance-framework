@@ -11,6 +11,7 @@ The next phase is:
 - deepen semantic verification
 - reduce workflow friction
 - strengthen proposal-time guidance without turning the repo into a policy engine
+- tighten the review surface around startup and change-control artifacts
 
 ## Highest-Value Remaining Work
 
@@ -72,12 +73,14 @@ Current status:
 - `pre_task_check` and `post_task_check` human outputs are more usable
 - `suggested_rules_preview`, `suggested_skills`, `suggested_agent` exist
 - `session_start.py` and `change_proposal_builder.py` provide startup/proposal context
+- `change_control_summary.py` and `change_control_index.py` provide review-facing startup/change-control artifacts
 
 Next step:
 
 - keep reducing friction in everyday usage
 - surface actionable next steps earlier in the flow
 - extend startup/proposal artifacts into more real-world developer entry points
+- keep CI artifact naming and summary consumption obvious for reviewers
 
 Why this matters:
 
@@ -98,6 +101,8 @@ The following items are now in place on `main`:
 - `session_start.py` and shared session-start runtime flow
 - proposal-time guidance and `change_proposal_builder.py`
 - human-readable startup/proposal output improvements
+- `change_control_summary.py` and `change_control_index.py`
+- CI/runtime smoke startup artifacts: handoff notes, JSON envelopes, summaries, and index
 
 ### 5. Kernel-Driver Pack Refinement
 
@@ -144,6 +149,14 @@ Potential follow-up work:
 - preserve driver-specific evidence decisions in curated memory or audit summaries
 - make promotion decisions more transparent for high-risk platform work
 - keep proposal-time impact and runtime evidence linked in durable audit records
+
+### 8. Review Surface Tightening
+
+Potential follow-up work:
+
+- make `change_control_summary` consume session-end summaries directly from more workflow entry points
+- keep CI artifact naming and README instructions tightly aligned
+- decide whether `INDEX.txt` should evolve into a richer human summary or stay intentionally lightweight
 
 ## Why The `passed` Count Changes
 

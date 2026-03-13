@@ -16,6 +16,7 @@ It now operates as an AI coding runtime-governance framework with:
 - advisory rule, skill, and agent suggestions
 - proposal-time architecture impact estimation
 - session-start governance context
+- proposal-to-runtime change-control summaries
 - session lifecycle closeout
 - memory curation and promotion policy
 - evidence-based runtime validation
@@ -168,6 +169,7 @@ Assessment:
 - skeleton is complete
 - enforcement is shared across CI and local pre-push
 - session-start context is now part of the shared runtime path
+- CI/runtime smoke now preserves startup notes, JSON envelopes, change-control summaries, and an index artifact
 - still not fully impossible to bypass in every development path
 
 ### Memory Lifecycle
@@ -187,7 +189,7 @@ Assessment:
 
 - maturity: `80%`
 - strong separation between raw session output and durable project truth
-- proposal-time concerns and public API diff summaries now enter the audit trail
+- proposal-time concerns, proposal summaries, and public API diff summaries now enter the audit trail
 
 ### Evidence / Signal Ingestion
 
@@ -201,6 +203,8 @@ The repository now ingests and interprets runtime evidence through:
 - `governance_tools/refactor_evidence_validator.py`
 - `governance_tools/architecture_impact_estimator.py`
 - `governance_tools/change_proposal_builder.py`
+- `governance_tools/change_control_summary.py`
+- `governance_tools/change_control_index.py`
 
 Current support:
 
@@ -214,6 +218,7 @@ Current support:
 - lightweight public API surface diff
 - driver-oriented evidence validation from external analysis output
 - proposal-time architecture impact reporting
+- reviewable change-control summaries derived from startup/runtime artifacts
 
 Assessment:
 
@@ -305,6 +310,8 @@ Current behavior:
 - `architecture_impact_estimator.py` emits structured impact reports
 - `change_proposal_builder.py` collects task, rule, impact, and guidance into a single proposal artifact
 - `session_start.py` exposes startup context for agent handoff and initialization
+- `change_control_summary.py` merges proposal/startup context with runtime outcomes into a single reviewable summary
+- `change_control_index.py` provides a lightweight index over generated startup/change-control artifacts
 
 Current limitation:
 
@@ -317,7 +324,7 @@ The most important completed asset is not any single checker or rule pack.
 
 It is the runtime governance pipeline:
 
-`AI coding event -> session-start guidance -> runtime checks -> session close -> curated memory`
+`AI coding event -> session-start guidance -> runtime checks -> session close -> curated memory -> reviewable change-control summary`
 
 This means the repo has already crossed the line from:
 
@@ -329,7 +336,7 @@ to:
 
 The strongest current direction of travel is:
 
-`evidence-based enforcement -> proposal-time guidance -> lightweight semantic verification`
+`evidence-based enforcement -> proposal-time guidance -> reviewable change-control artifacts -> lightweight semantic verification`
 
 ## Next Steps
 
@@ -360,6 +367,7 @@ Recommended work:
 - continue improving human-readable pre/post outputs
 - surface proposal guidance and evidence expectations earlier
 - make startup and handoff context easier to consume from agent tooling
+- keep startup/change-control summaries easy to review from CI artifacts and local smoke runs
 
 Why this matters:
 
@@ -412,6 +420,22 @@ Recommended work:
 Why this is later:
 
 - the repository already has startup context; the next step is broadening adoption without over-automating
+
+### 6. Review Surface Tightening
+
+Goal:
+
+- make proposal-time and runtime-time governance outputs easier to consume as one review object
+
+Recommended work:
+
+- keep refining `change_control_summary.py` and `change_control_index.py`
+- ensure startup JSON envelopes, human notes, and summaries remain aligned
+- avoid requiring reviewers to manually correlate multiple raw artifacts
+
+Why this matters:
+
+- the artifact chain now exists; the next improvement is lowering review friction
 
 ## Boundary To Protect
 
