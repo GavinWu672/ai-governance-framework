@@ -25,20 +25,24 @@ def _base_result(source: str, passed: int = 0, failed: int = 0, skipped: int = 0
         },
         "test_names": [],
         "failure_test_validation": None,
+        "diagnostics": [],
         "warnings": [],
         "errors": [],
         "ok": failed == 0,
     }
 
 
-def _finalize_result(result: dict, require_rollback: bool = False) -> dict:
-    failure_validation = validate_failure_test_coverage(
-        result.get("test_names", []),
-        require_rollback=require_rollback,
-    )
-    result["failure_test_validation"] = failure_validation
-    result["warnings"].extend(failure_validation["warnings"])
-    result["errors"].extend(failure_validation["errors"])
+def _finalize_result(result: dict, require_rollback: bool = False, validate_failure_tests: bool = True) -> dict:
+    if validate_failure_tests:
+        failure_validation = validate_failure_test_coverage(
+            result.get("test_names", []),
+            require_rollback=require_rollback,
+        )
+        result["failure_test_validation"] = failure_validation
+        result["warnings"].extend(failure_validation["warnings"])
+        result["errors"].extend(failure_validation["errors"])
+    else:
+        result["failure_test_validation"] = None
     result["ok"] = result["summary"]["failed"] == 0 and len(result["errors"]) == 0
     return result
 
@@ -121,19 +125,85 @@ def ingest_junit_xml(text: str, require_rollback: bool = False) -> dict:
     return _finalize_result(result, require_rollback=require_rollback)
 
 
+def ingest_sdv_text(text: str, require_rollback: bool = False) -> dict:
+    result = _base_result("sdv-text", passed=1, failed=0, skipped=0)
+    normalized = text.replace("\r\n", "\n")
+
+    for line in normalized.splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        lower = stripped.lower()
+        result["diagnostics"].append(stripped)
+        if any(token in lower for token in ("error", "defect", "violat", "failed")):
+            result["errors"].append(stripped)
+        elif any(token in lower for token in ("warning", "caution")):
+            result["warnings"].append(stripped)
+
+    if result["errors"]:
+        result["summary"]["failed"] = len(result["errors"])
+        result["summary"]["passed"] = 0
+
+    result["sdv_verified"] = len(result["errors"]) == 0
+    result["driver_analysis_verified"] = len(result["errors"]) == 0
+    result["ok"] = len(result["errors"]) == 0
+    return _finalize_result(result, require_rollback=require_rollback, validate_failure_tests=False)
+
+
+def ingest_msbuild_warning_text(text: str, require_rollback: bool = False) -> dict:
+    result = _base_result("msbuild-warning-text", passed=1, failed=0, skipped=0)
+    normalized = text.replace("\r\n", "\n")
+
+    warning_lines = []
+    error_lines = []
+    for line in normalized.splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        lower = stripped.lower()
+        if ": warning " in lower or lower.startswith("warning "):
+            warning_lines.append(stripped)
+            result["diagnostics"].append(stripped)
+        elif ": error " in lower or lower.startswith("error "):
+            error_lines.append(stripped)
+            result["diagnostics"].append(stripped)
+
+    result["warnings"].extend(warning_lines)
+    result["errors"].extend(error_lines)
+    if error_lines:
+        result["summary"]["failed"] = len(error_lines)
+        result["summary"]["passed"] = 0
+
+    diagnostic_blob = "\n".join(result["diagnostics"]).lower()
+    result["sdv_verified"] = "static driver verifier" in diagnostic_blob or " sdv" in diagnostic_blob
+    result["driver_analysis_verified"] = any(
+        token in diagnostic_blob for token in ("sal", "prefast", "wdk analysis", "static driver verifier", " sdv")
+    )
+    result["irql_verified"] = any(token in diagnostic_blob for token in ("irql", "passive_level", "dispatch_level", "pageable"))
+    result["ioctl_boundary_verified"] = any(
+        token in diagnostic_blob for token in ("ioctl", "user buffer", "buffer length", "malformed input")
+    )
+    result["ok"] = len(result["errors"]) == 0
+    return _finalize_result(result, require_rollback=require_rollback, validate_failure_tests=False)
+
+
 def ingest_test_results(path: Path, kind: str, require_rollback: bool = False) -> dict:
     text = path.read_text(encoding="utf-8")
     if kind == "pytest-text":
         return ingest_pytest_text(text, require_rollback=require_rollback)
     if kind == "junit-xml":
         return ingest_junit_xml(text, require_rollback=require_rollback)
+    if kind == "sdv-text":
+        return ingest_sdv_text(text, require_rollback=require_rollback)
+    if kind == "msbuild-warning-text":
+        return ingest_msbuild_warning_text(text, require_rollback=require_rollback)
     raise ValueError(f"Unsupported test result kind: {kind}")
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Normalize test results for runtime governance.")
     parser.add_argument("--file", required=True)
-    parser.add_argument("--kind", choices=["pytest-text", "junit-xml"], required=True)
+    parser.add_argument("--kind", choices=["pytest-text", "junit-xml", "sdv-text", "msbuild-warning-text"], required=True)
     parser.add_argument("--require-rollback", action="store_true")
     args = parser.parse_args()
 

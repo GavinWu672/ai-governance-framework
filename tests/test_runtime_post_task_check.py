@@ -131,3 +131,126 @@ def test_post_task_check_applies_failure_completeness_checks():
     assert result["ok"] is False
     assert result["failure_completeness"] is not None
     assert any("failure-completeness: Missing failure completeness evidence: failure-path signal" in error for error in result["errors"])
+
+
+def test_post_task_check_can_use_public_api_diff_for_refactor_interface_stability():
+    root = Path("tests") / "_tmp_public_api_runtime"
+    if root.exists():
+        shutil.rmtree(root)
+    root.mkdir(parents=True)
+    try:
+        before_file = root / "before.cs"
+        after_file = root / "after.cs"
+        before_file.write_text(
+            "public class Service\n{\n    public int Run(int value) => value;\n}\n",
+            encoding="utf-8",
+        )
+        after_file.write_text(
+            "public class Service\n{\n    public int Run(int value) => value;\n    public int Ping() => 0;\n}\n",
+            encoding="utf-8",
+        )
+
+        result = run_post_task_check(
+            _contract(RULES="common,refactor"),
+            risk="medium",
+            oversight="review-required",
+            checks={
+                "test_names": [
+                    "tests/test_service.py::test_regression_contract",
+                    "tests/test_service.py::test_cleanup_release",
+                ],
+                "warnings": [],
+                "errors": [],
+            },
+            api_before_files=[before_file],
+            api_after_files=[after_file],
+        )
+
+        assert result["public_api_diff"] is not None
+        assert result["public_api_diff"]["ok"] is True
+        assert result["refactor_evidence"]["signals_detected"]["interface_stability_evidence"] is True
+        assert all("interface stability signal" not in error for error in result["errors"])
+    finally:
+        shutil.rmtree(root, ignore_errors=True)
+
+
+def test_post_task_check_blocks_removed_public_api_for_refactor():
+    root = Path("tests") / "_tmp_public_api_runtime_removed"
+    if root.exists():
+        shutil.rmtree(root)
+    root.mkdir(parents=True)
+    try:
+        before_file = root / "before.cs"
+        after_file = root / "after.cs"
+        before_file.write_text("public class Service { public int Run(int value) => value; }", encoding="utf-8")
+        after_file.write_text("public class Service { internal int Run(int value) => value; }", encoding="utf-8")
+
+        result = run_post_task_check(
+            _contract(RULES="common,refactor"),
+            risk="medium",
+            oversight="review-required",
+            checks={
+                "test_names": [
+                    "tests/test_service.py::test_regression_contract",
+                    "tests/test_service.py::test_cleanup_release",
+                ],
+                "warnings": [],
+                "errors": [],
+            },
+            api_before_files=[before_file],
+            api_after_files=[after_file],
+        )
+
+        assert result["ok"] is False
+        assert any("public-api-diff: Public API surface removed or changed." in error for error in result["errors"])
+    finally:
+        shutil.rmtree(root, ignore_errors=True)
+
+
+def test_post_task_check_applies_kernel_driver_evidence_requirements():
+    result = run_post_task_check(
+        _contract(RULES="common,cpp,kernel-driver", RISK="high", OVERSIGHT="human-approval"),
+        risk="high",
+        oversight="human-approval",
+        checks={
+            "test_names": [
+                "driver_tests::test_ioctl_invalid_input_rejected",
+                "driver_tests::test_cleanup_unwind_on_partial_init_failure",
+            ],
+            "diagnostics": ["WDK compile output only"],
+            "summary": {"failed": 0},
+            "warnings": [],
+            "errors": [],
+        },
+    )
+
+    assert result["ok"] is False
+    assert result["driver_evidence"] is not None
+    assert any("driver-evidence: Missing kernel-driver evidence: static analysis result" in error for error in result["errors"])
+    assert any("driver-evidence: Missing kernel-driver evidence: IRQL / pageable-context verification" in error for error in result["errors"])
+
+
+def test_post_task_check_passes_kernel_driver_evidence_with_sdv_signal():
+    result = run_post_task_check(
+        _contract(RULES="common,cpp,kernel-driver", RISK="high", OVERSIGHT="human-approval"),
+        risk="high",
+        oversight="human-approval",
+        checks={
+            "test_names": [
+                "driver_tests::test_ioctl_invalid_input_rejected",
+                "driver_tests::test_cleanup_unwind_on_partial_init_failure",
+                "driver_tests::test_irql_passive_level_contract",
+            ],
+            "diagnostics": [
+                "Static Driver Verifier: ruleset passed",
+                "SAL analysis confirms pageable path is passive_level only",
+            ],
+            "summary": {"failed": 0},
+            "warnings": [],
+            "errors": [],
+        },
+    )
+
+    assert result["ok"] is True
+    assert result["driver_evidence"] is not None
+    assert result["driver_evidence"]["ok"] is True

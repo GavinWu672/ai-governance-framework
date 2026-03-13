@@ -43,12 +43,24 @@ Active rule injection:
 - `pre_task_check.py` now returns both rule-pack selection metadata and loaded active rule content
 - active rules are loaded from `governance/rules/<pack>/*.md`
 - runtime consumers should treat this payload as governance context, not as a general-purpose rule DSL
-- current seed packs: `common`, `python`, `cpp`, `refactor`
+- current seed packs include `common`, `python`, `cpp`, `refactor`, `csharp`, `swift`, `avalonia`, `kernel-driver`
+- pack categories distinguish `scope`, `language`, `framework`, and `platform`
 
 Test-result handoff:
 
 - `governance_tools/test_result_ingestor.py` converts runner output into normalized `checks`
 - recommended flow: test runner output -> `test_result_ingestor.py` -> runtime `checks.errors / checks.warnings / checks.summary`
+- supported evidence kinds now include `pytest-text`, `junit-xml`, `sdv-text`, and `msbuild-warning-text`
+
+Public API handoff:
+
+- `governance_tools/public_api_diff_checker.py` can be passed into `post_task_check.py` with `--api-before` and `--api-after`
+- this is currently used as a lightweight interface-stability signal for `refactor` tasks
+
+Kernel-driver evidence handoff:
+
+- `governance_tools/driver_evidence_validator.py` is applied by `post_task_check.py` when `RULES` contains `kernel-driver`
+- preferred evidence sources are external analysis and compiler diagnostics such as SDV / SAL / WDK outputs, merged into normalized `checks`
 
 Dispatcher:
 

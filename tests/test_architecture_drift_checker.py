@@ -51,3 +51,37 @@ def test_architecture_drift_checker_warns_on_refactor_boundary_drift():
 
     assert result["ok"] is True
     assert any("Potential refactor boundary drift" in warning for warning in result["warnings"])
+
+
+def test_architecture_drift_checker_warns_on_new_dependency_edge_in_refactor(local_drift_root):
+    before_file = local_drift_root / "before.py"
+    after_file = local_drift_root / "after.py"
+    before_file.write_text("import domain.service\n", encoding="utf-8")
+    after_file.write_text("import domain.service\nimport infrastructure.adapter\n", encoding="utf-8")
+
+    result = check_architecture_drift(
+        before_files=[before_file],
+        after_files=[after_file],
+        scope="refactor",
+    )
+
+    assert result["ok"] is True
+    assert result["dependency_diff"] is not None
+    assert any("Refactor introduced new dependency edge" in warning for warning in result["warnings"])
+
+
+def test_architecture_drift_checker_errors_on_new_cross_project_dependency_edge(local_drift_root):
+    before_file = local_drift_root / "before.cpp"
+    after_file = local_drift_root / "after.cpp"
+    before_file.write_text('#include "LocalHeader.h"\n', encoding="utf-8")
+    after_file.write_text('#include "LocalHeader.h"\n#include "../peer/Global.h"\n', encoding="utf-8")
+
+    result = check_architecture_drift(
+        before_files=[before_file],
+        after_files=[after_file],
+        scope="feature",
+    )
+
+    assert result["ok"] is False
+    assert result["dependency_diff"] is not None
+    assert any("New cross-project dependency edge detected" in error for error in result["errors"])

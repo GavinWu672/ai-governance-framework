@@ -17,6 +17,7 @@ if __package__ in (None, ""):
 
 from governance_tools.plan_freshness import check_freshness
 from governance_tools.rule_pack_loader import describe_rule_selection, load_rule_content, parse_rule_list
+from governance_tools.rule_pack_suggester import suggest_rule_packs
 
 
 def _yaml_str(value) -> str:
@@ -123,6 +124,8 @@ def generate_state(
     risk: str = "medium",
     oversight: str = "auto",
     memory_mode: str = "candidate",
+    project_root: Path | None = None,
+    task_text: str | None = None,
 ) -> dict:
     if not plan_path.exists():
         return {
@@ -135,10 +138,14 @@ def generate_state(
     freshness = check_freshness(plan_path)
     current_phase = parse_current_phase(text)
     requested_rules = parse_rule_list(rules)
+    resolved_project_root = (project_root or plan_path.parent).resolve()
+    effective_task_text = task_text if task_text is not None else (current_phase["name"] or current_phase["id"] or "")
+    suggestions = suggest_rule_packs(resolved_project_root, task_text=effective_task_text)
 
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "plan_path": str(plan_path),
+        "project_root": str(resolved_project_root),
         "project": {
             "owner": header.get("Owner"),
             "freshness_policy": header.get("Freshness"),
@@ -160,6 +167,7 @@ def generate_state(
             "oversight": oversight,
             "memory_mode": memory_mode,
         },
+        "rule_pack_suggestions": suggestions,
         "rule_packs": describe_rule_selection(requested_rules),
         "active_rules": load_rule_content(requested_rules),
     }
@@ -175,6 +183,8 @@ def main() -> None:
     parser.add_argument("--risk", default="medium")
     parser.add_argument("--oversight", default="auto")
     parser.add_argument("--memory-mode", default="candidate")
+    parser.add_argument("--project-root")
+    parser.add_argument("--task-text")
     args = parser.parse_args()
 
     state = generate_state(
@@ -183,6 +193,8 @@ def main() -> None:
         risk=args.risk,
         oversight=args.oversight,
         memory_mode=args.memory_mode,
+        project_root=Path(args.project_root) if args.project_root else None,
+        task_text=args.task_text,
     )
 
     if args.format == "json":

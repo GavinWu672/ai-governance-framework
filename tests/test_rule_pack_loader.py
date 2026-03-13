@@ -25,6 +25,7 @@ def test_available_rule_packs_contains_seed_packs():
     assert "csharp" in packs
     assert "avalonia" in packs
     assert "swift" in packs
+    assert "kernel-driver" in packs
 
 
 def test_describe_rule_selection_resolves_files():
@@ -88,7 +89,19 @@ def test_load_rule_content_can_load_csharp_avalonia_swift_packs():
     assert "structured concurrency" in contents
 
 
+def test_load_rule_content_can_load_kernel_driver_pack():
+    loaded = load_rule_content(["kernel-driver"])
+    assert loaded["valid"] is True
+    assert loaded["active_rules"][0]["name"] == "kernel-driver"
+    assert loaded["active_rules"][0]["category"] == "platform"
+    contents = "\n".join(file["content"] for file in loaded["active_rules"][0]["files"]).lower()
+    assert "passive_level" in contents
+    assert "dma" in contents
+    assert "surprise-remove" in contents
+
+
 def test_rule_pack_category_defaults_to_custom_for_unknown_packs():
     assert rule_pack_category("common") == "scope"
     assert rule_pack_category("avalonia") == "framework"
+    assert rule_pack_category("kernel-driver") == "platform"
     assert rule_pack_category("my-team-pack") == "custom"

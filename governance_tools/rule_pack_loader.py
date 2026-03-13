@@ -22,6 +22,10 @@ RULE_PACK_CATEGORIES = {
     "objective-c": "language",
     "avalonia": "framework",
     "electron": "framework",
+    "kernel-driver": "platform",
+    "kmdf": "platform",
+    "wdm": "platform",
+    "umdf": "platform",
 }
 
 

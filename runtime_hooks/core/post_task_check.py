@@ -14,7 +14,9 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from governance_tools.contract_validator import validate_contract
+from governance_tools.driver_evidence_validator import validate_driver_evidence
 from governance_tools.failure_completeness_validator import validate_failure_completeness
+from governance_tools.public_api_diff_checker import check_public_api_diff
 from governance_tools.refactor_evidence_validator import validate_refactor_evidence
 from governance_tools.rule_pack_loader import parse_rule_list
 from memory_pipeline.session_snapshot import create_session_snapshot
@@ -43,6 +45,32 @@ def _merge_refactor_evidence_checks(errors: list[str], warnings: list[str], chec
     return result
 
 
+def _merge_public_api_diff_checks(
+    errors: list[str],
+    warnings: list[str],
+    checks: dict | None,
+    rules: list[str],
+    api_before_files: list[Path] | None,
+    api_after_files: list[Path] | None,
+) -> dict | None:
+    if "refactor" not in rules:
+        return None
+
+    result = None
+    if checks and checks.get("public_api_diff"):
+        result = checks["public_api_diff"]
+    elif api_before_files and api_after_files:
+        result = check_public_api_diff(api_before_files, api_after_files)
+    else:
+        return None
+
+    for warning in result.get("warnings", []):
+        warnings.append(f"public-api-diff: {warning}")
+    for error in result.get("errors", []):
+        errors.append(f"public-api-diff: {error}")
+    return result
+
+
 def _merge_failure_completeness_checks(errors: list[str], warnings: list[str], checks: dict | None, rules: list[str]) -> dict | None:
     if not checks:
         return None
@@ -52,6 +80,18 @@ def _merge_failure_completeness_checks(errors: list[str], warnings: list[str], c
         warnings.append(f"failure-completeness: {warning}")
     for error in result["errors"]:
         errors.append(f"failure-completeness: {error}")
+    return result
+
+
+def _merge_driver_evidence_checks(errors: list[str], warnings: list[str], checks: dict | None, rules: list[str]) -> dict | None:
+    if "kernel-driver" not in rules:
+        return None
+
+    result = validate_driver_evidence(checks)
+    for warning in result["warnings"]:
+        warnings.append(f"driver-evidence: {warning}")
+    for error in result["errors"]:
+        errors.append(f"driver-evidence: {error}")
     return result
 
 
@@ -65,6 +105,8 @@ def run_post_task_check(
     snapshot_summary: str | None = None,
     create_snapshot: bool = False,
     checks: dict | None = None,
+    api_before_files: list[Path] | None = None,
+    api_after_files: list[Path] | None = None,
 ) -> dict:
     validation = validate_contract(response_text)
     errors = list(validation.errors)
@@ -73,6 +115,7 @@ def run_post_task_check(
     resolved_memory_mode = memory_mode or fields.get("MEMORY_MODE", "").strip() or "candidate"
     resolved_rules = parse_rule_list(fields.get("RULES", ""))
     snapshot_result = None
+    effective_checks = dict(checks or {})
 
     if not validation.contract_found:
         errors.append("Missing governance contract in task output")
@@ -86,9 +129,21 @@ def run_post_task_check(
     if resolved_memory_mode == "durable" and oversight == "review-required":
         warnings.append("Durable memory should typically be promoted after explicit review completion")
 
-    _merge_runtime_checks(errors, warnings, checks)
-    failure_completeness = _merge_failure_completeness_checks(errors, warnings, checks, resolved_rules)
-    refactor_evidence = _merge_refactor_evidence_checks(errors, warnings, checks, resolved_rules)
+    _merge_runtime_checks(errors, warnings, effective_checks)
+    public_api_diff = _merge_public_api_diff_checks(
+        errors,
+        warnings,
+        effective_checks,
+        resolved_rules,
+        api_before_files,
+        api_after_files,
+    )
+    if public_api_diff:
+        effective_checks["public_api_diff"] = public_api_diff
+        effective_checks["interface_stability_verified"] = public_api_diff.get("ok", False)
+    failure_completeness = _merge_failure_completeness_checks(errors, warnings, effective_checks, resolved_rules)
+    refactor_evidence = _merge_refactor_evidence_checks(errors, warnings, effective_checks, resolved_rules)
+    driver_evidence = _merge_driver_evidence_checks(errors, warnings, effective_checks, resolved_rules)
 
     if create_snapshot and validation.contract_found and validation.compliant and not errors:
         if memory_root is None:
@@ -111,9 +166,11 @@ def run_post_task_check(
         "memory_mode": resolved_memory_mode,
         "rules": resolved_rules,
         "snapshot": snapshot_result,
-        "checks": checks,
+        "checks": effective_checks if effective_checks else None,
+        "public_api_diff": public_api_diff,
         "failure_completeness": failure_completeness,
         "refactor_evidence": refactor_evidence,
+        "driver_evidence": driver_evidence,
         "errors": errors,
         "warnings": warnings,
     }
@@ -130,6 +187,8 @@ def main() -> None:
     parser.add_argument("--snapshot-summary")
     parser.add_argument("--create-snapshot", action="store_true")
     parser.add_argument("--checks-file")
+    parser.add_argument("--api-before", action="append", default=[])
+    parser.add_argument("--api-after", action="append", default=[])
     parser.add_argument("--format", choices=["human", "json"], default="human")
     args = parser.parse_args()
 
@@ -150,6 +209,8 @@ def main() -> None:
         snapshot_summary=args.snapshot_summary,
         create_snapshot=args.create_snapshot,
         checks=checks,
+        api_before_files=[Path(path) for path in args.api_before],
+        api_after_files=[Path(path) for path in args.api_after],
     )
 
     if args.format == "json":
@@ -161,6 +222,9 @@ def main() -> None:
         print(f"memory_mode={result['memory_mode']}")
         if result["snapshot"]:
             print(f"snapshot={result['snapshot']['snapshot_path']}")
+        if result["public_api_diff"]:
+            print(f"public_api_removed={len(result['public_api_diff']['removed'])}")
+            print(f"public_api_added={len(result['public_api_diff']['added'])}")
         for warning in result["warnings"]:
             print(f"warning: {warning}")
         for error in result["errors"]:

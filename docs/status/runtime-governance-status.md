@@ -11,8 +11,10 @@ It now operates as an AI coding runtime-governance framework with:
 - multi-harness event normalization
 - shared runtime enforcement
 - loadable rule packs
+- typed rule-pack categories
 - session lifecycle closeout
 - memory curation and promotion policy
+- evidence-based runtime validation
 - governance self-audit
 
 Practical status:
@@ -55,10 +57,17 @@ Key runtime-facing fields:
 - `OVERSIGHT`
 - `MEMORY_MODE`
 
+State generation now also includes:
+
+- advisory `rule_pack_suggestions`
+- suggested `language/framework` packs from repository signals
+- advisory `scope` pack suggestions from task text
+
 Assessment:
 
 - maturity: `85%`
 - stable enough to drive runtime checks
+- suggestion flow is now part of the state, but does not mutate the active contract
 
 ### Rule Pack System
 
@@ -75,6 +84,7 @@ Current categories:
 - `scope`
 - `language`
 - `framework`
+- `platform`
 - `custom`
 
 Current built-in packs:
@@ -82,6 +92,7 @@ Current built-in packs:
 - scope: `common`, `refactor`
 - language: `python`, `cpp`, `csharp`, `swift`
 - framework: `avalonia`
+- platform: `kernel-driver`
 
 Key files:
 
@@ -140,21 +151,30 @@ Assessment:
 
 ### Evidence / Signal Ingestion
 
-The repository now ingests and interprets test evidence through:
+The repository now ingests and interprets runtime evidence through:
 
 - `governance_tools/test_result_ingestor.py`
 - `governance_tools/failure_test_validator.py`
+- `governance_tools/failure_completeness_validator.py`
+- `governance_tools/public_api_diff_checker.py`
+- `governance_tools/driver_evidence_validator.py`
 
 Current support:
 
 - `pytest-text`
 - `junit-xml`
+- `sdv-text`
+- `msbuild-warning-text`
 - naming/signal-based failure-path validation
+- lightweight public API surface diff
+- driver-oriented evidence validation from external analysis output
 
 Assessment:
 
-- test evidence ingestion: `75%`
-- failure completeness: `60%`
+- test evidence ingestion: `80%`
+- failure completeness: `70%`
+- interface stability evidence: `75%`
+- driver evidence ingestion: `75%`
 
 ### Architecture / Governance Audit
 
@@ -165,7 +185,7 @@ Current enforcement and audit helpers:
 
 Assessment:
 
-- drift detection: `60%`
+- drift detection: `70%`
 - governance self-audit: `70%`
 
 ## Alpha / Seed Areas
@@ -180,10 +200,11 @@ Current behavior:
 - detects `boundary`
 - detects `failure_path`
 - optionally detects `rollback_cleanup`
+- accepts richer metadata for exception and cleanup verification
 
 Current limitation:
 
-- mostly naming/signal based
+- still partly heuristic
 - not yet semantic test-behavior verification
 
 ### Drift Detection
@@ -193,10 +214,12 @@ Current behavior:
 - cross-project private include checks
 - suspicious include-directory checks
 - refactor boundary-drift heuristics
+- before/after dependency-edge diff for includes/imports/usings
 
 Current limitation:
 
-- not yet a dependency/import/include graph analyzer
+- not yet a full dependency/import/include graph analyzer
+- still heuristic-first, not a semantic architecture model
 
 ### Rule-Pack Suggestion
 
@@ -204,11 +227,26 @@ Current behavior:
 
 - auto-suggests language/framework packs from repo signals
 - suggests scope packs from task text
+- `state_generator.py` exposes these suggestions without mutating the active contract
 
 Current limitation:
 
 - scope remains advisory only
 - suggestions do not auto-bind the contract
+
+### Kernel-Driver Governance
+
+Current behavior:
+
+- `kernel-driver` exists as a `platform` pack
+- seed rules cover IRQL boundaries, memory / buffer trust boundaries, and cleanup / unwind symmetry
+- `driver_evidence_validator.py` enforces evidence expectations from normalized checks
+- preferred evidence sources include SDV / SAL / WDK-style diagnostics
+
+Current limitation:
+
+- no KMDF / WDM / UMDF specialization yet
+- runtime still depends on normalized external evidence rather than deep driver semantics
 
 ## Current Position
 
@@ -226,73 +264,74 @@ to:
 
 - runtime governance framework
 
+The strongest current direction of travel is:
+
+`evidence-based enforcement -> lightweight semantic verification`
+
 ## Next Steps
 
-### 1. Strengthen Refactor Enforcement
+### 1. Push Current Working Tree
 
 Goal:
 
-- make refactor governance demand stronger evidence, not just load rules
+- keep remote status aligned with local capability
 
 Recommended work:
 
-- add enforcement signals for interface stability
-- require stronger regression proof when `RULES` includes `refactor`
-- verify partial-cleanup and rollback safety more directly
+- commit and push the current local work
+- keep README, status docs, and runtime behavior in sync
 
 Why this is first:
 
-- it closes the gap between "refactor as contract" and "refactor as evidence-backed decision"
+- several completed capabilities are still local only
 
-### 2. Strengthen Failure Completeness
+### 2. Kernel-Driver Pack Refinement
 
 Goal:
 
-- move beyond test-name heuristics
+- grow driver governance without turning the repo into a driver-development platform
 
 Recommended work:
 
-- ingest richer test metadata
-- detect exception-path coverage
-- detect rollback/cleanup verification
-- distinguish "tests passed" from "required failure evidence exists"
+- keep `kernel-driver` as the generic high-risk platform pack
+- only split into `kmdf`, `wdm`, `umdf` when usage patterns justify it
+- avoid adding platform-specific lifecycle engines to core runtime
 
 Why this matters:
 
-- current runtime can see test evidence
-- it still needs deeper confidence about error paths
+- the seed pack is useful today, but premature specialization would add maintenance cost
 
-### 3. Drift Detection v2
+### 3. Evidence Ingestion Expansion
 
 Goal:
 
-- upgrade from heuristic pattern matching to more structural analysis
+- ingest more realistic external analysis outputs without bloating validators
 
 Recommended work:
 
-- include/import graph analysis
-- module boundary diff
-- public/private API drift checks
+- add kinds such as `wdk-analysis-text`, `compiler-warning-json`, or `sarif`
+- keep validators focused on evidence presence and policy mapping
+- avoid embedding heavy parser logic directly in runtime hooks
 
 Why this matters:
 
-- this is the next step for catching "tests green, architecture drifted"
+- this improves evidence quality while preserving current framework boundaries
 
-### 4. Advisory Suggester Integration
+### 4. Deeper Semantic Verification
 
 Goal:
 
-- improve operator experience without allowing silent governance drift
+- continue moving from high-signal evidence checks toward stronger structural proof
 
 Recommended work:
 
-- expose `rule_pack_suggester.py` output through `state_generator.py`
-- keep `language/framework` as suggestions
-- keep `scope` explicitly advisory
+- strengthen public API diff beyond high-signal surface extraction
+- deepen failure completeness with richer metadata
+- continue refining architecture drift from edge-diff toward broader structural checks
 
 Why this is later:
 
-- usability should come after stronger evidence and enforcement depth
+- current v0.8 already has a working enforcement loop; the next gains come from higher-confidence verification
 
 ## Boundary To Protect
 

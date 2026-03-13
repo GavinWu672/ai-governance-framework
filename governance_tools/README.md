@@ -241,17 +241,19 @@ Rule-pack runtime support:
 - `rule_pack_loader.py` validates requested packs
 - `describe_rule_selection(...)` returns selection metadata
 - `load_rule_content(...)` returns loaded rule titles and markdown content for runtime injection
-- current seed packs: `common`, `python`, `cpp`, `refactor`
+- current seed packs include `common`, `python`, `cpp`, `refactor`, `csharp`, `swift`, `avalonia`, `kernel-driver`
+- pack categories now distinguish `scope`, `language`, `framework`, and `platform`
 
 Test-result normalization:
 
 - `test_result_ingestor.py` converts test runner output into normalized runtime `checks`
-- currently supports `pytest-text` and `junit-xml`
+- currently supports `pytest-text`, `junit-xml`, `sdv-text`, and `msbuild-warning-text`
 
 Architecture drift heuristics:
 
 - `architecture_drift_checker.py` detects high-signal boundary drift patterns
 - current heuristics include cross-project private includes, peer-path include directories, and refactor boundary drift warnings
+- it also supports lightweight before/after dependency-edge diffing for imports and includes, without becoming a heavy graph engine
 
 Example usage:
 
@@ -270,7 +272,9 @@ python runtime_hooks/core/pre_task_check.py \
 python runtime_hooks/core/post_task_check.py \
   --file ai_response.txt \
   --risk medium \
-  --oversight review-required
+  --oversight review-required \
+  --api-before before.cs \
+  --api-after after.cs
 ```
 
 Governance self-audit:
@@ -288,8 +292,15 @@ Rule-pack suggestion:
 
 - `rule_pack_suggester.py` suggests `language` and `framework` packs from repository signals
 - `scope` suggestions are advisory only and should be confirmed by the contract or a human reviewer
+- `state_generator.py` now includes these suggestions as `rule_pack_suggestions`, but does not mutate `runtime_contract.rules`
 
 Public API diff:
 
 - `public_api_diff_checker.py` extracts a high-signal public API manifest and compares before/after surfaces
 - intended as a lightweight semantic-verification step for interface stability, not a full language-aware compiler front end
+
+Kernel-driver governance:
+
+- `kernel-driver` is treated as a high-risk `platform` pack rather than a plain C++ appendix
+- the seed pack currently focuses on IRQL boundaries, memory / buffer trust boundaries, and cleanup / unwind symmetry
+- `driver_evidence_validator.py` validates normalized evidence from SDV / SAL / WDK-style diagnostics and driver-focused tests

@@ -4,8 +4,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from governance_tools.test_result_ingestor import (
+    ingest_msbuild_warning_text,
     ingest_junit_xml,
     ingest_pytest_text,
+    ingest_sdv_text,
 )
 
 
@@ -67,3 +69,30 @@ def test_ingest_junit_xml_collects_failures():
     assert any("tests.test_demo::test_dependency_failure_timeout - behavior changed" == e for e in payload["errors"])
     assert "tests.test_demo::test_invalid_payload" in payload["test_names"]
     assert payload["failure_test_validation"]["ok"] is True
+
+
+def test_ingest_sdv_text_emits_driver_analysis_signals():
+    payload = ingest_sdv_text(
+        """
+Static Driver Verifier: rule set completed successfully
+SAL analysis: pageable code not reachable from DISPATCH_LEVEL path
+""".strip()
+    )
+    assert payload["ok"] is True
+    assert payload["sdv_verified"] is True
+    assert payload["driver_analysis_verified"] is True
+    assert len(payload["diagnostics"]) == 2
+
+
+def test_ingest_msbuild_warning_text_collects_driver_related_diagnostics():
+    payload = ingest_msbuild_warning_text(
+        """
+driver.c(42): warning C28167: IRQL mismatch detected for dispatch path
+driver.c(50): warning C6387: user buffer length may be null
+Build succeeded.
+""".strip()
+    )
+    assert payload["ok"] is True
+    assert len(payload["warnings"]) == 2
+    assert payload["irql_verified"] is True
+    assert payload["ioctl_boundary_verified"] is True

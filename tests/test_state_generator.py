@@ -57,6 +57,7 @@ def test_generate_state_includes_runtime_contract(local_tmp_dir, monkeypatch):
     assert state["rule_packs"]["valid"] is True
     assert state["active_rules"]["valid"] is True
     assert state["active_rules"]["active_rules"][0]["files"]
+    assert "rule_pack_suggestions" in state
 
 
 def test_generate_state_missing_plan_returns_error(local_tmp_dir):
@@ -144,3 +145,40 @@ def test_generate_state_can_include_csharp_avalonia_swift_active_rules(local_tmp
     assert "async void" in contents
     assert "Dispatcher.UIThread" in contents
     assert "structured concurrency" in contents
+
+
+def test_generate_state_includes_advisory_rule_pack_suggestions_without_mutating_contract(local_tmp_dir, monkeypatch):
+    monkeypatch.setattr(state_generator, "check_freshness", lambda _: _FreshnessStub())
+
+    (local_tmp_dir / "App.csproj").write_text("<Project Sdk=\"Microsoft.NET.Sdk\"></Project>", encoding="utf-8")
+    (local_tmp_dir / "MainWindow.axaml.cs").write_text(
+        "using Avalonia.Threading;\npublic class MainWindow {}", encoding="utf-8"
+    )
+
+    plan = local_tmp_dir / "PLAN.md"
+    plan.write_text(
+        "> **Owner**: Tester\n"
+        "> **Freshness**: Sprint (7d)\n"
+        "\n"
+        "[>] Phase A : Refactor Avalonia boundary\n"
+        "\n"
+        "## Current Sprint\n"
+        "- [ ] Refactor UI boundary\n",
+        encoding="utf-8",
+    )
+
+    state = state_generator.generate_state(
+        plan,
+        rules="common",
+        risk="medium",
+        oversight="review-required",
+        memory_mode="candidate",
+    )
+
+    assert state["runtime_contract"]["rules"] == ["common"]
+    suggested = state["rule_pack_suggestions"]["suggested_rules"]
+    assert "common" in suggested
+    assert "csharp" in suggested
+    assert "avalonia" in suggested
+    scope_suggestions = state["rule_pack_suggestions"]["scope_packs"]
+    assert any(item["name"] == "refactor" and item["advisory_only"] is True for item in scope_suggestions)

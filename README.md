@@ -51,6 +51,7 @@ AI 在長期專案裡常見的問題不是單次回答不夠聰明，而是：
 - `failure_test_validator.py`
 - `failure_completeness_validator.py`
 - `public_api_diff_checker.py`
+- `driver_evidence_validator.py`
 - `rule_pack_suggester.py`
 - `architecture_drift_checker.py`
 - `governance_auditor.py`
@@ -95,12 +96,21 @@ Framework packs:
 
 - `avalonia`
 
+Platform packs:
+
+- `kernel-driver`
+
 其中：
 
 - `cpp` 已包含 build-boundary 規則，例如禁止跨專案 private include 與錯誤使用 `AdditionalIncludeDirectories`
 - `csharp` 聚焦 thread / native boundary
 - `avalonia` 聚焦 UI thread 與 ViewModel boundary
 - `swift` 聚焦 concurrency 與 native interop boundary
+- `kernel-driver` 聚焦 IRQL、memory boundary、cleanup / unwind 等高權限風險
+- `kernel-driver` 證據應優先來自 SDV / SAL / WDK 類分析結果與 driver-focused tests，而不是自製全能 parser
+- `test_result_ingestor.py` 現在除了 `pytest-text` / `junit-xml`，也可正規化 `sdv-text` 與 `msbuild-warning-text`
+- `architecture_drift_checker.py` 現在除了 high-signal heuristic，也支援 before/after dependency edge diff
+- `state_generator.py` 現在會附帶 advisory `rule_pack_suggestions`，但不會自動改寫 `runtime_contract.rules`
 
 範例：
 
@@ -113,6 +123,15 @@ RULES = common,csharp,avalonia,refactor
 - `avalonia`: UI / Dispatcher / ViewModel 邊界
 - `refactor`: 變更型別治理，要求 behavior lock 與 boundary safety
   並逐步要求 interface stability、regression evidence、cleanup / rollback evidence
+
+高風險平台例子：
+
+```text
+RULES = common,cpp,kernel-driver,refactor
+RISK = high
+OVERSIGHT = human-approval
+MEMORY_MODE = candidate
+```
 
 ## 執行時治理總覽
 
@@ -262,6 +281,7 @@ python governance_tools/memory_janitor.py --memory-root ./memory --check
 python governance_tools/failure_test_validator.py --file test_names.json --format json
 python governance_tools/failure_completeness_validator.py --file checks.json --format json
 python governance_tools/public_api_diff_checker.py --before before.cs --after after.cs --format json
+python governance_tools/driver_evidence_validator.py --file checks.json --format json
 python governance_tools/refactor_evidence_validator.py --file checks.json --format json
 python governance_tools/rule_pack_suggester.py --project-root . --task "Refactor Avalonia view model boundary"
 python governance_tools/governance_auditor.py --format json
@@ -271,9 +291,21 @@ python governance_tools/governance_auditor.py --format json
 
 ```bash
 python runtime_hooks/core/pre_task_check.py --rules common,python,cpp --risk high --oversight review-required
-python runtime_hooks/core/post_task_check.py --file ai_response.txt --risk medium --oversight review-required --checks-file checks.json
+python runtime_hooks/core/post_task_check.py --file ai_response.txt --risk medium --oversight review-required --checks-file checks.json --api-before before.cs --api-after after.cs
 python runtime_hooks/dispatcher.py --file shared_event.json
 python runtime_hooks/core/session_end.py --project-root . --session-id 2026-03-12-01 --runtime-contract-file contract.json --checks-file checks.json --event-log-file event_log.json --response-file ai_response.txt
+```
+
+Kernel-driver evidence flow:
+
+```text
+SDV / SAL / WDK diagnostics
+        ↓
+normalized checks payload
+        ↓
+driver_evidence_validator.py
+        ↓
+post_task_check.py
 ```
 
 ### Adapters
