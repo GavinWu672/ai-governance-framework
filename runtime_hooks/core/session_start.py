@@ -76,6 +76,7 @@ def build_session_start_context(
         "architecture_impact_preview": pre_task.get("architecture_impact_preview"),
         "proposal_guidance": state.get("proposal_guidance"),
         "change_proposal": proposal,
+        "proposal_summary": proposal.get("proposal_summary"),
         "state": state,
         "pre_task_check": pre_task,
     }
@@ -94,18 +95,19 @@ def format_human_result(result: dict) -> str:
     if result.get("suggested_agent"):
         lines.append(f"suggested_agent={result['suggested_agent']}")
 
+    summary = result.get("proposal_summary") or {}
     guidance = result.get("proposal_guidance") or {}
     if guidance:
         lines.append("[proposal_guidance]")
-        lines.append(f"recommended_risk={guidance.get('recommended_risk')}")
-        lines.append(f"recommended_oversight={guidance.get('recommended_oversight')}")
-        validators = guidance.get("expected_validators") or []
+        lines.append(f"recommended_risk={summary.get('recommended_risk')}")
+        lines.append(f"recommended_oversight={summary.get('recommended_oversight')}")
+        validators = summary.get("expected_validators") or []
         if validators:
             lines.append(f"expected_validators={','.join(validators)}")
-        evidence = guidance.get("required_evidence") or []
+        evidence = summary.get("required_evidence") or []
         if evidence:
             lines.append(f"required_evidence={','.join(evidence)}")
-        concerns = guidance.get("concerns") or []
+        concerns = summary.get("concerns") or []
         if concerns:
             lines.append(f"concerns={','.join(concerns)}")
 

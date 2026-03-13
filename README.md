@@ -367,7 +367,7 @@ task text + project signals + impact files
         ↓
 change_proposal_builder.py
         ↓
-suggested rules + proposal guidance + impact preview
+suggested rules + proposal guidance + impact preview + proposal_summary
 ```
 
 Session-start handoff flow:
@@ -377,7 +377,7 @@ state_generator.py + pre_task_check.py + change_proposal_builder.py
         ↓
 session_start.py
         ↓
-agent start context
+agent start context + proposal_summary
 ```
 
 ### Adapters

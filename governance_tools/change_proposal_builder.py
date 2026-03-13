@@ -23,6 +23,20 @@ def _infer_scope(requested_rules: list[str], suggestions: dict) -> str:
     return "feature"
 
 
+def build_proposal_summary(result: dict) -> dict:
+    guidance = result.get("proposal_guidance") or {}
+    return {
+        "task": result.get("task", ""),
+        "requested_rules": result.get("requested_rules", []) or [],
+        "suggested_rules_preview": result.get("suggested_rules_preview", []) or [],
+        "recommended_risk": guidance.get("recommended_risk"),
+        "recommended_oversight": guidance.get("recommended_oversight"),
+        "expected_validators": guidance.get("expected_validators", []) or [],
+        "required_evidence": guidance.get("required_evidence", []) or [],
+        "concerns": guidance.get("concerns", []) or [],
+    }
+
+
 def build_change_proposal(
     *,
     project_root: Path,
@@ -55,7 +69,7 @@ def build_change_proposal(
             "concerns": impact_preview.get("concerns", []) or [],
         }
 
-    return {
+    result = {
         "task": task_text,
         "project_root": str(project_root.resolve()),
         "requested_rules": requested_rules,
@@ -64,6 +78,8 @@ def build_change_proposal(
         "architecture_impact_preview": impact_preview,
         "proposal_guidance": proposal_guidance,
     }
+    result["proposal_summary"] = build_proposal_summary(result)
+    return result
 
 
 def format_human_result(result: dict) -> str:
@@ -76,18 +92,19 @@ def format_human_result(result: dict) -> str:
     if preview:
         lines.append(f"suggested_rules_preview={','.join(preview)}")
 
+    summary = result.get("proposal_summary") or {}
     guidance = result.get("proposal_guidance") or {}
     if guidance:
         lines.append("[proposal_guidance]")
-        lines.append(f"recommended_risk={guidance.get('recommended_risk')}")
-        lines.append(f"recommended_oversight={guidance.get('recommended_oversight')}")
-        validators = guidance.get("expected_validators") or []
+        lines.append(f"recommended_risk={summary.get('recommended_risk')}")
+        lines.append(f"recommended_oversight={summary.get('recommended_oversight')}")
+        validators = summary.get("expected_validators") or []
         if validators:
             lines.append(f"expected_validators={','.join(validators)}")
-        evidence = guidance.get("required_evidence") or []
+        evidence = summary.get("required_evidence") or []
         if evidence:
             lines.append(f"required_evidence={','.join(evidence)}")
-        concerns = guidance.get("concerns") or []
+        concerns = summary.get("concerns") or []
         if concerns:
             lines.append(f"concerns={','.join(concerns)}")
     return "\n".join(lines)
