@@ -39,6 +39,12 @@ run_smoke() {
 }
 
 run_pytest_suite() {
+    if ! "$PYTHON_CMD" -c "import pytest" >/dev/null 2>&1; then
+        echo "[runtime-governance] pytest is required for mode=$MODE"
+        echo "[runtime-governance] install it with: pip install pytest"
+        exit 1
+    fi
+
     "$PYTHON_CMD" -m pytest \
         tests/test_runtime_smoke_test.py \
         tests/test_runtime_dispatcher.py \
