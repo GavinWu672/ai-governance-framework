@@ -176,6 +176,32 @@ def run_post_task_check(
     }
 
 
+def format_human_result(result: dict) -> str:
+    lines = [
+        f"ok={result['ok']}",
+        f"contract_found={result['contract_found']}",
+        f"compliant={result['compliant']}",
+        f"memory_mode={result['memory_mode']}",
+    ]
+    if result["snapshot"]:
+        lines.append(f"snapshot={result['snapshot']['snapshot_path']}")
+    if result["public_api_diff"]:
+        lines.append(f"public_api_removed={len(result['public_api_diff']['removed'])}")
+        lines.append(f"public_api_added={len(result['public_api_diff']['added'])}")
+        lines.append(f"public_api_ok={result['public_api_diff']['ok']}")
+    if result["failure_completeness"] is not None:
+        lines.append(f"failure_completeness_ok={result['failure_completeness']['ok']}")
+    if result["refactor_evidence"] is not None:
+        lines.append(f"refactor_evidence_ok={result['refactor_evidence']['ok']}")
+    if result["driver_evidence"] is not None:
+        lines.append(f"driver_evidence_ok={result['driver_evidence']['ok']}")
+    for warning in result["warnings"]:
+        lines.append(f"warning: {warning}")
+    for error in result["errors"]:
+        lines.append(f"error: {error}")
+    return "\n".join(lines)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run post-task governance checks.")
     parser.add_argument("--file", "-f", help="Response file; defaults to stdin")
@@ -216,19 +242,7 @@ def main() -> None:
     if args.format == "json":
         print(json.dumps(result, ensure_ascii=False, indent=2))
     else:
-        print(f"ok={result['ok']}")
-        print(f"contract_found={result['contract_found']}")
-        print(f"compliant={result['compliant']}")
-        print(f"memory_mode={result['memory_mode']}")
-        if result["snapshot"]:
-            print(f"snapshot={result['snapshot']['snapshot_path']}")
-        if result["public_api_diff"]:
-            print(f"public_api_removed={len(result['public_api_diff']['removed'])}")
-            print(f"public_api_added={len(result['public_api_diff']['added'])}")
-        for warning in result["warnings"]:
-            print(f"warning: {warning}")
-        for error in result["errors"]:
-            print(f"error: {error}")
+        print(format_human_result(result))
 
     sys.exit(0 if result["ok"] else 1)
 

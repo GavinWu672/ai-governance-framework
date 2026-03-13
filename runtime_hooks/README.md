@@ -61,6 +61,7 @@ Public API handoff:
 - `governance_tools/public_api_diff_checker.py` can be passed into `post_task_check.py` with `--api-before` and `--api-after`
 - this is currently used as a lightweight interface-stability signal for `refactor` tasks
 - `session_end.py` now preserves public API diff evidence in runtime summaries and curated artifacts
+- human output from `post_task_check.py` now includes compact evidence summary lines such as `public_api_ok=...` and `refactor_evidence_ok=...`
 
 Kernel-driver evidence handoff:
 

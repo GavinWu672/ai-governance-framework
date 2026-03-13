@@ -115,6 +115,7 @@ Platform packs:
 - 當高信心 language/framework suggestion 未被載入時，`pre_task_check.py` 會給 advisory warning，但不會自動改 contract
 - `rule_pack_suggester.py` / `state_generator.py` / `pre_task_check.py` 現在都會提供 `suggested_rules_preview`，方便直接採用建議規則串
 - `pre_task_check --format human` 現在也會直接印出 `suggested_rules_preview=...`
+- `post_task_check --format human` 現在也會直接印出 evidence summary，例如 `public_api_ok=...`、`failure_completeness_ok=...`
 
 範例：
 

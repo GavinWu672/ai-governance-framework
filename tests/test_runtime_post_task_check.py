@@ -6,7 +6,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from runtime_hooks.core.post_task_check import run_post_task_check
+from runtime_hooks.core.post_task_check import format_human_result, run_post_task_check
 
 
 def _contract(**overrides) -> str:
@@ -254,3 +254,32 @@ def test_post_task_check_passes_kernel_driver_evidence_with_sdv_signal():
     assert result["ok"] is True
     assert result["driver_evidence"] is not None
     assert result["driver_evidence"]["ok"] is True
+
+
+def test_post_task_check_human_output_includes_evidence_summary():
+    result = run_post_task_check(
+        _contract(RULES="common,refactor"),
+        risk="medium",
+        oversight="review-required",
+        checks={
+            "test_names": [
+                "tests/test_service.py::test_regression_contract",
+                "tests/test_service.py::test_cleanup_release",
+            ],
+            "public_api_diff": {
+                "ok": True,
+                "removed": [],
+                "added": ["public int Ping() => 0;"],
+                "warnings": ["Public API surface added or changed."],
+                "errors": [],
+            },
+            "warnings": [],
+            "errors": [],
+        },
+    )
+
+    output = format_human_result(result)
+    assert "public_api_added=1" in output
+    assert "public_api_ok=True" in output
+    assert "failure_completeness_ok=" in output
+    assert "refactor_evidence_ok=" in output
