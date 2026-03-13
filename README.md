@@ -437,6 +437,7 @@ shared enforcement 現在也會同時保留：
 - `*_session_start.txt` handoff notes
 - `*_session_start.json` machine-readable startup envelopes
 - `*_change_control_summary.txt` proposal-to-startup review summaries
+其中 `*_session_start.json` 可直接作為 `change_control_summary.py --session-start-file ...` 的輸入。
 
 ### Shared Enforcement
 

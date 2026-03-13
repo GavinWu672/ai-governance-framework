@@ -17,13 +17,25 @@ def _load_json(path: Path | None) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _normalize_session_start_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    if payload.get("event_type") == "session_start" and isinstance(payload.get("result"), dict):
+        return payload["result"]
+    return payload
+
+
+def _normalize_session_end_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    if payload.get("event_type") == "session_end" and isinstance(payload.get("result"), dict):
+        return payload["result"]
+    return payload
+
+
 def build_change_control_summary(
     *,
     session_start: dict[str, Any] | None = None,
     session_end: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    session_start = session_start or {}
-    session_end = session_end or {}
+    session_start = _normalize_session_start_payload(session_start or {})
+    session_end = _normalize_session_end_payload(session_end or {})
 
     proposal_summary = session_start.get("proposal_summary") or {}
     runtime_contract = session_start.get("runtime_contract") or {}

@@ -76,3 +76,31 @@ def test_change_control_summary_human_output_is_reviewable():
     assert "[change_control_summary]" in output
     assert "expected_validators=failure_completeness_validator" in output
     assert "promoted=True" in output
+
+
+def test_change_control_summary_accepts_smoke_envelope_shape():
+    result = build_change_control_summary(
+        session_start={
+            "event_type": "session_start",
+            "payload_file": "runtime_hooks/examples/shared/session_start.shared.json",
+            "result": {
+                "task_text": "Refactor Avalonia boundary",
+                "runtime_contract": {"rules": ["common"], "risk": "medium", "oversight": "review-required"},
+                "suggested_rules_preview": ["common", "csharp", "avalonia", "refactor"],
+                "suggested_skills": ["code-style", "governance-runtime"],
+                "suggested_agent": "advanced-agent",
+                "proposal_summary": {
+                    "requested_rules": ["common", "refactor"],
+                    "recommended_risk": "high",
+                    "recommended_oversight": "human-approval",
+                    "expected_validators": ["architecture_drift_checker"],
+                    "required_evidence": ["architecture-review"],
+                    "concerns": ["cross-layer-change-risk"],
+                },
+            },
+        }
+    )
+
+    assert result["task"] == "Refactor Avalonia boundary"
+    assert result["requested_rules"] == ["common", "refactor"]
+    assert result["suggested_agent"] == "advanced-agent"
