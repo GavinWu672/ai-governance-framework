@@ -16,10 +16,33 @@ def _extract_summary_line(path: Path) -> str | None:
     return None
 
 
+def _priority_score(summary_line: str | None) -> tuple[int, str]:
+    if not summary_line:
+        return (99, "")
+
+    text = summary_line.lower()
+    risk_order = {
+        "proposal_risk=high": 0,
+        "proposal_risk=medium": 1,
+        "proposal_risk=low": 2,
+    }
+    risk_rank = 3
+    for token, rank in risk_order.items():
+        if token in text:
+            risk_rank = rank
+            break
+
+    decision_rank = 1 if "runtime_decision=blocked" in text else 0
+    promoted_rank = 1 if "promoted=false" in text else 0
+    return (risk_rank, -decision_rank - promoted_rank, text)
+
+
 def build_change_control_index(artifacts_dir: Path) -> str:
     summary_files = sorted(artifacts_dir.glob("*_change_control_summary.txt"))
     session_files = sorted(artifacts_dir.glob("*_session_start.txt"))
     json_files = sorted(artifacts_dir.glob("*_session_start.json"))
+    summary_entries = [(path, _extract_summary_line(path)) for path in summary_files]
+    priority_entries = sorted(summary_entries, key=lambda item: _priority_score(item[1]))
 
     lines = ["[change_control_index]", f"artifacts_dir={artifacts_dir}"]
     lines.append(
@@ -33,14 +56,21 @@ def build_change_control_index(artifacts_dir: Path) -> str:
         )
     )
     lines.append("[review_order]")
-    lines.append("1. read *_change_control_summary.txt")
+    lines.append("1. read [priority_change_control_summaries] first")
     lines.append("2. inspect *_session_start.txt if proposal/startup context needs more detail")
     lines.append("3. inspect *_session_start.json for machine-readable detail")
 
-    if summary_files:
+    if priority_entries:
+        lines.append("[priority_change_control_summaries]")
+        for path, summary_line in priority_entries:
+            if summary_line:
+                lines.append(f"{path.name} | {summary_line}")
+            else:
+                lines.append(path.name)
+
+    if summary_entries:
         lines.append("[change_control_summaries]")
-        for path in summary_files:
-            summary_line = _extract_summary_line(path)
+        for path, summary_line in summary_entries:
             if summary_line:
                 lines.append(f"{path.name} | {summary_line}")
             else:
