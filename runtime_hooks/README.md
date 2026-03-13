@@ -43,12 +43,18 @@ Active rule injection:
 - `pre_task_check.py` now returns both rule-pack selection metadata and loaded active rule content
 - active rules are loaded from `governance/rules/<pack>/*.md`
 - runtime consumers should treat this payload as governance context, not as a general-purpose rule DSL
-- current seed packs: `common`, `python`, `cpp`
+- current seed packs: `common`, `python`, `cpp`, `refactor`
+
+Test-result handoff:
+
+- `governance_tools/test_result_ingestor.py` converts runner output into normalized `checks`
+- recommended flow: test runner output -> `test_result_ingestor.py` -> runtime `checks.errors / checks.warnings / checks.summary`
 
 Dispatcher:
 
 - `dispatcher.py` routes a shared event JSON payload directly to `pre_task_check` or `post_task_check`
 - `smoke_test.py` runs documented native example payloads end-to-end
+- `../scripts/run-runtime-governance.sh` is the shared enforcement entrypoint for hooks and CI
 
 Session close:
 
@@ -63,3 +69,9 @@ Examples:
 - `examples/codex/*.native.json`
 - `examples/gemini/*.native.json`
 - `examples/shared/*.shared.json`
+
+Enforcement:
+
+- local `pre-push` runs `scripts/run-runtime-governance.sh --mode enforce`
+- CI runs the same script with `--mode ci`
+- this keeps smoke coverage and focused runtime tests on the same execution path

@@ -241,7 +241,17 @@ Rule-pack runtime support:
 - `rule_pack_loader.py` validates requested packs
 - `describe_rule_selection(...)` returns selection metadata
 - `load_rule_content(...)` returns loaded rule titles and markdown content for runtime injection
-- current seed packs: `common`, `python`, `cpp`
+- current seed packs: `common`, `python`, `cpp`, `refactor`
+
+Test-result normalization:
+
+- `test_result_ingestor.py` converts test runner output into normalized runtime `checks`
+- currently supports `pytest-text` and `junit-xml`
+
+Architecture drift heuristics:
+
+- `architecture_drift_checker.py` detects high-signal boundary drift patterns
+- current heuristics include cross-project private includes, peer-path include directories, and refactor boundary drift warnings
 
 Example usage:
 
@@ -262,3 +272,8 @@ python runtime_hooks/core/post_task_check.py \
   --risk medium \
   --oversight review-required
 ```
+
+Governance self-audit:
+
+- `governance_auditor.py` checks alignment between constitution docs, runtime enforcement entrypoints, and seed rule packs
+- intended to detect governance drift, not to act as a general-purpose policy engine

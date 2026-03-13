@@ -87,3 +87,29 @@ def test_generate_state_can_include_cpp_active_rules(local_tmp_dir, monkeypatch)
 
     cpp_pack = [pack for pack in state["active_rules"]["active_rules"] if pack["name"] == "cpp"][0]
     assert "cross-project private header" in cpp_pack["files"][0]["content"]
+
+
+def test_generate_state_can_include_refactor_active_rules(local_tmp_dir, monkeypatch):
+    monkeypatch.setattr(state_generator, "check_freshness", lambda _: _FreshnessStub())
+
+    plan = local_tmp_dir / "PLAN.md"
+    plan.write_text(
+        "> **Owner**: Tester\n"
+        "> **Freshness**: Sprint (7d)\n"
+        "\n"
+        "## Current Sprint\n"
+        "- [ ] Refactor service boundary\n",
+        encoding="utf-8",
+    )
+
+    state = state_generator.generate_state(
+        plan,
+        rules="common,refactor",
+        risk="medium",
+        oversight="review-required",
+        memory_mode="candidate",
+    )
+
+    refactor_pack = [pack for pack in state["active_rules"]["active_rules"] if pack["name"] == "refactor"][0]
+    contents = "\n".join(file["content"] for file in refactor_pack["files"])
+    assert "must not introduce new boundary crossings" in contents

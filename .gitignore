@@ -49,8 +49,14 @@ dist/
 
 # Test
 .pytest_cache/
+.pytest_tmp*/
+tests/_tmp_governance_auditor/
 .coverage
 htmlcov/
+
+# Runtime governance artifacts
+artifacts/runtime/
+memory/candidates/*.json
 
 # Documentation build
 docs/_build/

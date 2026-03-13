@@ -47,6 +47,9 @@ AI 在長期專案裡常見的問題不是單次回答不夠聰明，而是：
 - `memory_janitor.py`
 - `state_generator.py`
 - `rule_pack_loader.py`
+- `test_result_ingestor.py`
+- `architecture_drift_checker.py`
+- `governance_auditor.py`
 
 ### 3. Runtime Governance
 
@@ -223,6 +226,7 @@ python governance_tools/contract_validator.py --file ai_response.txt
 python governance_tools/plan_freshness.py --plan PLAN.md
 python governance_tools/state_generator.py --rules common,python,cpp --risk medium --oversight review-required --memory-mode candidate
 python governance_tools/memory_janitor.py --memory-root ./memory --check
+python governance_tools/governance_auditor.py --format json
 ```
 
 ### Runtime Hooks
@@ -258,6 +262,12 @@ python runtime_hooks/smoke_test.py --harness codex --event-type post_task
 python runtime_hooks/smoke_test.py --harness gemini --event-type post_task
 ```
 
+### Shared Enforcement
+
+```bash
+bash scripts/run-runtime-governance.sh --mode enforce
+```
+
 ## 多工具支援
 
 目前 runtime layer 已支援多種 AI 工具：
@@ -283,11 +293,13 @@ GitHub Actions workflow 在：
 
 - `.github/workflows/governance.yml`
 
-目前已包含 runtime smoke path，可驗證：
+目前已包含 shared runtime enforcement path，可驗證：
 
 - native payload normalization
 - shared event dispatch
 - pre/post task checks
+- session close and curated memory flow
+- focused runtime governance test suite
 
 ## 目前邊界
 

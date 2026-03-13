@@ -13,6 +13,7 @@ set -euo pipefail
 
 TOOL="governance_tools/contract_validator.py"
 SNAPSHOT_DIR="memory/governance_snapshots"
+RUNTIME_SCRIPT="scripts/run-runtime-governance.sh"
 
 if [ ! -f "$TOOL" ]; then
     exit 0
@@ -41,6 +42,18 @@ if [ "$FAIL_COUNT" -gt 0 ]; then
     echo "⚠️  [governance] ${FAIL_COUNT} 個 AI 回覆快照驗證不通過"
     echo "   如需強制 push: git push --no-verify"
     echo ""
+fi
+
+if [ -f "$RUNTIME_SCRIPT" ]; then
+    echo "[governance] running runtime-governance enforcement before push"
+    if ! bash "$RUNTIME_SCRIPT" --mode enforce; then
+        echo ""
+        echo "[governance] runtime-governance enforcement failed"
+        echo "  fix the runtime governance failures before push"
+        echo "  bypass once: git push --no-verify"
+        echo ""
+        exit 1
+    fi
 fi
 
 exit 0

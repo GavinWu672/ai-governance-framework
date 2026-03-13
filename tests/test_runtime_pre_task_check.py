@@ -89,3 +89,20 @@ def test_pre_task_check_exposes_cpp_active_rules(local_tmp_dir, monkeypatch):
     assert result["ok"] is True
     cpp_pack = [pack for pack in result["active_rules"]["active_rules"] if pack["name"] == "cpp"][0]
     assert "AdditionalIncludeDirectories" in cpp_pack["files"][0]["content"]
+
+
+def test_pre_task_check_exposes_refactor_active_rules(local_tmp_dir, monkeypatch):
+    monkeypatch.setattr(pre_task_check, "check_freshness", lambda _: _FreshnessStub())
+    (local_tmp_dir / "PLAN.md").write_text("> **Owner**: Tester\n", encoding="utf-8")
+
+    result = pre_task_check.run_pre_task_check(
+        local_tmp_dir,
+        rules="common,refactor",
+        risk="medium",
+        oversight="review-required",
+        memory_mode="candidate",
+    )
+    assert result["ok"] is True
+    refactor_pack = [pack for pack in result["active_rules"]["active_rules"] if pack["name"] == "refactor"][0]
+    contents = "\n".join(file["content"] for file in refactor_pack["files"])
+    assert "observable behavior remains unchanged" in contents
