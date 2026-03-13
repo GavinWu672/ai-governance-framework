@@ -112,6 +112,7 @@ Platform packs:
 - `architecture_drift_checker.py` 現在除了 high-signal heuristic，也支援 before/after dependency edge diff
 - `state_generator.py` 現在會附帶 advisory `rule_pack_suggestions`，但不會自動改寫 `runtime_contract.rules`
 - `pre_task_check.py` 現在也會暴露同樣的 advisory suggestions，讓 runtime 入口與 state view 對齊
+- 當高信心 language/framework suggestion 未被載入時，`pre_task_check.py` 會給 advisory warning，但不會自動改 contract
 
 範例：
 

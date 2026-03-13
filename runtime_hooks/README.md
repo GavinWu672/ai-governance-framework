@@ -46,6 +46,7 @@ Active rule injection:
 - current seed packs include `common`, `python`, `cpp`, `refactor`, `csharp`, `swift`, `avalonia`, `kernel-driver`
 - pack categories distinguish `scope`, `language`, `framework`, and `platform`
 - `pre_task_check.py` also exposes advisory `rule_pack_suggestions` so runtime entrypoints can see the same language/framework suggestions as `state_generator.py`
+- when a high-confidence suggestion is missing from the active contract, `pre_task_check.py` emits advisory warnings without mutating `RULES`
 
 Test-result handoff:
 

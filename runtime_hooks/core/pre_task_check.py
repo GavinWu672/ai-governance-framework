@@ -18,6 +18,25 @@ from governance_tools.rule_pack_loader import describe_rule_selection, load_rule
 from governance_tools.rule_pack_suggester import suggest_rule_packs
 
 
+def _append_suggestion_warnings(warnings: list[str], requested_rules: list[str], suggestions: dict) -> None:
+    active = set(requested_rules)
+
+    for item in suggestions.get("language_packs", []):
+        if item["name"] not in active and item.get("confidence") == "high":
+            reason = ", ".join(item.get("reasons", [])[:2])
+            warnings.append(f"Suggested language pack '{item['name']}' is not active; repo signals: {reason}")
+
+    for item in suggestions.get("framework_packs", []):
+        if item["name"] not in active and item.get("confidence") in {"high", "medium"}:
+            reason = ", ".join(item.get("reasons", [])[:2])
+            warnings.append(f"Suggested framework pack '{item['name']}' is not active; repo signals: {reason}")
+
+    for item in suggestions.get("scope_packs", []):
+        if item["name"] not in active:
+            reason = ", ".join(item.get("reasons", [])[:2])
+            warnings.append(f"Advisory scope pack '{item['name']}' is suggested by task text but not active; signals: {reason}")
+
+
 def run_pre_task_check(
     project_root: Path,
     rules: str,
@@ -46,6 +65,8 @@ def run_pre_task_check(
 
     if risk == "high" and oversight == "auto":
         errors.append("High-risk tasks require oversight != auto")
+
+    _append_suggestion_warnings(warnings, requested_rules, rule_pack_suggestions)
 
     return {
         "ok": len(errors) == 0,
