@@ -38,6 +38,12 @@ AI 在長期專案裡常見的問題不是單次回答不夠聰明，而是：
 - `NATIVE-INTEROP.md`
 - `PLAN.md`
 
+另外，`.github/` 現在也提供前置互動層：
+
+- `copilot-instructions.md` 作為 repo-wide baseline
+- `.github/agents/*.agent.md` 作為角色定義
+- `.github/skills/*/skill.md` 作為行為型 skill policy
+
 ### 2. 靜態治理工具
 
 `governance_tools/` 目前包含：
