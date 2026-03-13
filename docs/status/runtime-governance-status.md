@@ -12,6 +12,10 @@ It now operates as an AI coding runtime-governance framework with:
 - shared runtime enforcement
 - loadable rule packs
 - typed rule-pack categories
+- agent and skill governance assets
+- advisory rule, skill, and agent suggestions
+- proposal-time architecture impact estimation
+- session-start governance context
 - session lifecycle closeout
 - memory curation and promotion policy
 - evidence-based runtime validation
@@ -20,7 +24,7 @@ It now operates as an AI coding runtime-governance framework with:
 Practical status:
 
 - overall maturity: `v0.8`
-- current phase: `runtime skeleton complete, enforcement depth still growing`
+- current phase: `runtime spine complete, proposal-time guidance and evidence-aware enforcement active`
 
 ## Completed
 
@@ -60,6 +64,11 @@ Key runtime-facing fields:
 State generation now also includes:
 
 - advisory `rule_pack_suggestions`
+- `suggested_rules_preview`
+- advisory `suggested_skills`
+- advisory `suggested_agent`
+- `proposal_guidance`
+- optional `architecture_impact_preview`
 - suggested `language/framework` packs from repository signals
 - advisory `scope` pack suggestions from task text
 
@@ -68,6 +77,7 @@ Assessment:
 - maturity: `85%`
 - stable enough to drive runtime checks
 - suggestion flow is now part of the state, but does not mutate the active contract
+- proposal-time guidance is available before implementation begins
 
 ### Rule Pack System
 
@@ -104,14 +114,42 @@ Assessment:
 - maturity: `85%` as a loadable governance-context system
 - intentionally not a policy engine
 
+### Agent / Skill Governance Layer
+
+The repository now defines a pre-change governance interaction layer through:
+
+- `.github/copilot-instructions.md`
+- `.github/agents/*.agent.md`
+- `.github/skills/*/skill.md`
+
+Current built-in roles:
+
+- `advanced-agent`
+- `python-agent`
+- `cli-agent`
+
+Current built-in skills:
+
+- `code-style`
+- `python`
+- `governance-runtime`
+- `human-readable-cli`
+
+Assessment:
+
+- maturity: `75%`
+- strong enough to provide repo baseline, role guidance, and behavior policy
+- still advisory, not a mandatory activation layer
+
 ### Runtime Governance Skeleton
 
 The runtime path is now real:
 
-`AI event -> normalize -> dispatcher -> pre/post checks -> session_end`
+`AI event -> normalize -> dispatcher -> session_start/pre_task/post_task -> session_end`
 
 Key files:
 
+- `runtime_hooks/core/session_start.py`
 - `runtime_hooks/core/pre_task_check.py`
 - `runtime_hooks/core/post_task_check.py`
 - `runtime_hooks/core/session_end.py`
@@ -129,6 +167,7 @@ Assessment:
 - maturity: `85%`
 - skeleton is complete
 - enforcement is shared across CI and local pre-push
+- session-start context is now part of the shared runtime path
 - still not fully impossible to bypass in every development path
 
 ### Memory Lifecycle
@@ -148,6 +187,7 @@ Assessment:
 
 - maturity: `80%`
 - strong separation between raw session output and durable project truth
+- proposal-time concerns and public API diff summaries now enter the audit trail
 
 ### Evidence / Signal Ingestion
 
@@ -158,6 +198,9 @@ The repository now ingests and interprets runtime evidence through:
 - `governance_tools/failure_completeness_validator.py`
 - `governance_tools/public_api_diff_checker.py`
 - `governance_tools/driver_evidence_validator.py`
+- `governance_tools/refactor_evidence_validator.py`
+- `governance_tools/architecture_impact_estimator.py`
+- `governance_tools/change_proposal_builder.py`
 
 Current support:
 
@@ -165,9 +208,12 @@ Current support:
 - `junit-xml`
 - `sdv-text`
 - `msbuild-warning-text`
+- `sarif`
+- `wdk-analysis-text`
 - naming/signal-based failure-path validation
 - lightweight public API surface diff
 - driver-oriented evidence validation from external analysis output
+- proposal-time architecture impact reporting
 
 Assessment:
 
@@ -175,6 +221,7 @@ Assessment:
 - failure completeness: `70%`
 - interface stability evidence: `75%`
 - driver evidence ingestion: `75%`
+- proposal-time impact estimation: `70%`
 
 ### Architecture / Governance Audit
 
@@ -227,12 +274,15 @@ Current behavior:
 
 - auto-suggests language/framework packs from repo signals
 - suggests scope packs from task text
-- `state_generator.py` exposes these suggestions without mutating the active contract
+- suggests skills and a likely agent
+- exposes `suggested_rules_preview`
+- `state_generator.py` and `pre_task_check.py` expose these suggestions without mutating the active contract
 
 Current limitation:
 
 - scope remains advisory only
 - suggestions do not auto-bind the contract
+- skills and agents are suggested, not activated automatically
 
 ### Kernel-Driver Governance
 
@@ -248,13 +298,26 @@ Current limitation:
 - no KMDF / WDM / UMDF specialization yet
 - runtime still depends on normalized external evidence rather than deep driver semantics
 
+### Proposal-Time Guidance
+
+Current behavior:
+
+- `architecture_impact_estimator.py` emits structured impact reports
+- `change_proposal_builder.py` collects task, rule, impact, and guidance into a single proposal artifact
+- `session_start.py` exposes startup context for agent handoff and initialization
+
+Current limitation:
+
+- impact estimation is still heuristic-first
+- guidance remains advisory rather than an automatic gate
+
 ## Current Position
 
 The most important completed asset is not any single checker or rule pack.
 
 It is the runtime governance pipeline:
 
-`AI coding event -> runtime checks -> session close -> curated memory`
+`AI coding event -> session-start guidance -> runtime checks -> session close -> curated memory`
 
 This means the repo has already crossed the line from:
 
@@ -266,26 +329,43 @@ to:
 
 The strongest current direction of travel is:
 
-`evidence-based enforcement -> lightweight semantic verification`
+`evidence-based enforcement -> proposal-time guidance -> lightweight semantic verification`
 
 ## Next Steps
 
-### 1. Push Current Working Tree
+### 1. Deeper Semantic Verification
 
 Goal:
 
-- keep remote status aligned with local capability
+- keep moving from high-signal evidence checks toward stronger semantic proof
 
 Recommended work:
 
-- commit and push the current local work
-- keep README, status docs, and runtime behavior in sync
+- deepen `public_api_diff_checker.py` beyond surface extraction
+- continue evolving `architecture_drift_checker.py` toward broader structural reasoning
+- tighten failure completeness with richer evidence semantics
 
 Why this is first:
 
-- several completed capabilities are still local only
+- the runtime spine already exists; the next meaningful gains come from more trustworthy verification
 
-### 2. Kernel-Driver Pack Refinement
+### 2. Workflow Embedding
+
+Goal:
+
+- reduce adoption friction in normal day-to-day development
+
+Recommended work:
+
+- continue improving human-readable pre/post outputs
+- surface proposal guidance and evidence expectations earlier
+- make startup and handoff context easier to consume from agent tooling
+
+Why this matters:
+
+- the next bottleneck is not missing validators, but whether developers naturally stay on the governance path
+
+### 3. Kernel-Driver Pack Refinement
 
 Goal:
 
@@ -301,7 +381,7 @@ Why this matters:
 
 - the seed pack is useful today, but premature specialization would add maintenance cost
 
-### 3. Evidence Ingestion Expansion
+### 4. Evidence Ingestion Expansion
 
 Goal:
 
@@ -317,21 +397,21 @@ Why this matters:
 
 - this improves evidence quality while preserving current framework boundaries
 
-### 4. Deeper Semantic Verification
+### 5. Agent-Agnostic Context Injection
 
 Goal:
 
-- continue moving from high-signal evidence checks toward stronger structural proof
+- make governance context easier to activate consistently across multiple agent surfaces
 
 Recommended work:
 
-- strengthen public API diff beyond high-signal surface extraction
-- deepen failure completeness with richer metadata
-- continue refining architecture drift from edge-diff toward broader structural checks
+- extend `session_start` into more native adapter and workflow entry points
+- keep rule/skill/agent activation advisory, but easier to consume
+- avoid hidden automatic contract mutation
 
 Why this is later:
 
-- current v0.8 already has a working enforcement loop; the next gains come from higher-confidence verification
+- the repository already has startup context; the next step is broadening adoption without over-automating
 
 ## Boundary To Protect
 
@@ -352,5 +432,6 @@ Not become:
 Practical rule:
 
 - rule packs provide governance context
+- skills provide behavior guidance
 - runtime checks and policies make decisions
 - suggestion layers propose, but do not silently bind contracts
