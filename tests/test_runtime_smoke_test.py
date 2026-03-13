@@ -57,6 +57,14 @@ def test_smoke_test_session_start_human_output_surfaces_handoff_summary():
     assert "required_evidence=architecture-review,public-api-review" in output
 
 
+def test_smoke_test_adapter_session_start_human_output_uses_normalized_event_type():
+    envelope = run_smoke("claude_code", "session_start")
+    output = format_human_envelope(envelope, harness="claude_code")
+    assert "harness=claude_code" in output
+    assert "event_type=session_start" in output
+    assert "suggested_agent=python-agent" in output
+
+
 def test_smoke_test_handoff_summary_can_be_written(tmp_path):
     envelope = run_shared_smoke("session_start")
     output_file = tmp_path / "session_start.txt"

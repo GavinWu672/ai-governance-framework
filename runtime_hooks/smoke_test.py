@@ -64,13 +64,15 @@ def run_shared_smoke(event_type: str, payload_file: Path | None = None) -> dict:
 def format_human_envelope(envelope: dict, harness: str | None = None) -> str:
     lines: list[str] = []
     result = envelope["result"]
+    normalized_event = envelope.get("normalized_event") or {}
+    event_type = envelope.get("event_type") or normalized_event.get("event_type") or "unknown"
     if harness:
         lines.append(f"harness={harness}")
-    lines.append(f"event_type={envelope['event_type']}")
+    lines.append(f"event_type={event_type}")
     lines.append(f"payload_file={envelope['payload_file']}")
     lines.append(f"ok={result['ok']}")
 
-    if envelope["event_type"] == "session_start":
+    if event_type == "session_start":
         rules = result.get("runtime_contract", {}).get("rules", []) or []
         if rules:
             lines.append(f"rules={','.join(rules)}")
