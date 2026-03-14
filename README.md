@@ -1,66 +1,66 @@
-﻿# AI Governance Framework
+# AI Governance Framework
 
-> 從「叫 AI 幫忙寫程式」進化到「讓 AI 在治理框架內工作」。
+> Move from "asking AI to help write code" to "making AI work inside a governance framework."
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Version](https://img.shields.io/badge/version-1.0.0--alpha-orange.svg)](https://github.com/GavinWu672/ai-governance-framework)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
-## 這是什麼
+## What This Is
 
-AI 在長期專案裡常見的問題不是單次回答不夠聰明，而是：
+In long-lived projects, the most common AI failure modes are not "the answer was not smart enough once," but:
 
-- 逐漸忘記上下文
-- 偏離目前 sprint 或 phase
-- 破壞架構邊界
-- 任務做完後沒有留下可審核的知識
+- gradually forgetting context
+- drifting away from the current sprint or phase
+- breaking architectural boundaries
+- finishing tasks without leaving reviewable knowledge behind
 
-這個 repo 提供一套治理文件、驗證工具與 runtime hooks，讓 AI coding workflow 從：
+This repository provides governance documents, validation tools, and runtime hooks that move an AI coding workflow from:
 
 `AI -> code -> human review`
 
-變成：
+to:
 
 `AI -> runtime governance -> task execution -> session lifecycle -> memory governance`
 
-目前更精確的定位是：
+The most precise current positioning is:
 
-- 一個可運行的 `AI Coding Runtime Governance Framework prototype`
-- 具備完整的 runtime governance spine，而不是只有靜態 policy 文件
-- 已建立 external domain validator seam，並已跑通第一個 firmware domain vertical slice
-- 仍在持續補強 semantic verification、workflow embedding 與 interception coverage
+- a runnable `AI Coding Runtime Governance Framework prototype`
+- a framework with a real runtime governance spine, not just static policy documents
+- an established external domain validator seam, with the first firmware vertical slice already running
+- still actively strengthening semantic verification, workflow embedding, and interception coverage
 
-## 跨 Domain 治理關係圖
+## Cross-Domain Governance Map
 
 ```mermaid
 flowchart TB
 
-AI["AI 編碼代理<br/>AI Coding Agent<br/>(Claude / Copilot / Codex)"]
+AI["AI Coding Agent<br/>(Claude / Copilot / Codex)"]
 
-subgraph GOV["AI 治理框架<br/>AI Governance Framework"]
-    S["Session 啟動<br/>session_start"]
-    P["任務前檢查<br/>pre_task_check"]
-    R["規則包啟動<br/>rule pack activation"]
-    V["領域驗證器<br/>domain validators"]
-    E["證據收集<br/>evidence ingestion"]
-    T["任務後檢查<br/>post_task_check"]
-    A["變更控制產物<br/>change-control artifacts"]
-    M["記憶管線<br/>memory pipeline"]
+subgraph GOV["AI Governance Framework"]
+    S["Session Start<br/>session_start"]
+    P["Pre-Task Check<br/>pre_task_check"]
+    R["Rule Pack Activation"]
+    V["Domain Validators"]
+    E["Evidence Ingestion"]
+    T["Post-Task Check<br/>post_task_check"]
+    A["Change-Control Artifacts"]
+    M["Memory Pipeline"]
 end
 
-subgraph FW["USB Hub 韌體契約<br/>USB Hub Firmware Contract"]
-    F1["韌體架構規則<br/>firmware architecture rules"]
-    F2["ISR / 中斷限制<br/>interrupt constraints"]
-    F3["拓樸與硬體事實<br/>topology & hardware facts"]
+subgraph FW["USB Hub Firmware Contract"]
+    F1["Firmware Architecture Rules"]
+    F2["ISR / Interrupt Constraints"]
+    F3["Topology & Hardware Facts"]
 end
 
-subgraph DRV["Kernel Driver 契約<br/>Kernel Driver Contract"]
-    D1["IRQL 安全規則<br/>IRQL safety rules"]
-    D2["鎖與併發檢查<br/>locking & concurrency checks"]
-    D3["Driver 架構事實<br/>driver architecture facts"]
+subgraph DRV["Kernel Driver Contract"]
+    D1["IRQL Safety Rules"]
+    D2["Locking & Concurrency Checks"]
+    D3["Driver Architecture Facts"]
 end
 
-Reviewer["人工審查者<br/>Human Reviewer"]
+Reviewer["Human Reviewer"]
 
 AI --> S
 S --> P
@@ -76,11 +76,11 @@ R --> FW
 R --> DRV
 ```
 
-## 核心能力
+## Core Capabilities
 
-### 1. 治理憲法
+### 1. Governance Constitution
 
-`governance/` 目錄定義了 AI 在專案中的角色、邊界與停止條件：
+The `governance/` directory defines AI roles, boundaries, and stop conditions inside the repository:
 
 - `SYSTEM_PROMPT.md`
 - `HUMAN-OVERSIGHT.md`
@@ -91,15 +91,15 @@ R --> DRV
 - `NATIVE-INTEROP.md`
 - `PLAN.md`
 
-另外，`.github/` 現在也提供前置互動層：
+The `.github/` directory also provides a pre-runtime interaction layer:
 
-- `copilot-instructions.md` 作為 repo-wide baseline
-- `.github/agents/*.agent.md` 作為角色定義
-- `.github/skills/*/skill.md` 作為行為型 skill policy
+- `copilot-instructions.md` as a repo-wide baseline
+- `.github/agents/*.agent.md` as role definitions
+- `.github/skills/*/skill.md` as behavior-level skill policies
 
-### 2. 靜態治理工具
+### 2. Static Governance Tooling
 
-`governance_tools/` 目前包含：
+`governance_tools/` currently includes:
 
 - `contract_validator.py`
 - `plan_freshness.py`
@@ -119,10 +119,10 @@ R --> DRV
 
 ### 3. Runtime Governance
 
-`runtime_hooks/` 目前已支援：
+`runtime_hooks/` currently supports:
 
-- shared event contract
-- dispatcher
+- a shared event contract
+- a dispatcher
 - `session_start`
 - `pre_task_check`
 - `post_task_check`
@@ -130,23 +130,23 @@ R --> DRV
 - Claude Code / Codex / Gemini adapters
 - `session_start -> pre_task_check -> post_task_check -> session_end -> memory pipeline`
 
-這條 runtime governance loop 已經形成，但目前 interception coverage 尚未完全封閉，仍有部分 IDE / local edit / direct commit path 可能繞過。
+This runtime governance loop is real and operational, but interception coverage is still not fully closed. Some IDE, local-edit, or direct-commit paths can still bypass it.
 
 ### 4. Memory Pipeline
 
-`memory_pipeline/` 目前已支援：
+`memory_pipeline/` currently supports:
 
 - `session_snapshot.py`
 - `memory_curator.py`
 - `promotion_policy.py`
 - `memory_promoter.py`
-- `session_end.py` / `memory_curator.py` 現在也會保留 domain contract metadata
-  - 例如 `contract_source`、`contract_name`、`contract_domain`、`plugin_version`
-  - 讓 external domain governance context 能一路進到 summary / curated artifacts
+- `session_end.py` / `memory_curator.py` now also preserve domain contract metadata
+  - for example: `contract_source`, `contract_name`, `contract_domain`, `plugin_version`
+  - so external domain governance context can survive into summaries and curated artifacts
 
 ### 5. Rule Packs
 
-目前已內建的 rule packs：
+Built-in rule packs currently include:
 
 Scope packs:
 
@@ -168,73 +168,73 @@ Platform packs:
 
 - `kernel-driver`
 
-其中：
+Highlights:
 
-- `cpp` 已包含 build-boundary 規則，例如禁止跨專案 private include 與錯誤使用 `AdditionalIncludeDirectories`
-- `csharp` 聚焦 thread / native boundary
-- `avalonia` 聚焦 UI thread 與 ViewModel boundary
-- `swift` 聚焦 concurrency 與 native interop boundary
-- `kernel-driver` 聚焦 IRQL、memory boundary、cleanup / unwind 等高權限風險
-- `kernel-driver` 證據應優先來自 SDV / SAL / WDK 類分析結果與 driver-focused tests，而不是自製全能 parser
-- Rule packs 目前比較接近 policy activation layer，而不是完整 policy engine
-- `test_result_ingestor.py` 現在除了 `pytest-text` / `junit-xml`，也可正規化 `sdv-text`、`msbuild-warning-text`、`sarif`、`wdk-analysis-text`
-- `architecture_drift_checker.py` 現在除了 high-signal heuristic，也支援 before/after dependency edge diff
-- `state_generator.py` 現在會附帶 advisory `rule_pack_suggestions`，但不會自動改寫 `runtime_contract.rules`
-- `pre_task_check.py` 現在也會暴露同樣的 advisory suggestions，讓 runtime 入口與 state view 對齊
-- 當高信心 language/framework suggestion 未被載入時，`pre_task_check.py` 會給 advisory warning，但不會自動改 contract
-- `rule_pack_suggester.py` / `state_generator.py` / `pre_task_check.py` 現在都會提供 `suggested_rules_preview`，方便直接採用建議規則串
-- `rule_pack_suggester.py` / `state_generator.py` / `pre_task_check.py` 現在也會提供 advisory `suggested_skills` 與 `suggested_agent`
-- `pre_task_check --format human` 現在也會直接印出 `suggested_rules_preview=...`
-  - 同時也會直接印出 `suggested_skills=...` 與 `suggested_agent=...`
-- `pre_task_check.py` / `state_generator.py` 現在都可附帶 `architecture_impact_preview`
-  - 當 proposal 顯示風險高於目前 contract 時，只會給 advisory warning，不會自動改 `RULES` / `RISK` / `OVERSIGHT`
-  - 兩者現在也會補出 proposal guidance，例如 `expected_validators` / `required_evidence`
-- `pre_task_check --format human` 現在也會直接印出 `impact_validators=...` 與 `impact_evidence=...`
-- `session_end.py` / `memory_curator.py` 現在也會保留 `architecture_impact_preview`
-  - proposal-time concerns 與 expected evidence 會進 summary / curated artifacts，形成 audit trail
-- `session_end.py` / `memory_curator.py` 現在也會保留 `proposal_summary`
-  - proposal-time risk / oversight 建議、concerns、required evidence 會進 summary / curated artifacts
-- `post_task_check --format human` 現在也會直接印出 evidence summary，例如 `public_api_ok=...`、`failure_completeness_ok=...`
-- `architecture_impact_estimator.py` 現在可在 proposal 階段輸出結構化 `Governance Impact Report`
+- `cpp` includes build-boundary rules such as forbidding cross-project private includes and incorrect `AdditionalIncludeDirectories` usage
+- `csharp` focuses on thread and native boundaries
+- `avalonia` focuses on UI thread and ViewModel boundaries
+- `swift` focuses on concurrency and native interop boundaries
+- `kernel-driver` focuses on IRQL, memory boundaries, cleanup, unwind, and other privileged-risk concerns
+- `kernel-driver` evidence should come primarily from SDV / SAL / WDK analysis outputs and driver-focused tests, not from a homemade "do everything" parser
+- rule packs currently behave more like a policy activation layer than a full policy engine
+- `test_result_ingestor.py` now normalizes not only `pytest-text` / `junit-xml`, but also `sdv-text`, `msbuild-warning-text`, `sarif`, and `wdk-analysis-text`
+- `architecture_drift_checker.py` now supports before/after dependency edge diffs in addition to high-signal heuristics
+- `state_generator.py` now emits advisory `rule_pack_suggestions`, but does not silently rewrite `runtime_contract.rules`
+- `pre_task_check.py` now surfaces the same advisory suggestions so runtime entrypoints and state views stay aligned
+- when a high-confidence language/framework suggestion is not loaded, `pre_task_check.py` emits an advisory warning instead of auto-rewriting the contract
+- `rule_pack_suggester.py`, `state_generator.py`, and `pre_task_check.py` now all expose `suggested_rules_preview` for quick adoption
+- those same tools also expose advisory `suggested_skills` and `suggested_agent`
+- `pre_task_check --format human` now prints `suggested_rules_preview=...`
+  - and also prints `suggested_skills=...` and `suggested_agent=...`
+- `pre_task_check.py` / `state_generator.py` can now include `architecture_impact_preview`
+  - when proposal risk exceeds the current contract, the result remains advisory and does not auto-rewrite `RULES`, `RISK`, or `OVERSIGHT`
+  - both tools now also include proposal guidance such as `expected_validators` and `required_evidence`
+- `pre_task_check --format human` now prints `impact_validators=...` and `impact_evidence=...`
+- `session_end.py` / `memory_curator.py` now preserve `architecture_impact_preview`
+  - proposal-time concerns and expected evidence are carried into summary and curated artifacts as part of the audit trail
+- `session_end.py` / `memory_curator.py` now preserve `proposal_summary`
+  - proposal-time risk / oversight guidance, concerns, and required evidence are carried into summary and curated artifacts
+- `post_task_check --format human` now prints evidence summaries such as `public_api_ok=...` and `failure_completeness_ok=...`
+- `architecture_impact_estimator.py` can now produce a structured `Governance Impact Report` during the proposal phase
   - path-based layer heuristics (`touched_layers`, `boundary_risk`)
-  - evidence forecaster (`expected_validators`, `required_evidence`)
+  - evidence forecasting (`expected_validators`, `required_evidence`)
   - impact signals (`concerns`, `recommended_risk`, `recommended_oversight`)
-  - 只做 advisory impact estimation，不直接替代治理裁決
+  - it remains an advisory estimator, not a replacement for governance judgment
 
 ### 6. External Domain Seam
 
-目前已支援外部 domain extension seam：
+The framework currently supports an external domain extension seam with:
 
 - `contract.yaml` discovery
 - external rule roots
 - validator preflight
 - advisory validator execution
 
-內建 example 是 `examples/usb-hub-contract/`，目前已可：
+The built-in example is `examples/usb-hub-contract/`, which can currently:
 
-- 載入 firmware domain documents 與 behavior overrides
-- 啟用外部 `hub-firmware` rule pack
-- 執行 `interrupt_safety_validator.py`
-- 從 `diff_text`、unified diff、changed source files、以及 file-based `checks-file` / `diff_file` evidence 推導 interrupt context
+- load firmware domain documents and behavior overrides
+- activate an external `hub-firmware` rule pack
+- run `interrupt_safety_validator.py`
+- infer interrupt context from `diff_text`, unified diffs, changed source files, and file-based `checks-file` / `diff_file` evidence
 
-目前也已經有兩個外部 contract repo 驗證這條 seam：
+This seam has already been validated with two external contract repos:
 
 - `USB-Hub-Firmware-Architecture-Contract`
-  - 第一個真實 firmware vertical slice
-  - 已跑通 `session_start`、`pre_task_check`、`post_task_check`
+  - the first real firmware vertical slice
+  - already running through `session_start`, `pre_task_check`, and `post_task_check`
 - `Kernel-Driver-Contract`
-  - 第二個 low-level domain slice
-  - 已跑通 contract load、validator preflight、external rule activation、以及多 validator 的 advisory post-task loop
+  - the second low-level domain slice
+  - already running through contract loading, validator preflight, external rule activation, and a multi-validator advisory post-task loop
 
-為了降低接入摩擦，runtime hooks 現在也支援 contract auto-discovery：
+To reduce adoption friction, runtime hooks now support contract auto-discovery:
 
-- 先使用明確 `--contract`
-- 否則讀 `AI_GOVERNANCE_CONTRACT`
-- 否則從 `project_root` 或 evidence 檔案路徑往上找 `contract.yaml`
-- discovery 最多往上 3 層，遇到 `.git` 邊界就停止
-- 若找到多個候選，不會靜默選第一個，而是回報 warning 要求明確指定
+- use explicit `--contract` first
+- otherwise read `AI_GOVERNANCE_CONTRACT`
+- otherwise search upward from `project_root` or evidence file paths for `contract.yaml`
+- discovery ascends at most 3 levels and stops at a `.git` boundary
+- when multiple candidates are found, it does not silently pick one; it returns a warning and asks for an explicit path
 
-針對 multi-domain reviewer flow，framework 現在也會保留最小 contract governance metadata：
+For multi-domain reviewer flows, the framework also preserves minimal contract governance metadata:
 
 - `contract_source`
 - `contract_name`
@@ -242,16 +242,16 @@ Platform packs:
 - `plugin_version`
 - `contract_risk_tier`
 
-目前內建的 risk-tier 基線是：
+Current built-in risk-tier defaults:
 
 - `kernel-driver` -> `high`
 - `firmware` -> `medium`
 
-## 本機執行需求
+## Local Execution Requirements
 
-本 repo 的治理工具與 runtime hooks 需要 Python 3.9+。
+The governance tools and runtime hooks in this repo require Python 3.9+.
 
-若 `python` / `python3` / `py -3` 不在 `PATH`，可先指定：
+If `python`, `python3`, or `py -3` is not on `PATH`, set:
 
 ```bash
 export AI_GOVERNANCE_PYTHON=/path/to/python
@@ -263,26 +263,25 @@ Windows PowerShell:
 $env:AI_GOVERNANCE_PYTHON='C:\Path\To\python.exe'
 ```
 
-`scripts/run-runtime-governance.sh`、`scripts/verify_phase_gates.sh`、以及安裝後的 git hooks 都會優先使用這個變數。
+`scripts/run-runtime-governance.sh`, `scripts/verify_phase_gates.sh`, and installed git hooks all prefer this variable.
 
-當 hooks 安裝到其他 repo 時，安裝腳本現在也會在目標 repo 的 `.git/hooks/` 下寫入 framework root 設定，讓 hook 仍能回到 `ai-governance-framework` 本體執行治理工具，而不是假設所有腳本都在目標 repo 裡。
-安裝後也可以用 `governance_tools/hook_install_validator.py --repo /path/to/repo` 檢查 copied hooks 與 framework root 設定是否完整。
-`scripts/install-hooks.sh` 預設也會在安裝完成後自動跑一次這個驗證；若只想安裝不驗證，可加 `--no-verify`。
-若要一次檢查 external repo 的 hook / PLAN / contract 接入狀態，可再跑 `governance_tools/external_repo_readiness.py --repo /path/to/repo`。
+When hooks are installed into another repo, the install script now writes a framework-root pointer under the target repo's `.git/hooks/` directory so the copied hooks can call back into `ai-governance-framework` instead of assuming all governance scripts live inside the target repo.
+After installation, you can also run `governance_tools/hook_install_validator.py --repo /path/to/repo` to verify copied hooks and framework-root wiring.
+By default, `scripts/install-hooks.sh` now runs this validator automatically after installation; if you only want installation without verification, use `--no-verify`.
+If you want a single readiness check for an external repo's hook / PLAN / contract state, run `governance_tools/external_repo_readiness.py --repo /path/to/repo`.
 
-範例：
+Example:
 
 ```text
 RULES = common,csharp,avalonia,refactor
 ```
 
-- `common`: 全域治理基線
-- `csharp`: 語言層邊界與 threading / native contract
-- `avalonia`: UI / Dispatcher / ViewModel 邊界
-- `refactor`: 變更型別治理，要求 behavior lock 與 boundary safety
-  並逐步要求 interface stability、regression evidence、cleanup / rollback evidence
+- `common`: global governance baseline
+- `csharp`: language-level boundary, threading, and native contract rules
+- `avalonia`: UI / Dispatcher / ViewModel boundaries
+- `refactor`: change-type governance requiring behavior lock and boundary safety, then gradually asking for interface stability, regression evidence, and cleanup / rollback evidence
 
-高風險平台例子：
+A high-risk platform example:
 
 ```text
 RULES = common,cpp,kernel-driver,refactor
@@ -291,9 +290,9 @@ OVERSIGHT = human-approval
 MEMORY_MODE = candidate
 ```
 
-## 執行時治理總覽
+## Runtime Governance Overview
 
-核心 Governance Contract 欄位：
+Core Governance Contract fields:
 
 ```text
 RULES       = <comma-separated rule packs>
@@ -302,41 +301,41 @@ OVERSIGHT   = <auto|review-required|human-approval>
 MEMORY_MODE = <stateless|candidate|durable>
 ```
 
-### 架構總覽 (Runtime Architecture)
+### Architecture Overview
 
 ```mermaid
 flowchart TB
-    A["AI 工具<br/>AI Tools<br/>Claude / Codex / Gemini"]
+    A["AI Tools<br/>Claude / Codex / Gemini"]
 
-    subgraph B["適配層 Adapter Layer"]
-        B1["事件正規化<br/>normalize_event"]
-        B2["工具適配器<br/>tool adapters"]
+    subgraph B["Adapter Layer"]
+        B1["Event Normalization<br/>normalize_event"]
+        B2["Tool Adapters"]
     end
 
-    subgraph C["執行時治理層 Runtime Governance"]
-        C1["事件分派<br/>dispatcher"]
-        C2["任務前檢查<br/>pre_task_check"]
-        C3["任務後檢查<br/>post_task_check"]
+    subgraph C["Runtime Governance"]
+        C1["Dispatcher"]
+        C2["Pre-Task Check<br/>pre_task_check"]
+        C3["Post-Task Check<br/>post_task_check"]
     end
 
-    subgraph D["規則包 Rule Packs"]
+    subgraph D["Rule Packs"]
         D1["common"]
         D2["python"]
         D3["cpp"]
     end
 
-    subgraph E["Session 生命週期 Session Lifecycle"]
-        E1["收尾檢查<br/>session_end"]
-        E2["快照與摘要<br/>snapshot / summary"]
+    subgraph E["Session Lifecycle"]
+        E1["Session End<br/>session_end"]
+        E2["Snapshot / Summary"]
     end
 
-    subgraph F["記憶管線 Memory Pipeline"]
-        F1["候選記憶<br/>candidate memory"]
-        F2["內容整理<br/>memory_curator"]
-        F3["升級策略<br/>promotion_policy"]
+    subgraph F["Memory Pipeline"]
+        F1["Candidate Memory"]
+        F2["Memory Curator"]
+        F3["Promotion Policy"]
     end
 
-    G["專案長期記憶<br/>Durable Project Memory<br/>memory/ facts / decisions / tasks"]
+    G["Durable Project Memory<br/>memory/ facts / decisions / tasks"]
 
     A --> B1
     A --> B2
@@ -354,23 +353,23 @@ flowchart TB
     F3 --> G
 ```
 
-### 任務治理流程 (Runtime Flow)
+### Runtime Flow
 
 ```mermaid
 flowchart TD
-    A["任務開始<br/>Task Start"]
-    B["事件正規化<br/>Normalize Event"]
-    C["任務前檢查<br/>Pre Task Check<br/>plan freshness / rule validation"]
-    D["AI 執行任務<br/>Task Execution"]
-    E["任務後檢查<br/>Post Task Check<br/>runtime checks / rule violations"]
-    F["Session 收尾<br/>Session End"]
-    G["建立快照與摘要<br/>Create Snapshot / Summary<br/>contract / event log / checks"]
-    H["內容整理<br/>Memory Curator"]
-    I["升級策略判斷<br/>Promotion Policy"]
-    J["自動升級<br/>AUTO_PROMOTE"]
-    K["需人工審核<br/>REVIEW_REQUIRED"]
-    L["不升級<br/>DO_NOT_PROMOTE"]
-    M["更新長期記憶<br/>Durable Memory Update"]
+    A["Task Start"]
+    B["Normalize Event"]
+    C["Pre-Task Check<br/>plan freshness / rule validation"]
+    D["Task Execution"]
+    E["Post-Task Check<br/>runtime checks / rule violations"]
+    F["Session End"]
+    G["Create Snapshot / Summary<br/>contract / event log / checks"]
+    H["Memory Curator"]
+    I["Promotion Policy"]
+    J["AUTO_PROMOTE"]
+    K["REVIEW_REQUIRED"]
+    L["DO_NOT_PROMOTE"]
+    M["Durable Memory Update"]
 
     A --> B
     B --> C
@@ -386,11 +385,11 @@ flowchart TD
     J --> M
 ```
 
-## 快速開始
+## Quick Start
 
-### 最小可用版
+### Minimum Viable Setup
 
-如果你要先把治理框架帶進現有專案，最簡單的路徑是：
+If you want to bring this governance framework into an existing project, the simplest path is:
 
 ```bash
 git clone https://github.com/GavinWu672/ai-governance-framework.git
@@ -399,37 +398,38 @@ cd ai-governance-framework
 ./deploy_to_memory.sh /path/to/your/project
 ```
 
-或手動複製：
+Or copy the essentials manually:
 
 ```bash
 cp -r governance /path/to/your/project/
 cp -r governance_tools /path/to/your/project/
 ```
 
-建議至少準備：
+At minimum, prepare:
 
 - `governance/`
 - `PLAN.md`
 - `memory/`
 
-之後在新對話或新 agent 啟動時，先要求它：
+Then, when starting a new conversation or a new agent session, ask the agent to do this first:
 
 ```text
-請先完整閱讀 governance/SYSTEM_PROMPT.md，
-並依照 §2 初始化流程執行，完成後回報 [Governance Contract]。
+Please read governance/SYSTEM_PROMPT.md in full,
+follow the initialization process in section 2,
+and report back with a [Governance Contract] block.
 ```
 
-### 範例專案
+### Example Projects
 
-可參考：
+See:
 
 - `examples/starter-pack/`
 - `examples/todo-app-demo/`
 - `examples/chaos-demo/`
 
-## 常用入口
+## Common Entry Points
 
-### 靜態治理工具
+### Static Governance Tools
 
 ```bash
 python governance_tools/contract_validator.py --file ai_response.txt
@@ -533,9 +533,9 @@ change_control_summary.py
 reviewable change-control summary
 ```
 
-`change_control_summary.py --format human` 現在會先輸出一行 reviewer-first summary，再列 proposal / runtime 區塊細節。
-`change_control_index.py` 也會從對應的 `*_session_start.json` 裡補出 contract context，讓 reviewer 在跨 session 檢視時知道每筆 artifact 是由哪個 domain contract 驅動。
-`session_end.py` 的 human output、summary artifact、以及 curated artifact 也會保留同樣的 contract metadata，讓 reviewer chain 在 multi-domain 環境下保持一致。
+`change_control_summary.py --format human` now starts with a reviewer-first summary line, then drills into proposal and runtime sections.
+`change_control_index.py` also enriches artifacts with contract context from the corresponding `*_session_start.json`, so reviewers can see which domain contract drove each session when scanning across sessions.
+`session_end.py` human output, summary artifacts, and curated artifacts preserve the same contract metadata, so the reviewer chain stays consistent in multi-domain environments.
 
 ### Adapters
 
@@ -565,13 +565,15 @@ python runtime_hooks/smoke_test.py --harness gemini --event-type session_start
 python runtime_hooks/smoke_test.py --event-type session_start
 ```
 
-`session_start` smoke 的 human output 現在會直接顯示 startup handoff summary，例如目前 contract、expected validators、required evidence。
-shared enforcement 現在也會同時保留：
+`session_start` smoke output now shows startup handoff summaries directly, including the active contract, expected validators, and required evidence.
+Shared enforcement now also preserves:
+
 - `*_session_start.txt` handoff notes
 - `*_session_start.json` machine-readable startup envelopes
 - `*_change_control_summary.txt` proposal-to-startup review summaries
 - `INDEX.txt` change-control artifact index
-其中 `*_session_start.json` 可直接作為 `change_control_summary.py --session-start-file ...` 的輸入。
+
+Among these, `*_session_start.json` can be used directly as input to `change_control_summary.py --session-start-file ...`.
 
 ### Shared Enforcement
 
@@ -579,20 +581,20 @@ shared enforcement 現在也會同時保留：
 bash scripts/run-runtime-governance.sh --mode enforce
 ```
 
-## 多工具支援
+## Multi-Tool Support
 
-目前 runtime layer 已支援多種 AI 工具：
+The runtime layer currently supports multiple AI tools:
 
 - Claude Code
 - Codex
 - Gemini
 
-這些工具都會先把 native payload 正規化成同一個 shared event contract，再進入 governance checks。
+These tools all normalize native payloads into the same shared event contract before entering governance checks.
 
-`session_start` 目前先作為 shared governance event 存在，用於 agent 啟動與 handoff context；native harness adapters 可後續再接。
-現在 shared adapter runner 也已能處理 `session_start`，至少可用 shared/native examples 走通啟動鏈。
+`session_start` currently exists first as a shared governance event for agent startup and handoff context; native harness adapters can be added on top later.
+The shared adapter runner can now already process `session_start`, so startup chains can be exercised through shared/native examples today.
 
-相關檔案：
+Related files:
 
 - `runtime_hooks/event_contract.md`
 - `runtime_hooks/event_schema.json`
@@ -601,41 +603,41 @@ bash scripts/run-runtime-governance.sh --mode enforce
 - `runtime_hooks/examples/codex/`
 - `runtime_hooks/examples/gemini/`
 
-## CI 與驗證
+## CI and Validation
 
-GitHub Actions workflow 在：
+The GitHub Actions workflow lives at:
 
 - `.github/workflows/governance.yml`
 
-目前已包含 shared runtime enforcement path，可驗證：
+It now includes the shared runtime enforcement path and verifies:
 
 - native payload normalization
 - shared event dispatch
-- pre/post task checks
+- pre/post-task checks
 - session close and curated memory flow
-- focused runtime governance test suite
+- the focused runtime governance test suite
 - uploaded `artifacts/runtime/smoke/` handoff summaries from `session_start` smoke flows
-- uploaded JSON startup envelopes and derived change-control summaries for `session_start` smoke flows
+- uploaded JSON startup envelopes and derived change-control summaries from `session_start` smoke flows
 
-## 目前邊界
+## Current Boundary
 
-這個 repo 的定位是 **runtime governance framework prototype**，不是通用 agent platform。
+This repo is positioned as a **runtime governance framework prototype**, not a general-purpose agent platform.
 
-它專注處理：
+It is focused on:
 
 - governance constitution
 - runtime governance lifecycle
-- session lifecycle close
+- session lifecycle closeout
 - memory governance
 - reviewable project truth
 
-它目前不打算擴成：
+It is not currently trying to become:
 
-- plugin marketplace
-- 大型 command registry
-- 通用 subagent orchestration platform
+- a plugin marketplace
+- a large command registry
+- a general-purpose subagent orchestration platform
 
-## 延伸閱讀
+## Further Reading
 
 - `docs/runtime-governance-update.md`
 - `runtime_hooks/README.md`
@@ -643,6 +645,6 @@ GitHub Actions workflow 在：
 - `governance_tools/README.md`
 - `CONTRIBUTING.md`
 
-## 授權
+## License
 
-本專案採用 MIT License。詳見 `LICENSE`。
+This project is licensed under the MIT License. See `LICENSE`.
