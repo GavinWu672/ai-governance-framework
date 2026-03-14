@@ -25,6 +25,7 @@
 - `scripts/install-hooks.sh` now behaves more like install-and-verify by default, automatically invoking `hook_install_validator.py` after a real install unless `--no-verify` is used.
 - External repo onboarding now also has a single readiness entrypoint via `governance_tools/external_repo_readiness.py`, which summarizes hook state, PLAN freshness, and contract resolution/completeness in one report.
 - External repo onboarding now also has a shell entrypoint via `scripts/onboard-external-repo.sh`, combining hook installation and readiness assessment into one flow.
+- External repo onboarding now also includes a minimal governance smoke stage, so onboarding can fail when a contract resolves incorrectly or its rule roots do not actually power `session_start` / `pre_task_check`.
 
 ## Next Steps
 

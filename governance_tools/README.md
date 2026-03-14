@@ -246,6 +246,7 @@ bash scripts/install-hooks.sh
 `scripts/install-hooks.sh` 預設會在安裝後自動執行這個 validator，讓 external repo 的接入流程更接近 install-and-verify。
 若要檢查整體 external repo readiness，也可跑 `governance_tools/external_repo_readiness.py --repo /path/to/repo`，一次看 hooks / PLAN / contract 狀態。
 若要直接走 onboarding flow，也可用 `scripts/onboard-external-repo.sh --target /path/to/repo`，把 hook 安裝與 readiness report 串成一條命令。
+onboarding flow 預設還會再跑一個最小 governance smoke，驗證 external contract 是否真的能通過 `session_start` 與 `pre_task_check`。
 ---
 
 ## Runtime Layer

@@ -7,6 +7,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FRAMEWORK_ROOT="$(realpath "$SCRIPT_DIR/..")"
 INSTALL_SCRIPT="$SCRIPT_DIR/install-hooks.sh"
 READINESS_TOOL="$FRAMEWORK_ROOT/governance_tools/external_repo_readiness.py"
+SMOKE_TOOL="$FRAMEWORK_ROOT/governance_tools/external_repo_smoke.py"
 PYTHON_LIB="$FRAMEWORK_ROOT/scripts/lib/python.sh"
 
 TARGET_REPO=""
@@ -14,6 +15,7 @@ CONTRACT_PATH=""
 DRY_RUN=false
 NO_HOOK_VERIFY=false
 OUTPUT_FORMAT="human"
+NO_SMOKE=false
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -37,8 +39,12 @@ while [[ $# -gt 0 ]]; do
             OUTPUT_FORMAT="$2"
             shift 2
             ;;
+        --no-smoke)
+            NO_SMOKE=true
+            shift
+            ;;
         *)
-            echo "Usage: bash scripts/onboard-external-repo.sh --target /path/to/repo [--contract /path/to/contract.yaml] [--dry-run] [--no-hook-verify] [--format human|json]"
+            echo "Usage: bash scripts/onboard-external-repo.sh --target /path/to/repo [--contract /path/to/contract.yaml] [--dry-run] [--no-hook-verify] [--no-smoke] [--format human|json]"
             exit 1
             ;;
     esac
@@ -64,6 +70,11 @@ if [ "$DRY_RUN" = true ]; then
     echo "mode             = dry-run"
 else
     echo "mode             = install-and-assess"
+fi
+if [ "$NO_SMOKE" = true ]; then
+    echo "governance_smoke = disabled (--no-smoke)"
+else
+    echo "governance_smoke = enabled"
 fi
 echo ""
 
@@ -102,3 +113,22 @@ fi
 echo ""
 echo "== External Repo Readiness =="
 "${PYTHON_CMD[@]}" "$READINESS_TOOL" "${READINESS_ARGS[@]}"
+
+if [ "$NO_SMOKE" = true ]; then
+    exit 0
+fi
+
+if [ ! -f "$SMOKE_TOOL" ]; then
+    echo ""
+    echo "WARNING: missing smoke tooling, skipping governance smoke"
+    exit 0
+fi
+
+SMOKE_ARGS=(--repo "$(realpath "$TARGET_REPO")" --format "$OUTPUT_FORMAT")
+if [ -n "$CONTRACT_PATH" ]; then
+    SMOKE_ARGS+=(--contract "$(realpath "$CONTRACT_PATH")")
+fi
+
+echo ""
+echo "== Governance Smoke =="
+"${PYTHON_CMD[@]}" "$SMOKE_TOOL" "${SMOKE_ARGS[@]}"

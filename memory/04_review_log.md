@@ -192,6 +192,22 @@
   - `scripts/onboard-external-repo.sh --target ../Kernel-Driver-Contract --dry-run`
   - `scripts/verify_phase_gates.sh` -> `317 passed`, `4/4 Gates`
 
+## 2026-03-15 - Governance Smoke In Onboarding
+
+- Added `governance_tools/external_repo_smoke.py` to validate that an external repo can actually power a minimal governance chain, not just pass static readiness checks.
+- The smoke now verifies:
+  - contract resolution
+  - external rule-root existence
+  - inferred smoke rules
+  - `pre_task_check`
+  - `session_start`
+- `scripts/onboard-external-repo.sh` now runs this governance smoke by default unless `--no-smoke` is used.
+- This closes the specific gap where a bad `contract.yaml` could look "installed" but still fail to energize the actual governance path.
+- Verification:
+  - `tests/test_external_repo_smoke.py` -> `3 passed`
+  - `governance_tools/external_repo_smoke.py --repo D:\Kernel-Driver-Contract --format human`
+  - `scripts/verify_phase_gates.sh` -> `320 passed`, `4/4 Gates`
+
 ## 2026-03-14 - IC / SoC Governance Direction Recorded
 
 - Recorded a refined future-domain view for IC-related governance.
