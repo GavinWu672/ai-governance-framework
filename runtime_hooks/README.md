@@ -55,6 +55,10 @@ Active rule injection:
 - if multiple contract candidates are found, the runtime emits a warning and continues in generic mode instead of auto-picking one
 - `session_start.py` now performs validator preflight so broken external validators fail early in startup context
 - runtime consumers should treat this payload as governance context, not as a general-purpose rule DSL
+- runtime human output now follows a reviewer-first pattern:
+  - the first compact `summary=...` line should expose the highest-signal decision context first
+  - contract-aware runs should surface `contract=<domain>/<risk_tier>` when available
+  - detailed fields remain below the summary line for operator drill-down
 - current seed packs include `common`, `python`, `cpp`, `refactor`, `csharp`, `swift`, `avalonia`, `kernel-driver`
 - pack categories distinguish `scope`, `language`, `framework`, and `platform`
 - `pre_task_check.py` also exposes advisory `rule_pack_suggestions` so runtime entrypoints can see the same language/framework suggestions as `state_generator.py`
