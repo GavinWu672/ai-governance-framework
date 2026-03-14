@@ -9,6 +9,8 @@ import argparse
 import json
 from pathlib import Path
 
+from governance_tools.domain_governance_metadata import domain_priority_rank
+
 
 def _extract_summary_line(path: Path) -> str | None:
     for line in path.read_text(encoding="utf-8").splitlines():
@@ -60,13 +62,7 @@ def _domain_priority_rank(session_start_json: Path | None) -> int:
 
     domain_contract = payload.get("domain_contract") or {}
     domain_raw = domain_contract.get("raw") or {}
-    domain = str(domain_raw.get("domain", "")).strip().lower()
-
-    rank_map = {
-        "kernel-driver": 0,
-        "firmware": 1,
-    }
-    return rank_map.get(domain, 50 if domain else 99)
+    return domain_priority_rank(domain_raw.get("domain"))
 
 
 def _contract_resolution_suffix(session_start_json: Path | None) -> str:
