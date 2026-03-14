@@ -253,6 +253,15 @@
   - `tests/test_governance_auditor.py` -> `4 passed`
   - `scripts/verify_phase_gates.sh` -> `327 passed`, `4/4 Gates`
 
+## 2026-03-15 - Reviewer-Facing Top Issues For External Repos
+
+- Extended `external_repo_onboarding_index.py` so it now computes a small `top_issues` list from the most urgent failing repos.
+- `governance_auditor.py --external-repo ...` now surfaces those top issues directly in human output.
+- This shifts the output from "status table only" toward "what should be fixed first".
+- Verification:
+  - `tests/test_external_repo_onboarding_index.py tests/test_governance_auditor.py` -> `7 passed`
+  - `scripts/verify_phase_gates.sh` -> `327 passed`, `4/4 Gates`
+
 ## 2026-03-14 - IC / SoC Governance Direction Recorded
 
 - Recorded a refined future-domain view for IC-related governance.

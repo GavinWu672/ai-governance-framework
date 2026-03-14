@@ -45,6 +45,9 @@ def test_build_external_repo_onboarding_index_orders_failures_first(tmp_path: Pa
     assert result["indexed_count"] == 2
     assert result["entries"][0]["repo_root"].endswith("bad-repo")
     assert result["entries"][1]["repo_root"].endswith("ok-repo")
+    assert result["top_issues"][0]["repo_root"].endswith("bad-repo")
+    assert "readiness" in result["top_issues"][0]["reasons"]
+    assert "smoke" in result["top_issues"][0]["reasons"]
 
 
 def test_build_external_repo_onboarding_index_tracks_missing_reports(tmp_path: Path) -> None:
@@ -61,10 +64,10 @@ def test_format_human_lists_repos_and_missing_reports(tmp_path: Path) -> None:
     _write_json(
         repo / "memory" / "governance_onboarding" / "latest.json",
         {
-            "ok": True,
+            "ok": False,
             "generated_at": "2026-03-15T00:00:00+00:00",
             "contract_path": "contract.yaml",
-            "readiness": {"ready": True, "errors": []},
+            "readiness": {"ready": False, "errors": ["missing hooks"]},
             "smoke": {"ok": True, "rules": ["common", "kernel-driver"], "errors": []},
         },
     )
@@ -75,4 +78,5 @@ def test_format_human_lists_repos_and_missing_reports(tmp_path: Path) -> None:
     assert "[external_repo_onboarding_index]" in rendered
     assert "[missing_reports]" in rendered
     assert "[repos]" in rendered
+    assert "[top_issues]" in rendered
     assert "kernel-driver" in rendered

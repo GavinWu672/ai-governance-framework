@@ -109,4 +109,5 @@ def test_governance_auditor_can_include_external_onboarding_index():
 
     assert result["ok"] is False
     assert result["external_onboarding"]["indexed_count"] == 2
+    assert result["external_onboarding"]["top_issues"][0]["repo_root"].endswith("external-bad")
     assert any("external:onboarding-index" in error for error in result["errors"])

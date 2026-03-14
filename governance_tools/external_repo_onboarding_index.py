@@ -63,12 +63,32 @@ def build_external_repo_onboarding_index(repo_roots: list[Path]) -> dict:
         )
 
     ordered_entries = sorted(entries, key=_entry_priority)
+    top_issues = []
+    for entry in ordered_entries[:3]:
+        if entry.get("ok") is True:
+            continue
+        reasons = []
+        if entry.get("readiness_ready") is False:
+            reasons.append("readiness")
+        if entry.get("smoke_ok") is False:
+            reasons.append("smoke")
+        if not reasons:
+            reasons.append("report")
+        top_issues.append(
+            {
+                "repo_root": entry["repo_root"],
+                "reasons": reasons,
+                "contract_path": entry.get("contract_path"),
+            }
+        )
+
     return {
         "ok": len(missing) == 0 and all(entry.get("ok") for entry in ordered_entries),
         "repo_count": len(repo_roots),
         "indexed_count": len(ordered_entries),
         "missing_reports": missing,
         "entries": ordered_entries,
+        "top_issues": top_issues,
     }
 
 
@@ -99,6 +119,20 @@ def format_human(result: dict) -> str:
                         f"smoke={entry['smoke_ok']}",
                         f"rules={','.join(entry['rules'])}",
                         f"generated_at={entry['generated_at']}",
+                    ]
+                )
+            )
+
+    top_issues = result.get("top_issues") or []
+    if top_issues:
+        lines.append("[top_issues]")
+        for item in top_issues:
+            lines.append(
+                " | ".join(
+                    [
+                        item["repo_root"],
+                        f"reasons={','.join(item['reasons'])}",
+                        f"contract_path={item.get('contract_path')}",
                     ]
                 )
             )

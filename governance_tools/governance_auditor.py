@@ -157,6 +157,18 @@ def main() -> None:
         if external_onboarding is not None:
             print(f"external_repo_count={external_onboarding['repo_count']}")
             print(f"external_indexed_count={external_onboarding['indexed_count']}")
+            top_issues = external_onboarding.get("top_issues") or []
+            for item in top_issues:
+                print(
+                    "external_top_issue="
+                    + " | ".join(
+                        [
+                            item["repo_root"],
+                            f"reasons={','.join(item['reasons'])}",
+                            f"contract_path={item.get('contract_path')}",
+                        ]
+                    )
+                )
         for warning in result["warnings"]:
             print(f"warning: {warning}")
         for error in result["errors"]:
