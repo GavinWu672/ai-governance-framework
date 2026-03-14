@@ -17,9 +17,9 @@ def _extract_summary_line(path: Path) -> str | None:
     return None
 
 
-def _priority_score(summary_line: str | None) -> tuple[int, str]:
+def _priority_score(summary_line: str | None, session_start_json: Path | None = None) -> tuple[int, int, int, str]:
     if not summary_line:
-        return (99, "")
+        return (99, 99, 99, "")
 
     text = summary_line.lower()
     risk_order = {
@@ -33,9 +33,10 @@ def _priority_score(summary_line: str | None) -> tuple[int, str]:
             risk_rank = rank
             break
 
+    domain_rank = _domain_priority_rank(session_start_json)
     decision_rank = 1 if "runtime_decision=blocked" in text else 0
     promoted_rank = 1 if "promoted=false" in text else 0
-    return (risk_rank, -decision_rank - promoted_rank, text)
+    return (risk_rank, domain_rank, -decision_rank - promoted_rank, text)
 
 
 def _load_json(path: Path) -> dict:
@@ -46,6 +47,26 @@ def _normalize_session_start_payload(payload: dict) -> dict:
     if payload.get("event_type") == "session_start" and isinstance(payload.get("result"), dict):
         return payload["result"]
     return payload
+
+
+def _domain_priority_rank(session_start_json: Path | None) -> int:
+    if session_start_json is None or not session_start_json.exists():
+        return 99
+
+    try:
+        payload = _normalize_session_start_payload(_load_json(session_start_json))
+    except (OSError, json.JSONDecodeError):
+        return 99
+
+    domain_contract = payload.get("domain_contract") or {}
+    domain_raw = domain_contract.get("raw") or {}
+    domain = str(domain_raw.get("domain", "")).strip().lower()
+
+    rank_map = {
+        "kernel-driver": 0,
+        "firmware": 1,
+    }
+    return rank_map.get(domain, 50 if domain else 99)
 
 
 def _contract_resolution_suffix(session_start_json: Path | None) -> str:
@@ -79,7 +100,13 @@ def build_change_control_index(artifacts_dir: Path) -> str:
     json_files = sorted(artifacts_dir.glob("*_session_start.json"))
     json_lookup = {path.name.replace("_session_start.json", ""): path for path in json_files}
     summary_entries = [(path, _extract_summary_line(path)) for path in summary_files]
-    priority_entries = sorted(summary_entries, key=lambda item: _priority_score(item[1]))
+    priority_entries = sorted(
+        summary_entries,
+        key=lambda item: _priority_score(
+            item[1],
+            json_lookup.get(item[0].name.replace("_change_control_summary.txt", "")),
+        ),
+    )
 
     lines = ["[change_control_index]", f"artifacts_dir={artifacts_dir}"]
     lines.append(
