@@ -55,8 +55,8 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install pytest
-        run: pip install pytest
+      - name: Install documented dependencies
+        run: pip install -r requirements.txt
 
       - name: Verify phase gates
         run: bash scripts/verify_phase_gates.sh
@@ -114,8 +114,8 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install pytest
-        run: pip install pytest
+      - name: Install documented dependencies
+        run: pip install -r requirements.txt
 
       - name: Run runtime governance enforcement
         run: bash scripts/run-runtime-governance.sh --mode ci

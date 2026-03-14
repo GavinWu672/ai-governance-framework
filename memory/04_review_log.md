@@ -325,6 +325,11 @@
 - Verification:
   - `scripts/verify_phase_gates.sh` -> `330 passed`, `4/4 Gates`
 
+## 2026-03-15 - CI Dependency Baseline Alignment
+
+- Updated `.github/workflows/governance.yml` so test/runtime jobs now install `requirements.txt` instead of manually installing only `pytest`.
+- This keeps CI closer to the documented local onboarding path and reduces the chance that examples/tests drift onto different dependency baselines.
+
 ## 2026-03-14 - IC / SoC Governance Direction Recorded
 
 - Recorded a refined future-domain view for IC-related governance.

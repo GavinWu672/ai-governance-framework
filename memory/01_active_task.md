@@ -41,6 +41,7 @@
   - clarified example statuses for runnable demo vs walkthrough vs scaffold
 - The onboarding path now also has a single executable verifier via `governance_tools/quickstart_smoke.py`, so quickstart docs map to a real smoke command instead of only a sequence of copy-paste steps.
 - `scripts/verify_phase_gates.sh` now also exercises `quickstart_smoke.py` against the bundled USB-Hub example, so onboarding drift is covered by the same phase gates as the core runtime tools.
+- GitHub Actions runtime/test jobs now install from repo root `requirements.txt` instead of separately installing only `pytest`, reducing drift between local onboarding docs and CI setup.
 
 ## Next Steps
 
