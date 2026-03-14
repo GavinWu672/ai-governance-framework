@@ -71,6 +71,7 @@ fi
 info "Gate 3 / 工具可執行性"
 TOOLS=(
     "contract_validator.py"
+    "example_readiness.py"
     "quickstart_smoke.py"
     "plan_freshness.py"
     "memory_janitor.py"
@@ -89,6 +90,12 @@ if "${PYTHON_CMD[@]}" governance_tools/quickstart_smoke.py --project-root . --pl
     ok "quickstart_smoke.py onboarding path"
 else
     fail "quickstart_smoke.py onboarding path 失敗"
+    ALL_OK=0
+fi
+if "${PYTHON_CMD[@]}" governance_tools/example_readiness.py --format human > /dev/null 2>&1; then
+    ok "example_readiness.py example inventory"
+else
+    fail "example_readiness.py example inventory 失敗"
     ALL_OK=0
 fi
 if [ "$ALL_OK" -eq 1 ]; then

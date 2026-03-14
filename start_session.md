@@ -96,5 +96,6 @@ uvicorn src.main:app --app-dir examples/todo-app-demo --reload
 ## Step 5: What to open next
 
 - `README.md` for the overall architecture and entry points
+- `python governance_tools/example_readiness.py --format human` to inspect the current example set
 - `examples/README.md` for runnable vs walkthrough examples
 - `examples/usb-hub-contract/README.md` for the domain plugin path

@@ -330,6 +330,21 @@
 - Updated `.github/workflows/governance.yml` so test/runtime jobs now install `requirements.txt` instead of manually installing only `pytest`.
 - This keeps CI closer to the documented local onboarding path and reduces the chance that examples/tests drift onto different dependency baselines.
 
+## 2026-03-15 - Example Readiness Inventory
+
+- Added `governance_tools/example_readiness.py` to classify bundled examples as runnable demo, walkthrough, scaffold, or domain-contract sample.
+- The checker now reports:
+  - required-file completeness
+  - runtime readiness for runnable examples in the current environment
+  - domain contract load / validator preflight health for `usb-hub-contract`
+- Added `tests/test_example_readiness.py`.
+- Updated `examples/README.md` and `start_session.md` to point to the new inventory check.
+- Extended `scripts/verify_phase_gates.sh` so Gate 3 now also runs `example_readiness.py`.
+- Verification:
+  - `tests/test_example_readiness.py` -> `2 passed`
+  - `governance_tools/example_readiness.py --format human`
+  - `scripts/verify_phase_gates.sh` -> `332 passed`, `4/4 Gates`
+
 ## 2026-03-14 - IC / SoC Governance Direction Recorded
 
 - Recorded a refined future-domain view for IC-related governance.

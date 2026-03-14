@@ -36,6 +36,7 @@ $env:AI_GOVERNANCE_PYTHON='C:\Path\To\python.exe'
 | [memory_janitor.py](#memory_janitorpy) | 記憶壓力監控與歸檔 | 防止 context 過載 |
 | [contract_validator.py](#contract_validatorpy) | AI 初始化合規驗證 | CI gate |
 | [quickstart_smoke.py](#quickstart_smokepy) | 最小上手流程驗證 | onboarding / quickstart |
+| [example_readiness.py](#example_readinesspy) | 範例集健康度檢查 | onboarding / examples |
 | [plan_freshness.py](#plan_freshnesspy) | PLAN.md 新鮮度檢查 | CI gate / Git hook |
 | [state_generator.py](#state_generatorpy) | .governance-state.yaml 生成 | 狀態快照 |
 | [linear_integrator.py](#linear_integratorpy) | PLAN.md → Linear 同步 | 任務追蹤 |
@@ -121,6 +122,35 @@ python governance_tools/quickstart_smoke.py \
 - 新 clone 後先確認框架有沒有真的能跑
 - onboarding 文件更新後做快速回歸
 - demo / workshop 前先做最低限度驗證
+
+---
+
+## example_readiness.py
+
+檢查 `examples/` 目錄目前的 onboarding readiness。
+
+它會區分：
+
+- runnable demos
+- walkthrough-only examples
+- scaffold-only examples
+- domain-contract samples
+
+並回報：
+
+- 必要檔案是否齊全
+- runnable example 在目前環境下是否具備執行條件
+- domain contract example 是否可載入 / validator preflight 是否通過
+
+```bash
+python governance_tools/example_readiness.py --format human
+```
+
+若想把缺依賴也當作失敗，可加：
+
+```bash
+python governance_tools/example_readiness.py --strict-runtime --format human
+```
 
 ---
 

@@ -13,6 +13,7 @@ This directory contains three different kinds of examples:
 
 1. Start with [start_session.md](../start_session.md)
 2. Run the minimal framework commands from the repo root
-3. Open `todo-app-demo/` if you want a runnable application example
-4. Open `usb-hub-contract/` if you want a domain-plugin example
-5. Open `chaos-demo/` if you want a short architecture-governance narrative
+3. Run `python governance_tools/example_readiness.py --format human` to check the current example set
+4. Open `todo-app-demo/` if you want a runnable application example
+5. Open `usb-hub-contract/` if you want a domain-plugin example
+6. Open `chaos-demo/` if you want a short architecture-governance narrative

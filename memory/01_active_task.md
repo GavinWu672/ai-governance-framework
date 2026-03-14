@@ -42,6 +42,7 @@
 - The onboarding path now also has a single executable verifier via `governance_tools/quickstart_smoke.py`, so quickstart docs map to a real smoke command instead of only a sequence of copy-paste steps.
 - `scripts/verify_phase_gates.sh` now also exercises `quickstart_smoke.py` against the bundled USB-Hub example, so onboarding drift is covered by the same phase gates as the core runtime tools.
 - GitHub Actions runtime/test jobs now install from repo root `requirements.txt` instead of separately installing only `pytest`, reducing drift between local onboarding docs and CI setup.
+- The example inventory now has a dedicated readiness checker via `governance_tools/example_readiness.py`, and `verify_phase_gates.sh` also exercises it so example drift is part of the normal regression surface.
 
 ## Next Steps
 
