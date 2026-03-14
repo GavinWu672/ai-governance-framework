@@ -234,6 +234,19 @@ Platform packs:
 - discovery 最多往上 3 層，遇到 `.git` 邊界就停止
 - 若找到多個候選，不會靜默選第一個，而是回報 warning 要求明確指定
 
+針對 multi-domain reviewer flow，framework 現在也會保留最小 contract governance metadata：
+
+- `contract_source`
+- `contract_name`
+- `contract_domain`
+- `plugin_version`
+- `contract_risk_tier`
+
+目前內建的 risk-tier 基線是：
+
+- `kernel-driver` -> `high`
+- `firmware` -> `medium`
+
 ## 本機執行需求
 
 本 repo 的治理工具與 runtime hooks 需要 Python 3.9+。
@@ -517,6 +530,7 @@ reviewable change-control summary
 
 `change_control_summary.py --format human` 現在會先輸出一行 reviewer-first summary，再列 proposal / runtime 區塊細節。
 `change_control_index.py` 也會從對應的 `*_session_start.json` 裡補出 contract context，讓 reviewer 在跨 session 檢視時知道每筆 artifact 是由哪個 domain contract 驅動。
+`session_end.py` 的 human output、summary artifact、以及 curated artifact 也會保留同樣的 contract metadata，讓 reviewer chain 在 multi-domain 環境下保持一致。
 
 ### Adapters
 

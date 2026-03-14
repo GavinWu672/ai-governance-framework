@@ -272,6 +272,8 @@ Domain contract discovery:
 
 - `domain_contract_loader.py` loads a minimal `contract.yaml` without adding non-stdlib dependencies
 - `contract_resolver.py` resolves contracts through explicit path, environment override, and bounded upward discovery
+- `contract_context.py` extracts stable reviewer-facing contract context from session-start artifacts
+- `domain_governance_metadata.py` centralizes domain priority and risk-tier metadata
 - supported keys today: `name`, `documents`, `rule_roots`, `validators`
 - `runtime_hooks/core/session_start.py`, `pre_task_check.py`, and `post_task_check.py` can all consume this contract with `--contract`
 - when `--contract` is omitted, runtime hooks fall back to `AI_GOVERNANCE_CONTRACT`, then bounded upward discovery
@@ -344,6 +346,7 @@ Architecture impact estimation:
 - `change_control_summary.py` merges session-start proposal context and session-end runtime outcomes into a single reviewable change-control summary
 - `change_control_index.py` builds a lightweight index over generated session-start and change-control artifacts
 - `change_control_summary.py --format human` is optimized for reviewer consumption: one-line summary first, then proposal/runtime detail blocks
+- reviewer-facing outputs now also preserve contract metadata such as `contract_domain`, `plugin_version`, and `contract_risk_tier`
 - `rule_pack_suggester.py` now also emits advisory `suggested_skills` and `suggested_agent`, keeping agent-role activation recommendation separate from the runtime contract
 - it recommends evidence, risk, and oversight, but does not act as a policy engine or auto-decision maker
 

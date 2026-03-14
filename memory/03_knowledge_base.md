@@ -28,6 +28,15 @@
 - The first domain vertical slice exists through `examples/usb-hub-contract/`, which validates firmware-specific constraints inside the governance runtime.
 - Firmware evidence routing can currently infer interrupt context from explicit fields, `diff_text`, unified diff snippets, changed source files, and file-based `diff_file` inputs.
 - This seam is intentionally advisory-first while payload shape and enforcement semantics are still being learned from real domain workflows.
+- Multi-domain reviewer artifacts now preserve shared contract context:
+  - `contract_source`
+  - `contract_name`
+  - `contract_domain`
+  - `plugin_version`
+  - `contract_risk_tier`
+- Current built-in domain governance tiers are intentionally small and explicit:
+  - `kernel-driver` = `high`
+  - `firmware` = `medium`
 
 ## Boundary To Protect
 
