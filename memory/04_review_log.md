@@ -146,3 +146,15 @@
 - Re-ran the full phase gates after the hook changes:
   - `scripts/verify_phase_gates.sh` -> `310 passed`, `4/4 Gates`
 
+## 2026-03-14 - Hook Install Validation Tooling
+
+- Added `governance_tools/hook_install_validator.py` to inspect hook installation state for both self-hosted framework repos and external target repos.
+- The validator checks:
+  - copied `pre-commit` / `pre-push` hook presence
+  - `.git/hooks/ai-governance-framework-root`
+  - required framework-side scripts and tools referenced by the hooks
+- Updated `scripts/install-hooks.sh` and the README docs to surface the validator as the post-install verification path.
+- Verification:
+  - `tests/test_hook_install_validator.py` -> `4 passed`
+  - `scripts/verify_phase_gates.sh` -> `314 passed`, `4/4 Gates`
+

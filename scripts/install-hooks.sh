@@ -51,6 +51,7 @@ fi
 
 echo "📂 目標 repo: $(realpath "$TARGET_REPO")"
 echo "📁 hooks 來源: $HOOKS_SRC"
+echo "🏠 framework root: $FRAMEWORK_ROOT"
 echo ""
 
 # ── 安裝每個 hook ─────────────────────────────────────────────────────────
@@ -110,6 +111,7 @@ else
     echo ""
     echo "📋 驗證："
     echo "   cat $TARGET_HOOKS_DIR/pre-commit"
+    echo "   $FRAMEWORK_ROOT/governance_tools/hook_install_validator.py --repo $(realpath "$TARGET_REPO")"
     echo ""
     echo "🧪 測試："
     echo "   git commit --allow-empty -m 'test hook'"
