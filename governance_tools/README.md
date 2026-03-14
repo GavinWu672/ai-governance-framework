@@ -244,6 +244,7 @@ bash scripts/install-hooks.sh
 若安裝到其他 repo，hooks 會透過 `.git/hooks/ai-governance-framework-root` 回指 framework 本體，降低 external contract repo 的攔截失效風險。
 可再用 `governance_tools/hook_install_validator.py --repo /path/to/repo` 驗證 copied hooks 與 framework root 設定是否齊全。
 `scripts/install-hooks.sh` 預設會在安裝後自動執行這個 validator，讓 external repo 的接入流程更接近 install-and-verify。
+若要檢查整體 external repo readiness，也可跑 `governance_tools/external_repo_readiness.py --repo /path/to/repo`，一次看 hooks / PLAN / contract 狀態。
 ---
 
 ## Runtime Layer

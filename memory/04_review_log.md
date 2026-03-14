@@ -167,3 +167,17 @@
   - `scripts/install-hooks.sh --target ../Kernel-Driver-Contract --dry-run`
   - `scripts/verify_phase_gates.sh` -> `314 passed`, `4/4 Gates`
 
+## 2026-03-14 - External Repo Readiness Checker
+
+- Added `governance_tools/external_repo_readiness.py` as a single onboarding/readiness report for external repos.
+- The checker combines:
+  - hook installation state
+  - `PLAN.md` freshness
+  - contract discovery and file completeness
+- This gives one place to answer "is this external repo actually ready to participate in runtime governance?"
+- Validation:
+  - `tests/test_external_repo_readiness.py` -> `3 passed`
+  - `governance_tools/external_repo_readiness.py --repo D:\Kernel-Driver-Contract --format human`
+    - confirmed `Kernel-Driver-Contract` is contract/PLAN-ready but still hook-incomplete
+  - `scripts/verify_phase_gates.sh` -> `317 passed`, `4/4 Gates`
+
