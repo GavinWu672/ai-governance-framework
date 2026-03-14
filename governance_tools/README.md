@@ -273,6 +273,8 @@ Domain contract discovery:
 - `domain_contract_loader.py` loads a minimal `contract.yaml` without adding non-stdlib dependencies
 - supported keys today: `name`, `documents`, `rule_roots`, `validators`
 - `runtime_hooks/core/session_start.py`, `pre_task_check.py`, and `post_task_check.py` can all consume this contract with `--contract`
+- `validator_interface.py` defines the external validator contract
+- `domain_validator_loader.py` handles discovery, import isolation, startup preflight, and advisory execution routing
 
 Test-result normalization:
 

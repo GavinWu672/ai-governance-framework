@@ -70,3 +70,14 @@
   - `tests/test_domain_contract_example.py`
   - targeted verification result: `17 passed`
 
+## 2026-03-14 - Advisory Domain Validator Execution
+
+- Added `governance_tools/validator_interface.py` with shared `DomainValidator` and `ValidatorResult` types.
+- Added `governance_tools/domain_validator_loader.py` for isolated validator discovery, startup preflight, payload building, and advisory execution.
+- `session_start.py` now reports validator preflight status so broken domain validators are visible before task execution begins.
+- `post_task_check.py` now routes matching external validators and merges their findings as advisory warnings.
+- Upgraded `examples/usb-hub-contract/validators/interrupt_safety_validator.py` from placeholder metadata to a real advisory validator that scans ISR code for forbidden calls.
+- Verification:
+  - `tests/test_domain_validator_loader.py tests/test_domain_contract_example.py tests/test_runtime_session_start.py tests/test_runtime_post_task_check.py` -> `23 passed`
+  - `tests/test_contract_validator.py tests/test_domain_contract_loader.py tests/test_domain_validator_loader.py tests/test_domain_contract_example.py tests/test_rule_pack_loader.py tests/test_runtime_pre_task_check.py tests/test_runtime_session_start.py tests/test_runtime_post_task_check.py tests/test_runtime_smoke_test.py` -> `94 passed`
+

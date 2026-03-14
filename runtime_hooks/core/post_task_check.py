@@ -15,6 +15,7 @@ if __package__ in (None, ""):
 
 from governance_tools.contract_validator import validate_contract
 from governance_tools.domain_contract_loader import load_domain_contract
+from governance_tools.domain_validator_loader import build_domain_validation_payload, run_domain_validators
 from governance_tools.driver_evidence_validator import validate_driver_evidence
 from governance_tools.failure_completeness_validator import validate_failure_completeness
 from governance_tools.public_api_diff_checker import check_public_api_diff
@@ -96,6 +97,16 @@ def _merge_driver_evidence_checks(errors: list[str], warnings: list[str], checks
     return result
 
 
+def _merge_domain_validator_results(errors: list[str], warnings: list[str], results: list[dict]) -> None:
+    for item in results:
+        for warning in item.get("warnings", []):
+            warnings.append(f"domain-validator:{item['name']}: {warning}")
+        for violation in item.get("violations", []):
+            warnings.append(f"domain-validator:{item['name']}: {violation}")
+        for error in item.get("errors", []):
+            errors.append(f"domain-validator:{item['name']}: {error}")
+
+
 def run_post_task_check(
     response_text: str,
     risk: str,
@@ -157,6 +168,21 @@ def run_post_task_check(
     failure_completeness = _merge_failure_completeness_checks(errors, warnings, effective_checks, resolved_rules)
     refactor_evidence = _merge_refactor_evidence_checks(errors, warnings, effective_checks, resolved_rules)
     driver_evidence = _merge_driver_evidence_checks(errors, warnings, effective_checks, resolved_rules)
+    domain_validator_results = []
+    if domain_contract:
+        domain_payload = build_domain_validation_payload(
+            response_text=response_text,
+            checks=effective_checks,
+            fields=fields,
+            resolved_rules=resolved_rules,
+            domain_contract=domain_contract,
+        )
+        domain_validator_results = run_domain_validators(
+            contract_file=contract_file,
+            payload=domain_payload,
+            active_rule_ids=resolved_rules,
+        )
+        _merge_domain_validator_results(errors, warnings, domain_validator_results)
 
     if create_snapshot and validation.contract_found and validation.compliant and not errors:
         if memory_root is None:
@@ -184,6 +210,7 @@ def run_post_task_check(
         "failure_completeness": failure_completeness,
         "refactor_evidence": refactor_evidence,
         "driver_evidence": driver_evidence,
+        "domain_validator_results": domain_validator_results,
         "domain_contract": domain_contract,
         "rule_packs": resolved_rule_packs,
         "errors": errors,
@@ -210,6 +237,8 @@ def format_human_result(result: dict) -> str:
         lines.append(f"refactor_evidence_ok={result['refactor_evidence']['ok']}")
     if result["driver_evidence"] is not None:
         lines.append(f"driver_evidence_ok={result['driver_evidence']['ok']}")
+    if result.get("domain_validator_results"):
+        lines.append(f"domain_validator_count={len(result['domain_validator_results'])}")
     if result.get("domain_contract"):
         lines.append(f"domain_contract={result['domain_contract']['name']}")
     for warning in result["warnings"]:

@@ -15,6 +15,7 @@ if __package__ in (None, ""):
 
 from governance_tools.change_proposal_builder import build_change_proposal
 from governance_tools.domain_contract_loader import load_domain_contract
+from governance_tools.domain_validator_loader import preflight_domain_validators
 from governance_tools.state_generator import generate_state
 from runtime_hooks.core.pre_task_check import run_pre_task_check
 
@@ -67,6 +68,7 @@ def build_session_start_context(
         impact_after_files=impact_after_files,
     )
     domain_contract = load_domain_contract(contract_file) if contract_file else pre_task.get("domain_contract")
+    validator_preflight = preflight_domain_validators(contract_file) if contract_file else None
 
     return {
         "ok": state.get("error") is None and pre_task["ok"],
@@ -82,6 +84,7 @@ def build_session_start_context(
         "change_proposal": proposal,
         "proposal_summary": proposal.get("proposal_summary"),
         "domain_contract": domain_contract,
+        "validator_preflight": validator_preflight,
         "state": state,
         "pre_task_check": pre_task,
     }
@@ -114,6 +117,10 @@ def format_human_result(result: dict) -> str:
         validators = domain_contract.get("validators") or []
         if validators:
             lines.append(f"domain_validators={','.join(item['name'] for item in validators)}")
+        validator_preflight = result.get("validator_preflight") or {}
+        if validator_preflight:
+            lines.append(f"validator_preflight_ok={validator_preflight.get('ok')}")
+            lines.append(f"validator_preflight_count={validator_preflight.get('count')}")
         documents = domain_contract.get("documents") or []
         if documents:
             lines.append(f"domain_documents={','.join(Path(item['path']).name for item in documents)}")
@@ -128,6 +135,8 @@ def format_human_result(result: dict) -> str:
                 preview = _first_line(item.get("content", ""))
                 if preview:
                     lines.append(f"behavior_preview[{Path(item['path']).name}]={preview}")
+        for item in (validator_preflight or {}).get("validators", []):
+            lines.append(f"validator_preflight[{item['name']}]={item['ok']}")
 
     summary = result.get("proposal_summary") or {}
     guidance = result.get("proposal_guidance") or {}

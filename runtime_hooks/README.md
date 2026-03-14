@@ -47,6 +47,7 @@ Active rule injection:
 - active rules are loaded from `governance/rules/<pack>/*.md`
 - `pre_task_check.py`, `session_start.py`, and `post_task_check.py` now also accept `--contract <path/to/contract.yaml>`
 - external `contract.yaml` files can contribute additional `documents`, `rule_roots`, and `validators` without hardcoding repo coupling
+- `session_start.py` now performs validator preflight so broken external validators fail early in startup context
 - runtime consumers should treat this payload as governance context, not as a general-purpose rule DSL
 - current seed packs include `common`, `python`, `cpp`, `refactor`, `csharp`, `swift`, `avalonia`, `kernel-driver`
 - pack categories distinguish `scope`, `language`, `framework`, and `platform`
@@ -75,6 +76,13 @@ Kernel-driver evidence handoff:
 - `governance_tools/driver_evidence_validator.py` is applied by `post_task_check.py` when `RULES` contains `kernel-driver`
 - preferred evidence sources are external analysis and compiler diagnostics such as SDV / SAL / WDK outputs, merged into normalized `checks`
 
+Domain validator handoff:
+
+- `governance_tools/validator_interface.py` defines the shared `DomainValidator` / `ValidatorResult` interface
+- `governance_tools/domain_validator_loader.py` performs validator discovery, import isolation, preflight checks, and advisory execution routing
+- `post_task_check.py` currently merges domain-validator findings as advisory warnings first
+- validator import or execution failures are wrapped into structured runtime errors instead of crashing the governance engine
+
 Dispatcher:
 
 - `dispatcher.py` routes a shared event JSON payload directly to `pre_task_check` or `post_task_check`
@@ -98,6 +106,7 @@ Session start:
 - `core/session_start.py` builds an agent-start context from `state_generator.py` plus `pre_task_check.py`
 - it packages suggested rules, suggested skills, suggested agent, proposal guidance, and a full `change_proposal` artifact into one startup artifact
 - when `--contract` is supplied, startup context also includes discovered domain documents, extra rule roots, and validator metadata
+- startup human output now also surfaces validator preflight status and per-validator readiness
 
 External domain contract:
 
@@ -113,7 +122,7 @@ validators:
 
 - document and validator paths are resolved relative to `contract.yaml`
 - external rule packs are merged with the built-in `governance/rules/` packs
-- current validator discovery is metadata-first; execution hooks can be layered on later without changing the seam
+- current validator execution is advisory-first; policy escalation can later move selected rules toward hard-stop without changing the discovery seam
 
 Examples:
 
