@@ -30,6 +30,52 @@ AI 在長期專案裡常見的問題不是單次回答不夠聰明，而是：
 - 已建立 external domain validator seam，並已跑通第一個 firmware domain vertical slice
 - 仍在持續補強 semantic verification、workflow embedding 與 interception coverage
 
+## 跨 Domain 治理關係圖
+
+```mermaid
+flowchart TB
+
+AI["AI 編碼代理<br/>AI Coding Agent<br/>(Claude / Copilot / Codex)"]
+
+subgraph GOV["AI 治理框架<br/>AI Governance Framework"]
+    S["Session 啟動<br/>session_start"]
+    P["任務前檢查<br/>pre_task_check"]
+    R["規則包啟動<br/>rule pack activation"]
+    V["領域驗證器<br/>domain validators"]
+    E["證據收集<br/>evidence ingestion"]
+    T["任務後檢查<br/>post_task_check"]
+    A["變更控制產物<br/>change-control artifacts"]
+    M["記憶管線<br/>memory pipeline"]
+end
+
+subgraph FW["USB Hub 韌體契約<br/>USB Hub Firmware Contract"]
+    F1["韌體架構規則<br/>firmware architecture rules"]
+    F2["ISR / 中斷限制<br/>interrupt constraints"]
+    F3["拓樸與硬體事實<br/>topology & hardware facts"]
+end
+
+subgraph DRV["Kernel Driver 契約<br/>Kernel Driver Contract"]
+    D1["IRQL 安全規則<br/>IRQL safety rules"]
+    D2["鎖與併發檢查<br/>locking & concurrency checks"]
+    D3["Driver 架構事實<br/>driver architecture facts"]
+end
+
+Reviewer["人工審查者<br/>Human Reviewer"]
+
+AI --> S
+S --> P
+P --> R
+R --> V
+V --> E
+E --> T
+T --> A
+A --> Reviewer
+T --> M
+
+R --> FW
+R --> DRV
+```
+
 ## 核心能力
 
 ### 1. 治理憲法
@@ -161,12 +207,21 @@ Platform packs:
 - validator preflight
 - advisory validator execution
 
-第一個 vertical slice 是 `examples/usb-hub-contract/`，目前已可：
+內建 example 是 `examples/usb-hub-contract/`，目前已可：
 
 - 載入 firmware domain documents 與 behavior overrides
 - 啟用外部 `hub-firmware` rule pack
 - 執行 `interrupt_safety_validator.py`
 - 從 `diff_text`、unified diff、changed source files、以及 file-based `checks-file` / `diff_file` evidence 推導 interrupt context
+
+目前也已經有兩個外部 contract repo 驗證這條 seam：
+
+- `USB-Hub-Firmware-Architecture-Contract`
+  - 第一個真實 firmware vertical slice
+  - 已跑通 `session_start`、`pre_task_check`、`post_task_check`
+- `Kernel-Driver-Contract`
+  - 第二個 low-level domain slice
+  - 已跑通 contract load、validator preflight、external rule activation、以及多 validator 的 advisory post-task loop
 
 ## 本機執行需求
 
