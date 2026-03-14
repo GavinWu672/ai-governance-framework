@@ -4,7 +4,7 @@ import json
 import shutil
 from pathlib import Path
 
-from governance_tools.governance_auditor import audit_governance
+from governance_tools.governance_auditor import audit_governance, format_human_result
 
 
 FIXTURE_ROOT = Path("tests/_tmp_governance_auditor")
@@ -62,6 +62,15 @@ def test_governance_auditor_can_include_release_readiness():
     assert result["ok"] is True
     assert result["release_readiness"]["ok"] is True
     assert any(check["name"] == "release:readiness" and check["ok"] for check in result["checks"])
+
+
+def test_governance_auditor_human_output_is_summary_first():
+    result = audit_governance(Path(".").resolve(), release_version="v1.0.0-alpha")
+    output = format_human_result(result)
+
+    assert "[governance_auditor]" in output
+    assert "summary=ok=True | checks=" in output
+    assert "release=v1.0.0-alpha/ready" in output
 
 
 def test_governance_auditor_detects_missing_runtime_enforcement():

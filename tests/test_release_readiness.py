@@ -19,5 +19,6 @@ def test_release_readiness_human_output_is_scannable():
     output = format_human_result(result)
 
     assert "[release_readiness]" in output
+    assert "summary=ok=True | version=v1.0.0-alpha" in output
     assert "version=v1.0.0-alpha" in output
     assert "check[release_note]=True" in output

@@ -14,6 +14,7 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from governance_tools.external_repo_onboarding_index import build_external_repo_onboarding_index
+from governance_tools.human_summary import build_summary_line
 from governance_tools.release_readiness import assess_release_readiness
 
 
@@ -156,6 +157,63 @@ def audit_governance(
     }
 
 
+def format_human_result(result: dict) -> str:
+    lines = [
+        "[governance_auditor]",
+    ]
+    release_readiness = result.get("release_readiness")
+    external_onboarding = result.get("external_onboarding")
+    lines.append(
+        build_summary_line(
+            f"ok={result['ok']}",
+            f"checks={len(result['checks'])}",
+            (
+                f"release={release_readiness['version']}/"
+                + ("ready" if release_readiness["ok"] else "not-ready")
+            )
+            if release_readiness is not None
+            else None,
+            (
+                f"external_repos={external_onboarding['repo_count']}"
+                if external_onboarding is not None
+                else None
+            ),
+            (
+                f"external_top_issues={len(external_onboarding.get('top_issues') or [])}"
+                if external_onboarding is not None
+                else None
+            ),
+        )
+    )
+    lines.append(f"ok={result['ok']}")
+    lines.append(f"checks={len(result['checks'])}")
+
+    if release_readiness is not None:
+        lines.append(f"release_version={release_readiness['version']}")
+        lines.append(f"release_ready={release_readiness['ok']}")
+    if external_onboarding is not None:
+        lines.append(f"external_repo_count={external_onboarding['repo_count']}")
+        lines.append(f"external_indexed_count={external_onboarding['indexed_count']}")
+        top_issues = external_onboarding.get("top_issues") or []
+        for item in top_issues:
+            lines.append(
+                "external_top_issue="
+                + " | ".join(
+                    [
+                        item["repo_root"],
+                        f"reasons={','.join(item['reasons'])}",
+                        f"contract_path={item.get('contract_path')}",
+                        f"suggested_command={item.get('suggested_command')}",
+                    ]
+                )
+            )
+    for warning in result["warnings"]:
+        lines.append(f"warning: {warning}")
+    for error in result["errors"]:
+        lines.append(f"error: {error}")
+    return "\n".join(lines)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Audit governance constitution/runtime alignment.")
     parser.add_argument("--project-root", default=".")
@@ -173,33 +231,7 @@ def main() -> None:
     if args.format == "json":
         print(json.dumps(result, ensure_ascii=False, indent=2))
     else:
-        print(f"ok={result['ok']}")
-        print(f"checks={len(result['checks'])}")
-        release_readiness = result.get("release_readiness")
-        if release_readiness is not None:
-            print(f"release_version={release_readiness['version']}")
-            print(f"release_ready={release_readiness['ok']}")
-        external_onboarding = result.get("external_onboarding")
-        if external_onboarding is not None:
-            print(f"external_repo_count={external_onboarding['repo_count']}")
-            print(f"external_indexed_count={external_onboarding['indexed_count']}")
-            top_issues = external_onboarding.get("top_issues") or []
-            for item in top_issues:
-                print(
-                    "external_top_issue="
-                    + " | ".join(
-                        [
-                            item["repo_root"],
-                            f"reasons={','.join(item['reasons'])}",
-                            f"contract_path={item.get('contract_path')}",
-                            f"suggested_command={item.get('suggested_command')}",
-                        ]
-                    )
-                )
-        for warning in result["warnings"]:
-            print(f"warning: {warning}")
-        for error in result["errors"]:
-            print(f"error: {error}")
+        print(format_human_result(result))
 
     raise SystemExit(0 if result["ok"] else 1)
 

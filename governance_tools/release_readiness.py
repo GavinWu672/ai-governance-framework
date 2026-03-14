@@ -14,6 +14,8 @@ from pathlib import Path
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from governance_tools.human_summary import build_summary_line
+
 
 def assess_release_readiness(project_root: Path, *, version: str) -> dict:
     readme_path = project_root / "README.md"
@@ -98,6 +100,13 @@ def assess_release_readiness(project_root: Path, *, version: str) -> dict:
 def format_human_result(result: dict) -> str:
     lines = [
         "[release_readiness]",
+        build_summary_line(
+            f"ok={result['ok']}",
+            f"version={result['version']}",
+            f"checks={len(result['checks'])}",
+            f"warnings={len(result['warnings'])}",
+            f"errors={len(result['errors'])}",
+        ),
         f"ok={result['ok']}",
         f"version={result['version']}",
     ]

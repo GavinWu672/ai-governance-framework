@@ -411,6 +411,14 @@
 - Verification:
   - `scripts/verify_phase_gates.sh` -> `336 passed`, `4/4 Gates`
 
+## 2026-03-15 - Summary-First Human Output For High-Level Governance Tools
+
+- Added a shared `governance_tools/human_summary.py` helper for governance-tool human output.
+- `release_readiness.py`, `external_repo_onboarding_index.py`, and `governance_auditor.py` now begin with a reviewer-first `summary=...` line instead of forcing operators to scan lower-level fields first.
+- `governance_auditor.py` human rendering is now a dedicated function, making output-shape regressions testable without relying only on CLI behavior.
+- Verification:
+  - `scripts/verify_phase_gates.sh` -> `338 passed`, `4/4 Gates`
+
 ## 2026-03-14 - IC / SoC Governance Direction Recorded
 
 - Recorded a refined future-domain view for IC-related governance.

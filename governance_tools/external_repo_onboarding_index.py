@@ -13,6 +13,8 @@ from pathlib import Path
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from governance_tools.human_summary import build_summary_line
+
 
 def _load_latest_report(repo_root: Path) -> dict | None:
     latest_path = repo_root / "memory" / "governance_onboarding" / "latest.json"
@@ -115,6 +117,13 @@ def build_external_repo_onboarding_index(repo_roots: list[Path]) -> dict:
 def format_human(result: dict) -> str:
     lines = [
         "[external_repo_onboarding_index]",
+        build_summary_line(
+            f"ok={result['ok']}",
+            f"repos={result['repo_count']}",
+            f"indexed={result['indexed_count']}",
+            f"missing={len(result.get('missing_reports') or [])}",
+            f"top_issues={len(result.get('top_issues') or [])}",
+        ),
         f"ok={result['ok']}",
         f"repo_count={result['repo_count']}",
         f"indexed_count={result['indexed_count']}",

@@ -77,6 +77,7 @@ def test_format_human_lists_repos_and_missing_reports(tmp_path: Path) -> None:
     rendered = format_human(result)
 
     assert "[external_repo_onboarding_index]" in rendered
+    assert "summary=ok=False | repos=2 | indexed=1 | missing=1 | top_issues=1" in rendered
     assert "[missing_reports]" in rendered
     assert "[repos]" in rendered
     assert "[top_issues]" in rendered

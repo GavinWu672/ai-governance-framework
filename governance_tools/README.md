@@ -173,6 +173,8 @@ python governance_tools/example_readiness.py --strict-runtime --format human
 python governance_tools/release_readiness.py --version v1.0.0-alpha --format human
 ```
 
+human output now starts with a reviewer-first `summary=...` line so release status can be scanned quickly before reading individual checks.
+
 這個工具適合用在：
 
 - 發版前自查
@@ -411,6 +413,7 @@ Governance self-audit:
 - `governance_auditor.py` checks alignment between constitution docs, runtime enforcement entrypoints, seed rule packs, optional external onboarding state, and optional release-facing trust signals
 - intended to detect governance drift, not to act as a general-purpose policy engine
 - use `--release-version v1.0.0-alpha` when you want the same audit run to also confirm release-note / changelog / README / status-doc alignment
+- human output now starts with `summary=...`, matching the reviewer-first style used in runtime hooks and other high-signal governance tools
 
 Failure-path completeness:
 
