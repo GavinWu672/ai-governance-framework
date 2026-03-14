@@ -283,3 +283,27 @@ def test_post_task_check_human_output_includes_evidence_summary():
     assert "public_api_ok=True" in output
     assert "failure_completeness_ok=" in output
     assert "refactor_evidence_ok=" in output
+
+
+def test_post_task_check_can_validate_external_rule_pack_from_contract(tmp_path):
+    contract_root = tmp_path / "usb_hub_contract"
+    (contract_root / "rules" / "firmware").mkdir(parents=True)
+    (contract_root / "rules" / "firmware" / "safety.md").write_text("# Firmware rule\nValidate rollback.\n", encoding="utf-8")
+    contract_file = contract_root / "contract.yaml"
+    contract_file.write_text(
+        "name: usb-hub-firmware\n"
+        "rule_roots:\n"
+        "  - rules\n",
+        encoding="utf-8",
+    )
+
+    result = run_post_task_check(
+        _contract(RULES="common,firmware"),
+        risk="medium",
+        oversight="review-required",
+        contract_file=contract_file,
+    )
+
+    assert result["ok"] is True
+    assert result["domain_contract"]["name"] == "usb-hub-firmware"
+    assert result["rule_packs"]["valid"] is True

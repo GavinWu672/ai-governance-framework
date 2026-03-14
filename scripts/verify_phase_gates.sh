@@ -14,6 +14,9 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$SCRIPT_DIR/lib/python.sh"
+
 PASS=0
 FAIL=0
 
@@ -25,9 +28,20 @@ echo "╔═══════════════════════�
 echo "║   Phase Gate Verification                ║"
 echo "╚══════════════════════════════════════════╝"
 
+if ! set_python_cmd; then
+    fail "找不到可用的 Python 解譯器"
+    print_python_resolution_help "verify_phase_gates"
+    echo ""
+    echo "══════════════════════════════════════════"
+    TOTAL=$((PASS + FAIL))
+    echo "  結果: ${PASS}/${TOTAL} Gates 通過"
+    echo "  🚨 $FAIL 項未通過 — 請先安裝或指定 Python"
+    exit 1
+fi
+
 # ── Gate 1: 單元測試 ─────────────────────────────────────────
 info "Gate 1 / 單元測試"
-if python -m pytest tests/ -q --tb=short 2>&1; then
+if "${PYTHON_CMD[@]}" -m pytest tests/ -q --tb=short 2>&1; then
     ok "pytest 通過"
     PASS=$((PASS + 1))
 else
@@ -36,10 +50,10 @@ fi
 
 # ── Gate 2: PLAN.md 新鮮度 ───────────────────────────────────
 info "Gate 2 / PLAN.md 新鮮度"
-PLAN_OUTPUT=$(python governance_tools/plan_freshness.py --format json) || true
-PLAN_STATUS=$(echo "$PLAN_OUTPUT" | python3 -c \
+PLAN_OUTPUT=$("${PYTHON_CMD[@]}" governance_tools/plan_freshness.py --format json) || true
+PLAN_STATUS=$(echo "$PLAN_OUTPUT" | "${PYTHON_CMD[@]}" -c \
     "import json,sys; r=json.load(sys.stdin); print(r['status'])")
-PLAN_DAYS=$(echo "$PLAN_OUTPUT" | python3 -c \
+PLAN_DAYS=$(echo "$PLAN_OUTPUT" | "${PYTHON_CMD[@]}" -c \
     "import json,sys; r=json.load(sys.stdin); print(r.get('days_since_update','?'))")
 
 if [ "$PLAN_STATUS" = "CRITICAL" ] || [ "$PLAN_STATUS" = "ERROR" ]; then
@@ -63,7 +77,7 @@ TOOLS=(
 )
 ALL_OK=1
 for tool in "${TOOLS[@]}"; do
-    if python "governance_tools/$tool" --help > /dev/null 2>&1; then
+    if "${PYTHON_CMD[@]}" "governance_tools/$tool" --help > /dev/null 2>&1; then
         ok "$tool"
     else
         fail "$tool --help 失敗"

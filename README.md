@@ -141,6 +141,24 @@ Platform packs:
   - impact signals (`concerns`, `recommended_risk`, `recommended_oversight`)
   - 只做 advisory impact estimation，不直接替代治理裁決
 
+## 本機執行需求
+
+本 repo 的治理工具與 runtime hooks 需要 Python 3.9+。
+
+若 `python` / `python3` / `py -3` 不在 `PATH`，可先指定：
+
+```bash
+export AI_GOVERNANCE_PYTHON=/path/to/python
+```
+
+Windows PowerShell:
+
+```powershell
+$env:AI_GOVERNANCE_PYTHON='C:\Path\To\python.exe'
+```
+
+`scripts/run-runtime-governance.sh`、`scripts/verify_phase_gates.sh`、以及安裝後的 git hooks 都會優先使用這個變數。
+
 範例：
 
 ```text

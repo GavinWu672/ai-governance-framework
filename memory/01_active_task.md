@@ -12,17 +12,21 @@
 - Review-facing change-control outputs now exist through `change_control_summary.py` and `change_control_index.py`.
 - Shared smoke and CI flows now preserve startup handoff notes, JSON envelopes, and change-control artifacts.
 - The recent CI regression in `runtime_hooks/smoke_test.py` was fixed by making human envelope rendering compatible with both shared envelopes and adapter envelopes.
-- Local execution baseline is currently blocked on this workstation because neither `python` nor `py` is available on `PATH`, so CLI/runtime verification cannot proceed yet.
+- Local execution baseline is now verified on this workstation by using `AI_GOVERNANCE_PYTHON=C:\Users\daish\AppData\Local\Python\pythoncore-3.14-64\python.exe`.
+- Shell entrypoints now have shared Python interpreter resolution via `scripts/lib/python.sh`, and can use `AI_GOVERNANCE_PYTHON` when PATH-based discovery is unavailable.
+- Installed git hooks now resolve repo-root paths before loading shared shell helpers, avoiding broken sourcing after installation.
+- `scripts/verify_phase_gates.sh` now passes locally, and `scripts/run-runtime-governance.sh --mode smoke` completes successfully with the same interpreter override.
+- `contract.yaml`-based domain plugin discovery now exists for `pre_task_check`, `session_start`, and `post_task_check`, including external documents, rule roots, and validator metadata.
+- A minimal `examples/usb-hub-contract/` sample now validates the dual-repo seam with `contract.yaml`, domain documents, behavior overrides, external rules, and placeholder validator metadata.
 
 ## Next Steps
 
-- Restore or locate a working local Python runtime so `pre_task_check.py`, `session_start.py`, and the test suite can actually run.
-- Once Python is available, validate the local execution baseline before any USB-Hub contract integration work.
-- Treat current repository maturity as design-level confidence until CLI execution and adapter normalization are verified by local runs.
-- After local validation, start Phase 1 of the USB-Hub integration plan with a manual firmware AI session and a `start_session.md` workflow.
+- Persist the discovered Python path into local developer workflow setup so the interpreter override does not need to be rediscovered.
+- Use the restored local execution baseline before any USB-Hub contract integration work.
+- Extend the USB-Hub example into the real `USB-Hub-Firmware-Architecture-Contract` repository with its actual `start_session.md` / checklist content.
 - Prepare the integration path between `ai-governance-framework` and `USB-Hub-Firmware-Architecture-Contract` as a dual-repo layered model.
-- Add `contract.yaml`-based domain plugin discovery so `session_start` and `post_task_check` can load external documents, rule packs, and validators without hardcoded repo coupling.
-- Introduce a validator interface plus external rule-pack loading to support firmware-domain governance while keeping the framework repo focused on horizontal runtime governance.
+- Introduce a validator execution interface on top of the new discovery seam so external domain validators can participate in runtime decisions.
+- Extend the manual USB-Hub startup workflow around the new `contract.yaml` seam and `start_session.md` document handoff.
 - Deepen semantic verification, especially public API compatibility and architecture drift reasoning.
 - Strengthen workflow interception coverage without over-expanding the runtime into a policy engine.
 - Improve change-control artifact consumption so reviewer-facing outputs are easier to use in day-to-day development.

@@ -105,3 +105,17 @@ def test_rule_pack_category_defaults_to_custom_for_unknown_packs():
     assert rule_pack_category("avalonia") == "framework"
     assert rule_pack_category("kernel-driver") == "platform"
     assert rule_pack_category("my-team-pack") == "custom"
+
+
+def test_rule_loader_supports_external_rule_roots(tmp_path):
+    external_root = tmp_path / "rules"
+    firmware_pack = external_root / "firmware"
+    firmware_pack.mkdir(parents=True)
+    (firmware_pack / "safety.md").write_text("# Firmware safety\nUse bounded DMA.\n", encoding="utf-8")
+
+    loaded = load_rule_content(["common", "firmware"], [external_root, Path("governance/rules")])
+
+    assert loaded["valid"] is True
+    assert [pack["name"] for pack in loaded["active_rules"]] == ["common", "firmware"]
+    assert loaded["active_rules"][1]["category"] == "custom"
+    assert "bounded DMA" in loaded["active_rules"][1]["files"][0]["content"]

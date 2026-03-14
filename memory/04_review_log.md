@@ -22,3 +22,51 @@
 - As a result, `pre_task_check.py`, `session_start.py`, and `pytest` could not be executed locally, so runtime maturity remains unverified on this machine.
 - Immediate next action is to restore or expose a Python runtime before continuing Phase 1 validation.
 
+## 2026-03-14 - Python Entrypoint Hardening
+
+- Added shared interpreter resolution in `scripts/lib/python.sh`.
+- Updated `scripts/run-runtime-governance.sh` and `scripts/verify_phase_gates.sh` to honor `AI_GOVERNANCE_PYTHON` before falling back to `python`, `python3`, or `py -3`.
+- Updated installed git hooks to resolve the repository root before sourcing shared shell helpers, avoiding broken relative paths under `.git/hooks`.
+- Documented the new override path in `README.md` and `governance_tools/README.md`.
+
+## 2026-03-14 - Local Baseline Restored
+
+- Located the workstation's usable interpreter at `C:\Users\daish\AppData\Local\Python\pythoncore-3.14-64\python.exe` by tracing `D:\Bookstore-Scraper\.venv\pyvenv.cfg`.
+- Confirmed the interpreter is Python `3.14.2`.
+- Verified `governance_tools/plan_freshness.py --format json` returns `FRESH`.
+- Verified `runtime_hooks/core/pre_task_check.py --rules common,python --risk medium --oversight review-required --format human` runs successfully and emits advisory suggestions.
+- Ran `scripts/verify_phase_gates.sh` with `AI_GOVERNANCE_PYTHON` set to the discovered interpreter; result: `259 passed`, `4/4 Gates` passed.
+- Ran `scripts/run-runtime-governance.sh --mode smoke` with the same interpreter override; shared and adapter smoke flows completed successfully and produced change-control artifacts under `artifacts/runtime/smoke/`.
+
+## 2026-03-14 - contract.yaml Discovery Seam Added
+
+- Added `governance_tools/domain_contract_loader.py` as a stdlib-only loader for minimal external `contract.yaml` files.
+- Extended `rule_pack_loader.py` so built-in and external rule roots can be merged during runtime governance.
+- Added `--contract` support to `runtime_hooks/core/pre_task_check.py`, `session_start.py`, and `post_task_check.py`.
+- `session_start` now carries discovered domain documents, rule roots, and validator metadata into startup context.
+- `post_task_check` now validates external rule packs against discovered contract rule roots, instead of rejecting them as unknown.
+- Added targeted tests for domain contract loading, external rule-root loading, session-start contract integration, and post-task contract validation.
+- Verification:
+  - `tests/test_domain_contract_loader.py tests/test_rule_pack_loader.py tests/test_runtime_session_start.py tests/test_runtime_post_task_check.py` -> `29 passed`
+  - `tests/test_contract_validator.py tests/test_rule_pack_loader.py tests/test_runtime_pre_task_check.py tests/test_runtime_session_start.py tests/test_runtime_post_task_check.py tests/test_runtime_smoke_test.py` -> `87 passed`
+
+## 2026-03-14 - USB-Hub Example Contract Validation
+
+- Added `examples/usb-hub-contract/` as a minimal dual-repo style domain plugin sample.
+- Added a runnable `governance_tools/domain_contract_loader.py --contract ...` CLI so contract discovery can be validated outside unit tests.
+- Extended session-start human output to surface domain document names, behavior-override names, and first-line previews.
+- Example contract now includes:
+  - `contract.yaml`
+  - `AGENTS.md`
+  - `USB_HUB_FW_CHECKLIST.md`
+  - `USB_HUB_ARCHITECTURE.md`
+  - `rules/hub-firmware/safety.md`
+  - `validators/interrupt_safety_validator.py`
+- Validation completed:
+  - `domain_contract_loader.py --contract examples/usb-hub-contract/contract.yaml --format human`
+  - `session_start.py --contract examples/usb-hub-contract/contract.yaml --format human`
+  - `pre_task_check.py --contract examples/usb-hub-contract/contract.yaml --format json`
+- Added example-focused tests:
+  - `tests/test_domain_contract_example.py`
+  - targeted verification result: `17 passed`
+

@@ -6,6 +6,29 @@
 
 ---
 
+## Python 啟動方式
+
+所有 shell 入口會依序嘗試：
+
+- `AI_GOVERNANCE_PYTHON`
+- `python`
+- `python3`
+- `py -3`
+
+若本機 Python 沒有加入 `PATH`，可先指定：
+
+```bash
+export AI_GOVERNANCE_PYTHON=/path/to/python
+```
+
+Windows PowerShell:
+
+```powershell
+$env:AI_GOVERNANCE_PYTHON='C:\Path\To\python.exe'
+```
+
+---
+
 ## 工具一覽
 
 | 工具 | 功能 | 主要用途 |
@@ -241,8 +264,15 @@ Rule-pack runtime support:
 - `rule_pack_loader.py` validates requested packs
 - `describe_rule_selection(...)` returns selection metadata
 - `load_rule_content(...)` returns loaded rule titles and markdown content for runtime injection
+- external rule roots can now be merged in through `contract.yaml` discovery
 - current seed packs include `common`, `python`, `cpp`, `refactor`, `csharp`, `swift`, `avalonia`, `kernel-driver`
 - pack categories now distinguish `scope`, `language`, `framework`, and `platform`
+
+Domain contract discovery:
+
+- `domain_contract_loader.py` loads a minimal `contract.yaml` without adding non-stdlib dependencies
+- supported keys today: `name`, `documents`, `rule_roots`, `validators`
+- `runtime_hooks/core/session_start.py`, `pre_task_check.py`, and `post_task_check.py` can all consume this contract with `--contract`
 
 Test-result normalization:
 

@@ -87,7 +87,7 @@ def _validate_choice(fields: dict, key: str, valid_values: set[str], errors: lis
         errors.append(f"{key} invalid: '{value}'. Allowed: {sorted(valid_values)}")
 
 
-def _validate_rules(fields: dict, errors: list[str]) -> None:
+def _validate_rules(fields: dict, errors: list[str], available: set[str] | None = None) -> None:
     rules_raw = fields.get("RULES", "").strip()
     if not rules_raw:
         errors.append("RULES field is required")
@@ -98,7 +98,7 @@ def _validate_rules(fields: dict, errors: list[str]) -> None:
         errors.append("RULES must contain at least one rule pack")
         return
 
-    available = available_rule_packs()
+    available = available or available_rule_packs()
     invalid = [name for name in rule_names if name not in available]
     if invalid:
         errors.append(
@@ -106,7 +106,7 @@ def _validate_rules(fields: dict, errors: list[str]) -> None:
         )
 
 
-def validate_contract(text: str) -> ValidationResult:
+def validate_contract(text: str, available_rules: set[str] | None = None) -> ValidationResult:
     block = extract_contract_block(text)
     if block is None:
         return ValidationResult(
@@ -171,7 +171,7 @@ def validate_contract(text: str) -> ValidationResult:
         if "(" not in pressure or "/" not in pressure:
             warnings.append("PRESSURE should include line-count context, e.g. SAFE (45/200)")
 
-    _validate_rules(fields, errors)
+    _validate_rules(fields, errors, available=available_rules)
     _validate_choice(fields, "RISK", VALID_RISK_LEVELS, errors)
     _validate_choice(fields, "OVERSIGHT", VALID_OVERSIGHT_LEVELS, errors)
     _validate_choice(fields, "MEMORY_MODE", VALID_MEMORY_MODES, errors)

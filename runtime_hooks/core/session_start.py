@@ -14,6 +14,7 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from governance_tools.change_proposal_builder import build_change_proposal
+from governance_tools.domain_contract_loader import load_domain_contract
 from governance_tools.state_generator import generate_state
 from runtime_hooks.core.pre_task_check import run_pre_task_check
 
@@ -29,6 +30,7 @@ def build_session_start_context(
     task_text: str = "",
     impact_before_files: list[Path] | None = None,
     impact_after_files: list[Path] | None = None,
+    contract_file: Path | None = None,
 ) -> dict:
     impact_before_files = impact_before_files or []
     impact_after_files = impact_after_files or []
@@ -54,6 +56,7 @@ def build_session_start_context(
         task_text=task_text,
         impact_before_files=impact_before_files,
         impact_after_files=impact_after_files,
+        contract_file=contract_file,
     )
 
     proposal = build_change_proposal(
@@ -63,6 +66,7 @@ def build_session_start_context(
         impact_before_files=impact_before_files,
         impact_after_files=impact_after_files,
     )
+    domain_contract = load_domain_contract(contract_file) if contract_file else pre_task.get("domain_contract")
 
     return {
         "ok": state.get("error") is None and pre_task["ok"],
@@ -77,12 +81,20 @@ def build_session_start_context(
         "proposal_guidance": state.get("proposal_guidance"),
         "change_proposal": proposal,
         "proposal_summary": proposal.get("proposal_summary"),
+        "domain_contract": domain_contract,
         "state": state,
         "pre_task_check": pre_task,
     }
 
 
 def format_human_result(result: dict) -> str:
+    def _first_line(text: str) -> str:
+        for line in text.splitlines():
+            stripped = line.strip()
+            if stripped:
+                return stripped
+        return ""
+
     lines = [
         "[session_start]",
         f"ok={result['ok']}",
@@ -94,6 +106,28 @@ def format_human_result(result: dict) -> str:
         lines.append(f"suggested_skills={','.join(result['suggested_skills'])}")
     if result.get("suggested_agent"):
         lines.append(f"suggested_agent={result['suggested_agent']}")
+    domain_contract = result.get("domain_contract") or {}
+    if domain_contract:
+        lines.append(f"domain_contract={domain_contract.get('name')}")
+        if domain_contract.get("rule_roots"):
+            lines.append(f"domain_rule_roots={len(domain_contract['rule_roots'])}")
+        validators = domain_contract.get("validators") or []
+        if validators:
+            lines.append(f"domain_validators={','.join(item['name'] for item in validators)}")
+        documents = domain_contract.get("documents") or []
+        if documents:
+            lines.append(f"domain_documents={','.join(Path(item['path']).name for item in documents)}")
+            for item in documents:
+                preview = _first_line(item.get("content", ""))
+                if preview:
+                    lines.append(f"document_preview[{Path(item['path']).name}]={preview}")
+        overrides = domain_contract.get("ai_behavior_override") or []
+        if overrides:
+            lines.append(f"domain_behavior_overrides={','.join(Path(item['path']).name for item in overrides)}")
+            for item in overrides:
+                preview = _first_line(item.get("content", ""))
+                if preview:
+                    lines.append(f"behavior_preview[{Path(item['path']).name}]={preview}")
 
     summary = result.get("proposal_summary") or {}
     guidance = result.get("proposal_guidance") or {}
@@ -135,6 +169,7 @@ def main() -> None:
     parser.add_argument("--task-text", default="")
     parser.add_argument("--impact-before", action="append", default=[])
     parser.add_argument("--impact-after", action="append", default=[])
+    parser.add_argument("--contract")
     parser.add_argument("--format", choices=["human", "json"], default="human")
     parser.add_argument("--output")
     args = parser.parse_args()
@@ -149,6 +184,7 @@ def main() -> None:
         task_text=args.task_text,
         impact_before_files=[Path(path) for path in args.impact_before],
         impact_after_files=[Path(path) for path in args.impact_after],
+        contract_file=Path(args.contract).resolve() if args.contract else None,
     )
 
     rendered = json.dumps(result, ensure_ascii=False, indent=2) if args.format == "json" else format_human_result(result)

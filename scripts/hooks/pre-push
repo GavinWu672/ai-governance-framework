@@ -11,9 +11,13 @@
 
 set -euo pipefail
 
-TOOL="governance_tools/contract_validator.py"
-SNAPSHOT_DIR="memory/governance_snapshots"
-RUNTIME_SCRIPT="scripts/run-runtime-governance.sh"
+HOOK_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(git -C "$HOOK_DIR" rev-parse --show-toplevel 2>/dev/null || pwd)"
+. "$REPO_ROOT/scripts/lib/python.sh"
+
+TOOL="$REPO_ROOT/governance_tools/contract_validator.py"
+SNAPSHOT_DIR="$REPO_ROOT/memory/governance_snapshots"
+RUNTIME_SCRIPT="$REPO_ROOT/scripts/run-runtime-governance.sh"
 
 if [ ! -f "$TOOL" ]; then
     exit 0
@@ -23,14 +27,16 @@ if [ ! -d "$SNAPSHOT_DIR" ]; then
     exit 0
 fi
 
-PYTHON_CMD="python"
-command -v python &>/dev/null || PYTHON_CMD="python3"
+if ! set_python_cmd; then
+    echo "⚠️  [governance] 找不到 Python，略過合規快照驗證"
+fi
 
 FAIL_COUNT=0
 for snapshot in "$SNAPSHOT_DIR"/*.txt; do
     [ -f "$snapshot" ] || continue
-    RESULT=$($PYTHON_CMD "$TOOL" --file "$snapshot" --format json 2>/dev/null) || true
-    STATUS=$(echo "$RESULT" | $PYTHON_CMD -c "import sys,json; d=json.load(sys.stdin); print(d.get('valid',True))" 2>/dev/null || echo "true")
+    [ "${#PYTHON_CMD[@]}" -gt 0 ] || break
+    RESULT=$("${PYTHON_CMD[@]}" "$TOOL" --file "$snapshot" --format json 2>/dev/null) || true
+    STATUS=$(echo "$RESULT" | "${PYTHON_CMD[@]}" -c "import sys,json; d=json.load(sys.stdin); print(d.get('valid',True))" 2>/dev/null || echo "true")
     if [ "$STATUS" = "False" ]; then
         echo "⚠️  [governance] 合規快照不通過: $(basename "$snapshot")"
         FAIL_COUNT=$((FAIL_COUNT + 1))

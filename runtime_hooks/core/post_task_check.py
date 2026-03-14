@@ -14,11 +14,12 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from governance_tools.contract_validator import validate_contract
+from governance_tools.domain_contract_loader import load_domain_contract
 from governance_tools.driver_evidence_validator import validate_driver_evidence
 from governance_tools.failure_completeness_validator import validate_failure_completeness
 from governance_tools.public_api_diff_checker import check_public_api_diff
 from governance_tools.refactor_evidence_validator import validate_refactor_evidence
-from governance_tools.rule_pack_loader import parse_rule_list
+from governance_tools.rule_pack_loader import available_rule_packs, describe_rule_selection, parse_rule_list
 from memory_pipeline.session_snapshot import create_session_snapshot
 
 
@@ -107,8 +108,12 @@ def run_post_task_check(
     checks: dict | None = None,
     api_before_files: list[Path] | None = None,
     api_after_files: list[Path] | None = None,
+    contract_file: Path | None = None,
 ) -> dict:
-    validation = validate_contract(response_text)
+    domain_contract = load_domain_contract(contract_file) if contract_file else None
+    contract_rules_roots = [Path(path) for path in domain_contract.get("rule_roots", [])] if domain_contract else []
+    available_rules = available_rule_packs(contract_rules_roots + [Path(__file__).resolve().parents[2] / "governance" / "rules"])
+    validation = validate_contract(response_text, available_rules=available_rules if domain_contract else None)
     errors = list(validation.errors)
     warnings = list(validation.warnings)
     fields = validation.fields
@@ -128,6 +133,14 @@ def run_post_task_check(
 
     if resolved_memory_mode == "durable" and oversight == "review-required":
         warnings.append("Durable memory should typically be promoted after explicit review completion")
+
+    if domain_contract:
+        rules_roots = contract_rules_roots + [Path(__file__).resolve().parents[2] / "governance" / "rules"]
+        resolved_rule_packs = describe_rule_selection(resolved_rules, rules_roots)
+        if not resolved_rule_packs["valid"]:
+            errors.append(f"Unknown rule packs: {resolved_rule_packs['missing']}")
+    else:
+        resolved_rule_packs = None
 
     _merge_runtime_checks(errors, warnings, effective_checks)
     public_api_diff = _merge_public_api_diff_checks(
@@ -171,6 +184,8 @@ def run_post_task_check(
         "failure_completeness": failure_completeness,
         "refactor_evidence": refactor_evidence,
         "driver_evidence": driver_evidence,
+        "domain_contract": domain_contract,
+        "rule_packs": resolved_rule_packs,
         "errors": errors,
         "warnings": warnings,
     }
@@ -195,6 +210,8 @@ def format_human_result(result: dict) -> str:
         lines.append(f"refactor_evidence_ok={result['refactor_evidence']['ok']}")
     if result["driver_evidence"] is not None:
         lines.append(f"driver_evidence_ok={result['driver_evidence']['ok']}")
+    if result.get("domain_contract"):
+        lines.append(f"domain_contract={result['domain_contract']['name']}")
     for warning in result["warnings"]:
         lines.append(f"warning: {warning}")
     for error in result["errors"]:
@@ -215,6 +232,7 @@ def main() -> None:
     parser.add_argument("--checks-file")
     parser.add_argument("--api-before", action="append", default=[])
     parser.add_argument("--api-after", action="append", default=[])
+    parser.add_argument("--contract")
     parser.add_argument("--format", choices=["human", "json"], default="human")
     args = parser.parse_args()
 
@@ -237,6 +255,7 @@ def main() -> None:
         checks=checks,
         api_before_files=[Path(path) for path in args.api_before],
         api_after_files=[Path(path) for path in args.api_after],
+        contract_file=Path(args.contract).resolve() if args.contract else None,
     )
 
     if args.format == "json":

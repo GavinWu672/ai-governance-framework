@@ -4,6 +4,7 @@
 |---------|------|--------|------|
 | [todo-app-demo](todo-app-demo/) | 最小 CRUD API，15 分鐘體感治理效果 | Python / FastAPI | L1 |
 | [chaos-demo](chaos-demo/) | AI 亂改架構 vs 治理攔截，架構破壞 before/after | Python / 三層架構 | L2 |
+| [usb-hub-contract](usb-hub-contract/) | 最小 dual-repo domain plugin 樣板，驗證 `contract.yaml` / session-start / external rules | Markdown / Python | L2 |
 
 ## 如何使用
 

@@ -45,6 +45,8 @@ Active rule injection:
 
 - `pre_task_check.py` now returns both rule-pack selection metadata and loaded active rule content
 - active rules are loaded from `governance/rules/<pack>/*.md`
+- `pre_task_check.py`, `session_start.py`, and `post_task_check.py` now also accept `--contract <path/to/contract.yaml>`
+- external `contract.yaml` files can contribute additional `documents`, `rule_roots`, and `validators` without hardcoding repo coupling
 - runtime consumers should treat this payload as governance context, not as a general-purpose rule DSL
 - current seed packs include `common`, `python`, `cpp`, `refactor`, `csharp`, `swift`, `avalonia`, `kernel-driver`
 - pack categories distinguish `scope`, `language`, `framework`, and `platform`
@@ -95,6 +97,23 @@ Session start:
 
 - `core/session_start.py` builds an agent-start context from `state_generator.py` plus `pre_task_check.py`
 - it packages suggested rules, suggested skills, suggested agent, proposal guidance, and a full `change_proposal` artifact into one startup artifact
+- when `--contract` is supplied, startup context also includes discovered domain documents, extra rule roots, and validator metadata
+
+External domain contract:
+
+```yaml
+name: usb-hub-firmware
+documents:
+  - docs/start_session.md
+rule_roots:
+  - rules
+validators:
+  - validators/firmware_validator.py
+```
+
+- document and validator paths are resolved relative to `contract.yaml`
+- external rule packs are merged with the built-in `governance/rules/` packs
+- current validator discovery is metadata-first; execution hooks can be layered on later without changing the seam
 
 Examples:
 

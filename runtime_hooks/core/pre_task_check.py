@@ -15,6 +15,7 @@ if __package__ in (None, ""):
 
 from governance_tools.plan_freshness import check_freshness
 from governance_tools.architecture_impact_estimator import estimate_architecture_impact
+from governance_tools.domain_contract_loader import load_domain_contract
 from governance_tools.rule_pack_loader import describe_rule_selection, load_rule_content, parse_rule_list
 from governance_tools.rule_pack_suggester import suggest_rule_packs
 
@@ -79,12 +80,15 @@ def run_pre_task_check(
     task_text: str = "",
     impact_before_files: list[Path] | None = None,
     impact_after_files: list[Path] | None = None,
+    contract_file: Path | None = None,
 ) -> dict:
     plan_path = project_root / "PLAN.md"
     freshness = check_freshness(plan_path)
     requested_rules = parse_rule_list(rules)
-    rule_packs = describe_rule_selection(requested_rules)
-    active_rules = load_rule_content(requested_rules)
+    domain_contract = load_domain_contract(contract_file) if contract_file else None
+    rules_roots = [Path(path) for path in (domain_contract or {}).get("rule_roots", [])] + [Path(__file__).resolve().parents[2] / "governance" / "rules"]
+    rule_packs = describe_rule_selection(requested_rules, rules_roots)
+    active_rules = load_rule_content(requested_rules, rules_roots)
     rule_pack_suggestions = suggest_rule_packs(project_root, task_text=task_text)
     impact_before_files = impact_before_files or []
     impact_after_files = impact_after_files or []
@@ -136,6 +140,7 @@ def run_pre_task_check(
         "architecture_impact_preview": impact_preview,
         "rule_packs": rule_packs,
         "active_rules": active_rules,
+        "domain_contract": domain_contract,
         "errors": errors,
         "warnings": warnings,
     }
@@ -186,6 +191,7 @@ def main() -> None:
     parser.add_argument("--task-text", default="")
     parser.add_argument("--impact-before", action="append", default=[])
     parser.add_argument("--impact-after", action="append", default=[])
+    parser.add_argument("--contract")
     parser.add_argument("--format", choices=["human", "json"], default="human")
     args = parser.parse_args()
 
@@ -198,6 +204,7 @@ def main() -> None:
         task_text=args.task_text,
         impact_before_files=[Path(path) for path in args.impact_before],
         impact_after_files=[Path(path) for path in args.impact_after],
+        contract_file=Path(args.contract).resolve() if args.contract else None,
     )
 
     if args.format == "json":

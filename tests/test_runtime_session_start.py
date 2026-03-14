@@ -90,3 +90,48 @@ def test_session_start_human_output_is_actionable(local_session_start_root):
     assert "suggested_skills=code-style,governance-runtime,python,human-readable-cli" in output
     assert "suggested_agent=cli-agent" in output
     assert "proposal_rules=common" in output
+
+
+def test_session_start_can_load_domain_contract_with_external_rules(local_session_start_root):
+    plan = local_session_start_root / "PLAN.md"
+    plan.write_text(
+        "> **最後更新**: 2026-03-09\n"
+        "> **Owner**: Tester\n"
+        "> **Freshness**: Sprint (7d)\n",
+        encoding="utf-8",
+    )
+    contract_root = local_session_start_root / "usb_hub_contract"
+    (contract_root / "docs").mkdir(parents=True)
+    (contract_root / "rules" / "firmware").mkdir(parents=True)
+    (contract_root / "validators").mkdir(parents=True)
+    (contract_root / "docs" / "start_session.md").write_text("# Start\nRead board map.\n", encoding="utf-8")
+    (contract_root / "rules" / "firmware" / "safety.md").write_text("# Firmware rule\nValidate rollback.\n", encoding="utf-8")
+    (contract_root / "validators" / "firmware_validator.py").write_text("def validate():\n    return True\n", encoding="utf-8")
+    contract_file = contract_root / "contract.yaml"
+    contract_file.write_text(
+        "name: usb-hub-firmware\n"
+        "documents:\n"
+        "  - docs/start_session.md\n"
+        "rule_roots:\n"
+        "  - rules\n"
+        "validators:\n"
+        "  - validators/firmware_validator.py\n",
+        encoding="utf-8",
+    )
+
+    result = build_session_start_context(
+        project_root=local_session_start_root,
+        plan_path=plan,
+        rules="common,firmware",
+        risk="medium",
+        oversight="review-required",
+        memory_mode="candidate",
+        task_text="Validate firmware rollback boundary",
+        contract_file=contract_file,
+    )
+
+    assert result["ok"] is True
+    assert result["domain_contract"]["name"] == "usb-hub-firmware"
+    assert result["pre_task_check"]["active_rules"]["active_rules"][1]["name"] == "firmware"
+    assert "Read board map." in result["domain_contract"]["documents"][0]["content"]
+    assert result["domain_contract"]["validators"][0]["name"] == "firmware_validator"
