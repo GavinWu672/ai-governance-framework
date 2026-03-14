@@ -243,6 +243,7 @@ bash scripts/install-hooks.sh
 安裝後：`git commit` 時自動執行 `plan_freshness.py`，CRITICAL 狀態會擋下 commit。
 若安裝到其他 repo，hooks 會透過 `.git/hooks/ai-governance-framework-root` 回指 framework 本體，降低 external contract repo 的攔截失效風險。
 可再用 `governance_tools/hook_install_validator.py --repo /path/to/repo` 驗證 copied hooks 與 framework root 設定是否齊全。
+`scripts/install-hooks.sh` 預設會在安裝後自動執行這個 validator，讓 external repo 的接入流程更接近 install-and-verify。
 ---
 
 ## Runtime Layer

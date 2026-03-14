@@ -158,3 +158,12 @@
   - `tests/test_hook_install_validator.py` -> `4 passed`
   - `scripts/verify_phase_gates.sh` -> `314 passed`, `4/4 Gates`
 
+## 2026-03-14 - Install-And-Verify Hook Flow
+
+- Updated `scripts/install-hooks.sh` so real installs now auto-run `hook_install_validator.py` by default.
+- Added `--no-verify` for cases where only copying hooks is desired.
+- This lowers the friction between "hook installed" and "hook installation actually verified", especially for external contract repos.
+- Verification:
+  - `scripts/install-hooks.sh --target ../Kernel-Driver-Contract --dry-run`
+  - `scripts/verify_phase_gates.sh` -> `314 passed`, `4/4 Gates`
+

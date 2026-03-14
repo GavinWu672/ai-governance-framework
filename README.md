@@ -267,6 +267,7 @@ $env:AI_GOVERNANCE_PYTHON='C:\Path\To\python.exe'
 
 當 hooks 安裝到其他 repo 時，安裝腳本現在也會在目標 repo 的 `.git/hooks/` 下寫入 framework root 設定，讓 hook 仍能回到 `ai-governance-framework` 本體執行治理工具，而不是假設所有腳本都在目標 repo 裡。
 安裝後也可以用 `governance_tools/hook_install_validator.py --repo /path/to/repo` 檢查 copied hooks 與 framework root 設定是否完整。
+`scripts/install-hooks.sh` 預設也會在安裝完成後自動跑一次這個驗證；若只想安裝不驗證，可加 `--no-verify`。
 
 範例：
 

@@ -22,6 +22,7 @@
 - The example now includes `post_task_check --checks-file` fixtures so the advisory validator path can be exercised through a file-based runtime entrypoint.
 - Cross-repo git hooks can now write and reuse a framework-root pointer under `.git/hooks/ai-governance-framework-root`, so external contract repos can call back into `ai-governance-framework` instead of assuming the governance scripts live inside the target repo.
 - Hook installation now has a dedicated verifier via `governance_tools/hook_install_validator.py`, so copied hooks and framework-root wiring can be checked without relying only on dry-run output.
+- `scripts/install-hooks.sh` now behaves more like install-and-verify by default, automatically invoking `hook_install_validator.py` after a real install unless `--no-verify` is used.
 
 ## Next Steps
 
