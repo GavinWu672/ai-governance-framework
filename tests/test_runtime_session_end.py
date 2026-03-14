@@ -7,7 +7,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from runtime_hooks.core.session_end import run_session_end
+from runtime_hooks.core.session_end import format_human_result, run_session_end
 
 
 @pytest.fixture
@@ -250,3 +250,33 @@ def test_session_end_preserves_contract_context_in_summary_and_curated_artifact(
 
     curated_payload = json.loads(Path(result["curated_artifact"]).read_text(encoding="utf-8"))
     assert any(item["source"] == "contract_resolution" for item in curated_payload["items"])
+
+
+def test_session_end_human_output_includes_contract_context(local_project_root):
+    result = run_session_end(
+        project_root=local_project_root,
+        session_id="2026-03-12-10",
+        runtime_contract=_contract(rules=["common", "cpp", "kernel-driver"]),
+        checks={"ok": True, "errors": []},
+        contract_resolution={
+            "source": "explicit",
+            "path": "D:/Kernel-Driver-Contract/contract.yaml",
+        },
+        domain_contract={
+            "name": "kernel-driver-contract",
+            "raw": {
+                "domain": "kernel-driver",
+                "plugin_version": "1.0.0",
+            },
+        },
+        response_text="runtime output",
+        summary="Kernel-driver session human output",
+    )
+
+    output = format_human_result(result)
+
+    assert "contract_source=explicit" in output
+    assert "contract_path=D:/Kernel-Driver-Contract/contract.yaml" in output
+    assert "contract_name=kernel-driver-contract" in output
+    assert "contract_domain=kernel-driver" in output
+    assert "contract_plugin_version=1.0.0" in output

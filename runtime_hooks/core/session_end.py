@@ -195,6 +195,33 @@ def run_session_end(
     }
 
 
+def format_human_result(result: dict[str, Any]) -> str:
+    lines = [
+        f"ok={result['ok']}",
+        f"session_id={result['session_id']}",
+        f"decision={result['decision']}",
+        f"candidate_artifact={result['candidate_artifact']}",
+        f"curated_artifact={result['curated_artifact']}",
+        f"summary_artifact={result['summary_artifact']}",
+    ]
+    summary_payload = json.loads(Path(result["summary_artifact"]).read_text(encoding="utf-8"))
+    if summary_payload.get("contract_resolution_present"):
+        lines.append(f"contract_source={summary_payload.get('contract_source')}")
+        lines.append(f"contract_path={summary_payload.get('contract_path')}")
+        lines.append(f"contract_name={summary_payload.get('contract_name')}")
+        lines.append(f"contract_domain={summary_payload.get('contract_domain')}")
+        lines.append(f"contract_plugin_version={summary_payload.get('contract_plugin_version')}")
+    if result["snapshot"]:
+        lines.append(f"snapshot={result['snapshot']['snapshot_path']}")
+    if result["promotion"]:
+        lines.append(f"promotion={result['promotion']['status']}")
+    for warning in result["warnings"]:
+        lines.append(f"warning: {warning}")
+    for error in result["errors"]:
+        lines.append(f"error: {error}")
+    return "\n".join(lines)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Close a governance runtime session.")
     parser.add_argument("--project-root", default=".")
@@ -245,20 +272,7 @@ def main() -> None:
     if args.format == "json":
         print(json.dumps(result, ensure_ascii=False, indent=2))
     else:
-        print(f"ok={result['ok']}")
-        print(f"session_id={result['session_id']}")
-        print(f"decision={result['decision']}")
-        print(f"candidate_artifact={result['candidate_artifact']}")
-        print(f"curated_artifact={result['curated_artifact']}")
-        print(f"summary_artifact={result['summary_artifact']}")
-        if result["snapshot"]:
-            print(f"snapshot={result['snapshot']['snapshot_path']}")
-        if result["promotion"]:
-            print(f"promotion={result['promotion']['status']}")
-        for warning in result["warnings"]:
-            print(f"warning: {warning}")
-        for error in result["errors"]:
-            print(f"error: {error}")
+        print(format_human_result(result))
 
     sys.exit(0 if result["ok"] else 1)
 
