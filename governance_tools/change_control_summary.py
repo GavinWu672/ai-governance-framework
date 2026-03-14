@@ -39,6 +39,9 @@ def build_change_control_summary(
 
     proposal_summary = session_start.get("proposal_summary") or {}
     runtime_contract = session_start.get("runtime_contract") or {}
+    contract_resolution = session_start.get("contract_resolution") or {}
+    domain_contract = session_start.get("domain_contract") or {}
+    domain_raw = domain_contract.get("raw") or {}
     end_summary = session_end
 
     return {
@@ -48,6 +51,13 @@ def build_change_control_summary(
         "suggested_rules_preview": session_start.get("suggested_rules_preview", []) or [],
         "suggested_skills": session_start.get("suggested_skills", []) or [],
         "suggested_agent": session_start.get("suggested_agent"),
+        "contract_resolution": {
+            "source": contract_resolution.get("source"),
+            "path": contract_resolution.get("path") or session_start.get("resolved_contract_file"),
+            "name": domain_contract.get("name"),
+            "domain": domain_raw.get("domain"),
+            "plugin_version": domain_raw.get("plugin_version"),
+        },
         "proposal": {
             "recommended_risk": proposal_summary.get("recommended_risk"),
             "recommended_oversight": proposal_summary.get("recommended_oversight"),
@@ -72,6 +82,7 @@ def build_change_control_summary(
 def format_human_result(result: dict[str, Any]) -> str:
     proposal = result.get("proposal") or {}
     runtime = result.get("runtime") or {}
+    contract_resolution = result.get("contract_resolution") or {}
     lines = ["[change_control_summary]"]
     summary_parts = []
     if result.get("task"):
@@ -97,6 +108,13 @@ def format_human_result(result: dict[str, Any]) -> str:
         lines.append(f"suggested_skills={','.join(result['suggested_skills'])}")
     if result.get("suggested_agent"):
         lines.append(f"suggested_agent={result['suggested_agent']}")
+    if any(contract_resolution.get(key) for key in ("source", "path", "name", "domain", "plugin_version")):
+        lines.append("[contract_resolution]")
+        lines.append(f"contract_source={contract_resolution.get('source')}")
+        lines.append(f"contract_path={contract_resolution.get('path')}")
+        lines.append(f"contract_name={contract_resolution.get('name')}")
+        lines.append(f"contract_domain={contract_resolution.get('domain')}")
+        lines.append(f"plugin_version={contract_resolution.get('plugin_version')}")
 
     lines.append("[proposal]")
     lines.append(f"recommended_risk={proposal.get('recommended_risk')}")

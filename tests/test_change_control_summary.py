@@ -12,6 +12,17 @@ def test_change_control_summary_merges_proposal_and_runtime():
         session_start={
             "task_text": "Refactor Avalonia boundary",
             "runtime_contract": {"rules": ["common"], "risk": "medium", "oversight": "review-required"},
+            "contract_resolution": {
+                "source": "discovery",
+                "path": "D:/USB-Hub-Firmware-Architecture-Contract/contract.yaml",
+            },
+            "domain_contract": {
+                "name": "usb-hub-firmware-contract",
+                "raw": {
+                    "domain": "firmware",
+                    "plugin_version": "1.0.0",
+                },
+            },
             "suggested_rules_preview": ["common", "csharp", "avalonia", "refactor"],
             "suggested_skills": ["code-style", "governance-runtime"],
             "suggested_agent": "advanced-agent",
@@ -42,6 +53,8 @@ def test_change_control_summary_merges_proposal_and_runtime():
     assert result["task"] == "Refactor Avalonia boundary"
     assert result["requested_rules"] == ["common", "refactor"]
     assert result["active_rules"] == ["common"]
+    assert result["contract_resolution"]["source"] == "discovery"
+    assert result["contract_resolution"]["domain"] == "firmware"
     assert result["proposal"]["recommended_risk"] == "high"
     assert result["runtime"]["decision"] == "REVIEW_REQUIRED"
 
@@ -52,6 +65,17 @@ def test_change_control_summary_human_output_is_reviewable():
             session_start={
                 "task_text": "Improve CLI output",
                 "runtime_contract": {"rules": ["common"], "risk": "medium", "oversight": "review-required"},
+                "contract_resolution": {
+                    "source": "env",
+                    "path": "D:/Kernel-Driver-Contract/contract.yaml",
+                },
+                "domain_contract": {
+                    "name": "kernel-driver-contract",
+                    "raw": {
+                        "domain": "kernel-driver",
+                        "plugin_version": "1.0.0",
+                    },
+                },
                 "proposal_summary": {
                     "requested_rules": ["common"],
                     "recommended_risk": "medium",
@@ -75,6 +99,10 @@ def test_change_control_summary_human_output_is_reviewable():
 
     assert "[change_control_summary]" in output
     assert "summary=task=Improve CLI output | proposal_risk=medium | runtime_decision=AUTO_PROMOTE | promoted=True" in output
+    assert "[contract_resolution]" in output
+    assert "contract_source=env" in output
+    assert "contract_domain=kernel-driver" in output
+    assert "plugin_version=1.0.0" in output
     assert "expected_validators=failure_completeness_validator" in output
     assert "promoted=True" in output
 
@@ -87,6 +115,17 @@ def test_change_control_summary_accepts_smoke_envelope_shape():
             "result": {
                 "task_text": "Refactor Avalonia boundary",
                 "runtime_contract": {"rules": ["common"], "risk": "medium", "oversight": "review-required"},
+                "contract_resolution": {
+                    "source": "explicit",
+                    "path": "D:/USB-Hub-Firmware-Architecture-Contract/contract.yaml",
+                },
+                "domain_contract": {
+                    "name": "usb-hub-firmware-contract",
+                    "raw": {
+                        "domain": "firmware",
+                        "plugin_version": "1.0.0",
+                    },
+                },
                 "suggested_rules_preview": ["common", "csharp", "avalonia", "refactor"],
                 "suggested_skills": ["code-style", "governance-runtime"],
                 "suggested_agent": "advanced-agent",
@@ -105,3 +144,4 @@ def test_change_control_summary_accepts_smoke_envelope_shape():
     assert result["task"] == "Refactor Avalonia boundary"
     assert result["requested_rules"] == ["common", "refactor"]
     assert result["suggested_agent"] == "advanced-agent"
+    assert result["contract_resolution"]["source"] == "explicit"
