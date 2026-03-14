@@ -152,6 +152,8 @@ python governance_tools/example_readiness.py --format human
 python governance_tools/example_readiness.py --strict-runtime --format human
 ```
 
+這個模式特別適合放在 CI，因為 CI 已經會先安裝 `requirements.txt`。
+
 ---
 
 ## plan_freshness.py

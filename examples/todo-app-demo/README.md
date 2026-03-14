@@ -45,6 +45,12 @@ Then open:
 
 - `http://127.0.0.1:8000/health`
 
+After installing `requirements.txt`, you can also validate the example through the shared readiness checker:
+
+```bash
+python governance_tools/example_readiness.py --strict-runtime --format human
+```
+
 ## Read Next
 
 - `DEMO_LOG.md` for the walkthrough

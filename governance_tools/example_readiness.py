@@ -65,6 +65,27 @@ def _load_python_module(module_path: Path, module_name: str) -> None:
         raise ImportError(f"Could not load module spec for {module_path}")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
+    return module
+
+
+def _inspect_demo_module(module: Any) -> dict[str, Any]:
+    app = getattr(module, "app", None)
+    if app is None:
+        raise AttributeError("Example module does not expose 'app'")
+
+    route_paths = sorted(
+        {
+            getattr(route, "path")
+            for route in getattr(app, "routes", [])
+            if getattr(route, "path", None)
+        }
+    )
+    return {
+        "app_object_present": True,
+        "app_title": getattr(app, "title", None),
+        "route_paths": route_paths,
+        "health_route_present": "/health" in route_paths,
+    }
 
 
 def assess_example(
@@ -110,8 +131,16 @@ def assess_example(
         main_file = example_root / "src" / "main.py"
         if main_file.exists() and not missing_modules:
             try:
-                _load_python_module(main_file, f"example_{spec['name']}_main")
+                module = _load_python_module(main_file, f"example_{spec['name']}_main")
                 runtime_details["module_import_ok"] = True
+                runtime_details.update(_inspect_demo_module(module))
+                if not runtime_details.get("health_route_present"):
+                    runtime_ready = False
+                    message = "Runnable demo is missing the /health route"
+                    if strict_runtime:
+                        errors.append(message)
+                    else:
+                        warnings.append(message)
             except Exception as exc:  # pragma: no cover
                 runtime_ready = False
                 runtime_details["module_import_ok"] = False

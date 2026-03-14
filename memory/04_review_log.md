@@ -345,6 +345,21 @@
   - `governance_tools/example_readiness.py --format human`
   - `scripts/verify_phase_gates.sh` -> `332 passed`, `4/4 Gates`
 
+## 2026-03-15 - Strict Runnable Example Validation In CI
+
+- Strengthened `example_readiness.py` so runnable demos are no longer checked only by dependency presence and module import.
+- When dependencies are present, runnable-demo validation now also checks:
+  - that the module exposes `app`
+  - that the app advertises a `/health` route
+- Added a unit test covering this deeper runnable-demo smoke without requiring FastAPI.
+- Updated `.github/workflows/governance.yml` so GitHub Actions now runs:
+  - `python governance_tools/example_readiness.py --strict-runtime --format human`
+  after installing `requirements.txt`
+- This keeps local adoption checks permissive enough for contributors without demo dependencies, while making CI the strict verifier for runnable example health.
+- Verification:
+  - `tests/test_example_readiness.py` -> `3 passed`
+  - `scripts/verify_phase_gates.sh` -> `333 passed`, `4/4 Gates`
+
 ## 2026-03-14 - IC / SoC Governance Direction Recorded
 
 - Recorded a refined future-domain view for IC-related governance.
