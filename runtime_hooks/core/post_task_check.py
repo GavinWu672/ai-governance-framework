@@ -24,6 +24,7 @@ from governance_tools.public_api_diff_checker import check_public_api_diff
 from governance_tools.refactor_evidence_validator import validate_refactor_evidence
 from governance_tools.rule_pack_loader import available_rule_packs, describe_rule_selection, parse_rule_list
 from memory_pipeline.session_snapshot import create_session_snapshot
+from runtime_hooks.core.human_summary import build_summary_line, format_contract_summary_label
 
 
 def _merge_runtime_checks(errors: list[str], warnings: list[str], checks: dict | None) -> None:
@@ -250,16 +251,18 @@ def format_human_result(result: dict) -> str:
         f"compliant={result['compliant']}",
         f"memory_mode={result['memory_mode']}",
     ]
-    summary_parts = [
-        f"ok={result['ok']}",
-        f"compliant={result['compliant']}",
-        f"memory_mode={result['memory_mode']}",
-    ]
-    if contract_label:
-        summary_parts.append(
-            f"contract={contract_label}/{contract_risk}" if contract_risk != "unknown" else f"contract={contract_label}"
+    lines.append(
+        build_summary_line(
+            f"ok={result['ok']}",
+            f"compliant={result['compliant']}",
+            f"memory_mode={result['memory_mode']}",
+            (
+                f"contract={format_contract_summary_label(contract_label, contract_risk)}"
+                if contract_label
+                else None
+            ),
         )
-    lines.append(f"summary={' | '.join(summary_parts)}")
+    )
     if result["snapshot"]:
         lines.append(f"snapshot={result['snapshot']['snapshot_path']}")
     if result["public_api_diff"]:

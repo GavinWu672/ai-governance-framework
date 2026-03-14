@@ -20,6 +20,7 @@ from governance_tools.domain_governance_metadata import domain_risk_tier
 from governance_tools.domain_contract_loader import load_domain_contract
 from governance_tools.rule_pack_loader import describe_rule_selection, load_rule_content, parse_rule_list
 from governance_tools.rule_pack_suggester import suggest_rule_packs
+from runtime_hooks.core.human_summary import build_summary_line, format_contract_summary_label
 
 
 RISK_ORDER = {"low": 0, "medium": 1, "high": 2}
@@ -172,16 +173,18 @@ def format_human_result(result: dict) -> str:
         f"freshness={result['freshness']['status']}",
         f"rules={', '.join(result['runtime_contract']['rules'])}",
     ]
-    summary_parts = [
-        f"ok={result['ok']}",
-        f"freshness={result['freshness']['status']}",
-        f"rules={','.join(result['runtime_contract']['rules'])}",
-    ]
-    if contract_label:
-        summary_parts.append(
-            f"contract={contract_label}/{contract_risk}" if contract_risk != "unknown" else f"contract={contract_label}"
+    lines.append(
+        build_summary_line(
+            f"ok={result['ok']}",
+            f"freshness={result['freshness']['status']}",
+            f"rules={','.join(result['runtime_contract']['rules'])}",
+            (
+                f"contract={format_contract_summary_label(contract_label, contract_risk)}"
+                if contract_label
+                else None
+            ),
         )
-    lines.append(f"summary={' | '.join(summary_parts)}")
+    )
     preview = result.get("suggested_rules_preview") or []
     if preview:
         lines.append(f"suggested_rules_preview={','.join(preview)}")
