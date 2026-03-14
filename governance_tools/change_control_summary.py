@@ -10,18 +10,13 @@ import json
 from pathlib import Path
 from typing import Any
 
+from governance_tools.contract_context import contract_label, extract_contract_context, normalize_session_start_payload
+
 
 def _load_json(path: Path | None) -> dict[str, Any]:
     if path is None:
         return {}
     return json.loads(path.read_text(encoding="utf-8"))
-
-
-def _normalize_session_start_payload(payload: dict[str, Any]) -> dict[str, Any]:
-    if payload.get("event_type") == "session_start" and isinstance(payload.get("result"), dict):
-        return payload["result"]
-    return payload
-
 
 def _normalize_session_end_payload(payload: dict[str, Any]) -> dict[str, Any]:
     if payload.get("event_type") == "session_end" and isinstance(payload.get("result"), dict):
@@ -34,14 +29,12 @@ def build_change_control_summary(
     session_start: dict[str, Any] | None = None,
     session_end: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    session_start = _normalize_session_start_payload(session_start or {})
+    session_start = normalize_session_start_payload(session_start or {})
     session_end = _normalize_session_end_payload(session_end or {})
 
     proposal_summary = session_start.get("proposal_summary") or {}
     runtime_contract = session_start.get("runtime_contract") or {}
-    contract_resolution = session_start.get("contract_resolution") or {}
-    domain_contract = session_start.get("domain_contract") or {}
-    domain_raw = domain_contract.get("raw") or {}
+    resolved_contract_context = extract_contract_context(session_start)
     end_summary = session_end
 
     return {
@@ -51,13 +44,7 @@ def build_change_control_summary(
         "suggested_rules_preview": session_start.get("suggested_rules_preview", []) or [],
         "suggested_skills": session_start.get("suggested_skills", []) or [],
         "suggested_agent": session_start.get("suggested_agent"),
-        "contract_resolution": {
-            "source": contract_resolution.get("source"),
-            "path": contract_resolution.get("path") or session_start.get("resolved_contract_file"),
-            "name": domain_contract.get("name"),
-            "domain": domain_raw.get("domain"),
-            "plugin_version": domain_raw.get("plugin_version"),
-        },
+        "contract_resolution": resolved_contract_context,
         "proposal": {
             "recommended_risk": proposal_summary.get("recommended_risk"),
             "recommended_oversight": proposal_summary.get("recommended_oversight"),
@@ -93,9 +80,9 @@ def format_human_result(result: dict[str, Any]) -> str:
         summary_parts.append(f"runtime_decision={runtime.get('decision')}")
     if runtime.get("promoted") is not None:
         summary_parts.append(f"promoted={runtime.get('promoted')}")
-    contract_label = contract_resolution.get("domain") or contract_resolution.get("name")
-    if contract_label:
-        summary_parts.append(f"contract={contract_label}")
+    label = contract_label(contract_resolution)
+    if label:
+        summary_parts.append(f"contract={label}")
     if summary_parts:
         lines.append(f"summary={' | '.join(summary_parts)}")
 
