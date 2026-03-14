@@ -14,7 +14,6 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from governance_tools.change_proposal_builder import build_change_proposal
-from governance_tools.domain_contract_loader import load_domain_contract
 from governance_tools.domain_validator_loader import preflight_domain_validators
 from governance_tools.state_generator import generate_state
 from runtime_hooks.core.pre_task_check import run_pre_task_check
@@ -67,8 +66,9 @@ def build_session_start_context(
         impact_before_files=impact_before_files,
         impact_after_files=impact_after_files,
     )
-    domain_contract = load_domain_contract(contract_file) if contract_file else pre_task.get("domain_contract")
-    validator_preflight = preflight_domain_validators(contract_file) if contract_file else None
+    resolved_contract_file = Path(pre_task["resolved_contract_file"]) if pre_task.get("resolved_contract_file") else None
+    domain_contract = pre_task.get("domain_contract")
+    validator_preflight = preflight_domain_validators(resolved_contract_file) if resolved_contract_file else None
 
     return {
         "ok": state.get("error") is None and pre_task["ok"],
@@ -83,6 +83,8 @@ def build_session_start_context(
         "proposal_guidance": state.get("proposal_guidance"),
         "change_proposal": proposal,
         "proposal_summary": proposal.get("proposal_summary"),
+        "resolved_contract_file": str(resolved_contract_file) if resolved_contract_file else None,
+        "contract_resolution": pre_task.get("contract_resolution"),
         "domain_contract": domain_contract,
         "validator_preflight": validator_preflight,
         "state": state,
@@ -109,6 +111,11 @@ def format_human_result(result: dict) -> str:
         lines.append(f"suggested_skills={','.join(result['suggested_skills'])}")
     if result.get("suggested_agent"):
         lines.append(f"suggested_agent={result['suggested_agent']}")
+    contract_resolution = result.get("contract_resolution") or {}
+    if contract_resolution.get("source"):
+        lines.append(f"contract_source={contract_resolution['source']}")
+    if contract_resolution.get("path"):
+        lines.append(f"contract_path={contract_resolution['path']}")
     domain_contract = result.get("domain_contract") or {}
     if domain_contract:
         lines.append(f"domain_contract={domain_contract.get('name')}")

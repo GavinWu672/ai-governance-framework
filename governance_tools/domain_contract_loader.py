@@ -10,6 +10,8 @@ import json
 import sys
 from pathlib import Path
 
+from governance_tools.contract_resolver import resolve_contract
+
 
 def _parse_scalar(value: str) -> str:
     parsed = value.strip()
@@ -88,6 +90,20 @@ def _load_validator(path: Path) -> dict:
     }
 
 
+def resolve_domain_contract(
+    contract_file: str | Path | None,
+    *,
+    project_root: str | Path | None = None,
+    extra_paths: list[str | Path] | None = None,
+) -> Path | None:
+    resolution = resolve_contract(
+        contract_file,
+        project_root=project_root,
+        extra_paths=extra_paths,
+    )
+    return resolution.path
+
+
 def load_domain_contract(contract_file: str | Path | None) -> dict | None:
     if contract_file is None:
         return None
@@ -115,13 +131,21 @@ def load_domain_contract(contract_file: str | Path | None) -> dict | None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Load a domain contract from contract.yaml.")
-    parser.add_argument("--contract", required=True)
+    parser.add_argument("--contract")
+    parser.add_argument("--project-root")
     parser.add_argument("--format", choices=["human", "json"], default="human")
     args = parser.parse_args()
 
-    contract = load_domain_contract(args.contract)
+    resolution = resolve_contract(args.contract, project_root=args.project_root)
+    contract_path = resolution.path
+    contract = load_domain_contract(contract_path)
     if contract is None:
-        print("ERROR: contract not found", file=sys.stderr)
+        if resolution.error:
+            print(f"ERROR: {resolution.error}", file=sys.stderr)
+        else:
+            print("ERROR: contract not found", file=sys.stderr)
+            for warning in resolution.warnings:
+                print(f"warning: {warning}", file=sys.stderr)
         raise SystemExit(1)
 
     if args.format == "json":

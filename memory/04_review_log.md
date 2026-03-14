@@ -91,3 +91,18 @@
   - `tests/test_domain_contract_example.py tests/test_domain_validator_loader.py tests/test_runtime_post_task_check.py` -> `27 passed`
   - `tests/test_runtime_session_start.py tests/test_domain_contract_example.py tests/test_domain_validator_loader.py tests/test_runtime_post_task_check.py` -> `30 passed`
 
+## 2026-03-14 - Contract Auto-Discovery Resolver
+
+- Added `governance_tools/contract_resolver.py` so runtime hooks can resolve domain contracts without always requiring `--contract`.
+- Resolution order is now:
+  - explicit `--contract`
+  - `AI_GOVERNANCE_CONTRACT`
+  - bounded upward discovery from `project_root` or evidence file paths
+- Discovery is intentionally constrained:
+  - stop at `.git` boundary
+  - stop after ascending 3 levels
+  - warn instead of auto-selecting when multiple candidates are discovered
+- `pre_task_check.py`, `session_start.py`, and `post_task_check.py` now surface `contract_source` / `contract_path` so runtime behavior is not silent.
+- Verification:
+  - `tests/test_contract_resolver.py tests/test_domain_contract_loader.py tests/test_runtime_pre_task_check.py tests/test_runtime_session_start.py tests/test_runtime_post_task_check.py` -> `40 passed`
+

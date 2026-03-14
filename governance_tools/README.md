@@ -271,8 +271,10 @@ Rule-pack runtime support:
 Domain contract discovery:
 
 - `domain_contract_loader.py` loads a minimal `contract.yaml` without adding non-stdlib dependencies
+- `contract_resolver.py` resolves contracts through explicit path, environment override, and bounded upward discovery
 - supported keys today: `name`, `documents`, `rule_roots`, `validators`
 - `runtime_hooks/core/session_start.py`, `pre_task_check.py`, and `post_task_check.py` can all consume this contract with `--contract`
+- when `--contract` is omitted, runtime hooks fall back to `AI_GOVERNANCE_CONTRACT`, then bounded upward discovery
 - `validator_interface.py` defines the external validator contract
 - `domain_validator_loader.py` handles discovery, import isolation, startup preflight, and advisory execution routing
 

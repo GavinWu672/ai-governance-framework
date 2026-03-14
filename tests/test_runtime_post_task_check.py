@@ -307,3 +307,27 @@ def test_post_task_check_can_validate_external_rule_pack_from_contract(tmp_path)
     assert result["ok"] is True
     assert result["domain_contract"]["name"] == "usb-hub-firmware"
     assert result["rule_packs"]["valid"] is True
+
+
+def test_post_task_check_can_auto_discover_domain_contract_from_project_root(tmp_path):
+    (tmp_path / "rules" / "firmware").mkdir(parents=True)
+    (tmp_path / "rules" / "firmware" / "safety.md").write_text("# Firmware rule\nValidate rollback.\n", encoding="utf-8")
+    contract_file = tmp_path / "contract.yaml"
+    contract_file.write_text(
+        "name: usb-hub-firmware\n"
+        "rule_roots:\n"
+        "  - rules\n",
+        encoding="utf-8",
+    )
+
+    result = run_post_task_check(
+        _contract(RULES="common,firmware"),
+        risk="medium",
+        oversight="review-required",
+        project_root=tmp_path,
+    )
+
+    assert result["ok"] is True
+    assert result["domain_contract"]["name"] == "usb-hub-firmware"
+    assert result["contract_resolution"]["source"] == "discovery"
+    assert result["resolved_contract_file"] == str(contract_file.resolve())

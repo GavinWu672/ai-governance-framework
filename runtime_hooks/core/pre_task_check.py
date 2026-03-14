@@ -15,6 +15,7 @@ if __package__ in (None, ""):
 
 from governance_tools.plan_freshness import check_freshness
 from governance_tools.architecture_impact_estimator import estimate_architecture_impact
+from governance_tools.contract_resolver import resolve_contract
 from governance_tools.domain_contract_loader import load_domain_contract
 from governance_tools.rule_pack_loader import describe_rule_selection, load_rule_content, parse_rule_list
 from governance_tools.rule_pack_suggester import suggest_rule_packs
@@ -85,7 +86,9 @@ def run_pre_task_check(
     plan_path = project_root / "PLAN.md"
     freshness = check_freshness(plan_path)
     requested_rules = parse_rule_list(rules)
-    domain_contract = load_domain_contract(contract_file) if contract_file else None
+    contract_resolution = resolve_contract(contract_file, project_root=project_root)
+    resolved_contract_file = contract_resolution.path
+    domain_contract = load_domain_contract(resolved_contract_file) if resolved_contract_file else None
     rules_roots = [Path(path) for path in (domain_contract or {}).get("rule_roots", [])] + [Path(__file__).resolve().parents[2] / "governance" / "rules"]
     rule_packs = describe_rule_selection(requested_rules, rules_roots)
     active_rules = load_rule_content(requested_rules, rules_roots)
@@ -107,6 +110,10 @@ def run_pre_task_check(
 
     if risk == "high" and oversight == "auto":
         errors.append("High-risk tasks require oversight != auto")
+
+    warnings.extend(contract_resolution.warnings)
+    if contract_resolution.error:
+        errors.append(contract_resolution.error)
 
     _append_suggestion_warnings(warnings, requested_rules, rule_pack_suggestions)
     if impact_before_files or impact_after_files:
@@ -140,7 +147,14 @@ def run_pre_task_check(
         "architecture_impact_preview": impact_preview,
         "rule_packs": rule_packs,
         "active_rules": active_rules,
+        "contract_resolution": {
+            "source": contract_resolution.source,
+            "path": str(resolved_contract_file) if resolved_contract_file else None,
+            "warnings": contract_resolution.warnings,
+            "error": contract_resolution.error,
+        },
         "domain_contract": domain_contract,
+        "resolved_contract_file": str(resolved_contract_file) if resolved_contract_file else None,
         "errors": errors,
         "warnings": warnings,
     }
@@ -161,6 +175,11 @@ def format_human_result(result: dict) -> str:
     suggested_agent = result.get("suggested_agent")
     if suggested_agent:
         lines.append(f"suggested_agent={suggested_agent}")
+    contract_resolution = result.get("contract_resolution") or {}
+    if contract_resolution.get("source"):
+        lines.append(f"contract_source={contract_resolution['source']}")
+    if contract_resolution.get("path"):
+        lines.append(f"contract_path={contract_resolution['path']}")
     impact_preview = result.get("architecture_impact_preview") or {}
     if impact_preview:
         lines.append(f"impact_risk={impact_preview.get('recommended_risk')}")

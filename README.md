@@ -223,6 +223,14 @@ Platform packs:
   - 第二個 low-level domain slice
   - 已跑通 contract load、validator preflight、external rule activation、以及多 validator 的 advisory post-task loop
 
+為了降低接入摩擦，runtime hooks 現在也支援 contract auto-discovery：
+
+- 先使用明確 `--contract`
+- 否則讀 `AI_GOVERNANCE_CONTRACT`
+- 否則從 `project_root` 或 evidence 檔案路徑往上找 `contract.yaml`
+- discovery 最多往上 3 層，遇到 `.git` 邊界就停止
+- 若找到多個候選，不會靜默選第一個，而是回報 warning 要求明確指定
+
 ## 本機執行需求
 
 本 repo 的治理工具與 runtime hooks 需要 Python 3.9+。

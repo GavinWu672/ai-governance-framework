@@ -14,6 +14,7 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from governance_tools.contract_validator import validate_contract
+from governance_tools.contract_resolver import resolve_contract
 from governance_tools.domain_contract_loader import load_domain_contract
 from governance_tools.domain_validator_loader import build_domain_validation_payload, run_domain_validators
 from governance_tools.driver_evidence_validator import validate_driver_evidence
@@ -120,8 +121,16 @@ def run_post_task_check(
     api_before_files: list[Path] | None = None,
     api_after_files: list[Path] | None = None,
     contract_file: Path | None = None,
+    project_root: Path | None = None,
+    evidence_paths: list[Path] | None = None,
 ) -> dict:
-    domain_contract = load_domain_contract(contract_file) if contract_file else None
+    contract_resolution = resolve_contract(
+        contract_file,
+        project_root=project_root,
+        extra_paths=evidence_paths,
+    )
+    resolved_contract_file = contract_resolution.path
+    domain_contract = load_domain_contract(resolved_contract_file) if resolved_contract_file else None
     contract_rules_roots = [Path(path) for path in domain_contract.get("rule_roots", [])] if domain_contract else []
     available_rules = available_rule_packs(contract_rules_roots + [Path(__file__).resolve().parents[2] / "governance" / "rules"])
     validation = validate_contract(response_text, available_rules=available_rules if domain_contract else None)
@@ -144,6 +153,9 @@ def run_post_task_check(
 
     if resolved_memory_mode == "durable" and oversight == "review-required":
         warnings.append("Durable memory should typically be promoted after explicit review completion")
+    warnings.extend(contract_resolution.warnings)
+    if contract_resolution.error:
+        errors.append(contract_resolution.error)
 
     if domain_contract:
         rules_roots = contract_rules_roots + [Path(__file__).resolve().parents[2] / "governance" / "rules"]
@@ -178,7 +190,7 @@ def run_post_task_check(
             domain_contract=domain_contract,
         )
         domain_validator_results = run_domain_validators(
-            contract_file=contract_file,
+            contract_file=resolved_contract_file,
             payload=domain_payload,
             active_rule_ids=resolved_rules,
         )
@@ -206,6 +218,13 @@ def run_post_task_check(
         "rules": resolved_rules,
         "snapshot": snapshot_result,
         "checks": effective_checks if effective_checks else None,
+        "resolved_contract_file": str(resolved_contract_file) if resolved_contract_file else None,
+        "contract_resolution": {
+            "source": contract_resolution.source,
+            "path": str(resolved_contract_file) if resolved_contract_file else None,
+            "warnings": contract_resolution.warnings,
+            "error": contract_resolution.error,
+        },
         "public_api_diff": public_api_diff,
         "failure_completeness": failure_completeness,
         "refactor_evidence": refactor_evidence,
@@ -239,6 +258,11 @@ def format_human_result(result: dict) -> str:
         lines.append(f"driver_evidence_ok={result['driver_evidence']['ok']}")
     if result.get("domain_validator_results"):
         lines.append(f"domain_validator_count={len(result['domain_validator_results'])}")
+    contract_resolution = result.get("contract_resolution") or {}
+    if contract_resolution.get("source"):
+        lines.append(f"contract_source={contract_resolution['source']}")
+    if contract_resolution.get("path"):
+        lines.append(f"contract_path={contract_resolution['path']}")
     if result.get("domain_contract"):
         lines.append(f"domain_contract={result['domain_contract']['name']}")
     for warning in result["warnings"]:
@@ -261,6 +285,7 @@ def main() -> None:
     parser.add_argument("--checks-file")
     parser.add_argument("--api-before", action="append", default=[])
     parser.add_argument("--api-after", action="append", default=[])
+    parser.add_argument("--project-root")
     parser.add_argument("--contract")
     parser.add_argument("--format", choices=["human", "json"], default="human")
     args = parser.parse_args()
@@ -284,6 +309,8 @@ def main() -> None:
         checks=checks,
         api_before_files=[Path(path) for path in args.api_before],
         api_after_files=[Path(path) for path in args.api_after],
+        project_root=Path(args.project_root).resolve() if args.project_root else None,
+        evidence_paths=[Path(path).resolve() for path in [args.file, args.checks_file] if path],
         contract_file=Path(args.contract).resolve() if args.contract else None,
     )
 

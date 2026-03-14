@@ -237,3 +237,29 @@ def test_pre_task_check_includes_architecture_impact_preview(local_tmp_dir, monk
     assert "impact_validators=architecture_drift_checker,public_api_diff_checker,refactor_evidence_validator" in output
     assert "impact_evidence=architecture-review,regression-evidence,interface-stability-evidence,cleanup-or-rollback-evidence,public-api-review" in output
     assert not any("Architecture impact preview recommends risk" in warning for warning in result["warnings"])
+
+
+def test_pre_task_check_can_auto_discover_domain_contract(local_tmp_dir, monkeypatch):
+    monkeypatch.setattr(pre_task_check, "check_freshness", lambda _: _FreshnessStub())
+    (local_tmp_dir / "PLAN.md").write_text("> **Owner**: Tester\n", encoding="utf-8")
+    (local_tmp_dir / "rules" / "firmware").mkdir(parents=True)
+    (local_tmp_dir / "rules" / "firmware" / "safety.md").write_text("# Firmware rule\nValidate rollback.\n", encoding="utf-8")
+    (local_tmp_dir / "contract.yaml").write_text(
+        "name: usb-hub-firmware\n"
+        "rule_roots:\n"
+        "  - rules\n",
+        encoding="utf-8",
+    )
+
+    result = pre_task_check.run_pre_task_check(
+        local_tmp_dir,
+        rules="common,firmware",
+        risk="medium",
+        oversight="review-required",
+        memory_mode="candidate",
+    )
+
+    assert result["ok"] is True
+    assert result["domain_contract"]["name"] == "usb-hub-firmware"
+    assert result["contract_resolution"]["source"] == "discovery"
+    assert result["resolved_contract_file"].replace("\\", "/").endswith("/tests/_tmp_runtime_hooks/contract.yaml")

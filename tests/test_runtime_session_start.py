@@ -135,3 +135,36 @@ def test_session_start_can_load_domain_contract_with_external_rules(local_sessio
     assert result["pre_task_check"]["active_rules"]["active_rules"][1]["name"] == "firmware"
     assert "Read board map." in result["domain_contract"]["documents"][0]["content"]
     assert result["domain_contract"]["validators"][0]["name"] == "firmware_validator"
+
+
+def test_session_start_can_auto_discover_domain_contract(local_session_start_root):
+    plan = local_session_start_root / "PLAN.md"
+    plan.write_text(
+        "> **最後更新**: 2026-03-09\n"
+        "> **Owner**: Tester\n"
+        "> **Freshness**: Sprint (7d)\n",
+        encoding="utf-8",
+    )
+    (local_session_start_root / "rules" / "firmware").mkdir(parents=True)
+    (local_session_start_root / "rules" / "firmware" / "safety.md").write_text("# Firmware rule\nValidate rollback.\n", encoding="utf-8")
+    (local_session_start_root / "contract.yaml").write_text(
+        "name: usb-hub-firmware\n"
+        "rule_roots:\n"
+        "  - rules\n",
+        encoding="utf-8",
+    )
+
+    result = build_session_start_context(
+        project_root=local_session_start_root,
+        plan_path=plan,
+        rules="common,firmware",
+        risk="medium",
+        oversight="review-required",
+        memory_mode="candidate",
+        task_text="Validate firmware rollback boundary",
+    )
+
+    assert result["ok"] is True
+    assert result["domain_contract"]["name"] == "usb-hub-firmware"
+    assert result["contract_resolution"]["source"] == "discovery"
+    assert result["resolved_contract_file"].replace("\\", "/").endswith("/tests/_tmp_session_start/contract.yaml")

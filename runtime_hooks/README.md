@@ -47,6 +47,12 @@ Active rule injection:
 - active rules are loaded from `governance/rules/<pack>/*.md`
 - `pre_task_check.py`, `session_start.py`, and `post_task_check.py` now also accept `--contract <path/to/contract.yaml>`
 - external `contract.yaml` files can contribute additional `documents`, `rule_roots`, and `validators` without hardcoding repo coupling
+- when `--contract` is omitted, runtime hooks now resolve contracts in this order:
+  - explicit `--contract`
+  - `AI_GOVERNANCE_CONTRACT`
+  - upward discovery from `project_root` or evidence file paths
+- upward discovery is bounded on purpose: stop at `.git` or after ascending 3 levels
+- if multiple contract candidates are found, the runtime emits a warning and continues in generic mode instead of auto-picking one
 - `session_start.py` now performs validator preflight so broken external validators fail early in startup context
 - runtime consumers should treat this payload as governance context, not as a general-purpose rule DSL
 - current seed packs include `common`, `python`, `cpp`, `refactor`, `csharp`, `swift`, `avalonia`, `kernel-driver`
@@ -106,6 +112,7 @@ Session start:
 - `core/session_start.py` builds an agent-start context from `state_generator.py` plus `pre_task_check.py`
 - it packages suggested rules, suggested skills, suggested agent, proposal guidance, and a full `change_proposal` artifact into one startup artifact
 - when `--contract` is supplied, startup context also includes discovered domain documents, extra rule roots, and validator metadata
+- when a contract is resolved, human output now also shows `contract_source=...` and `contract_path=...`
 - startup human output now also surfaces validator preflight status and per-validator readiness
 
 External domain contract:
