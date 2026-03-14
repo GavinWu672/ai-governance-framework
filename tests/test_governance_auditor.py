@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import shutil
 from pathlib import Path
 
@@ -20,6 +21,11 @@ def _reset_fixture(name: str) -> Path:
 def _write(path: Path, content: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding="utf-8")
+
+
+def _write_json(path: Path, payload: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 def _seed_minimal_project(root: Path) -> None:
@@ -70,3 +76,37 @@ def test_governance_auditor_detects_build_boundary_alignment_drift():
 
     assert result["ok"] is False
     assert any("alignment:build-boundary" in error for error in result["errors"])
+
+
+def test_governance_auditor_can_include_external_onboarding_index():
+    root = _reset_fixture("with_external_repos")
+    _seed_minimal_project(root)
+    ok_repo = root / "external-ok"
+    bad_repo = root / "external-bad"
+
+    _write_json(
+        ok_repo / "memory" / "governance_onboarding" / "latest.json",
+        {
+            "ok": True,
+            "generated_at": "2026-03-15T00:00:00+00:00",
+            "contract_path": "ok-contract.yaml",
+            "readiness": {"ready": True, "errors": []},
+            "smoke": {"ok": True, "rules": ["common", "firmware"], "errors": []},
+        },
+    )
+    _write_json(
+        bad_repo / "memory" / "governance_onboarding" / "latest.json",
+        {
+            "ok": False,
+            "generated_at": "2026-03-15T00:00:00+00:00",
+            "contract_path": "bad-contract.yaml",
+            "readiness": {"ready": False, "errors": ["missing hooks"]},
+            "smoke": {"ok": False, "rules": ["common"], "errors": ["bad contract"]},
+        },
+    )
+
+    result = audit_governance(root, external_repos=[ok_repo, bad_repo])
+
+    assert result["ok"] is False
+    assert result["external_onboarding"]["indexed_count"] == 2
+    assert any("external:onboarding-index" in error for error in result["errors"])

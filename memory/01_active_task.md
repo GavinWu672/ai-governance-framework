@@ -29,6 +29,7 @@
 - External repo onboarding now also emits a JSON onboarding report, so readiness/smoke status can be tracked after the shell session instead of living only in terminal output.
 - Onboarding artifacts now keep `latest + history + index`, so external repo setup state has a minimal audit trail rather than a single overwritten report.
 - The framework repo can now build a cross-repo onboarding index, so multiple external contract repos can be reviewed together instead of one-by-one.
+- `governance_auditor.py` can now optionally incorporate external onboarding state, so framework self-audits can surface external repo adoption drift as part of the same report.
 
 ## Next Steps
 

@@ -9,6 +9,8 @@ import argparse
 import json
 from pathlib import Path
 
+from governance_tools.external_repo_onboarding_index import build_external_repo_onboarding_index
+
 
 REQUIRED_DOCS = [
     "governance/SYSTEM_PROMPT.md",
@@ -35,7 +37,7 @@ def _read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
-def audit_governance(project_root: Path) -> dict:
+def audit_governance(project_root: Path, external_repos: list[Path] | None = None) -> dict:
     errors: list[str] = []
     warnings: list[str] = []
     checks: list[dict[str, object]] = []
@@ -113,28 +115,48 @@ def audit_governance(project_root: Path) -> dict:
     if "runtime-enforcement" not in workflow_text:
         warnings.append("Workflow job name 'runtime-enforcement' was not found; enforcement may be harder to locate.")
 
+    external_onboarding = None
+    if external_repos:
+        external_onboarding = build_external_repo_onboarding_index(external_repos)
+        add_check(
+            "external:onboarding-index",
+            external_onboarding["ok"],
+            "one or more external repos are missing onboarding reports or have failing onboarding state",
+        )
+        for missing in external_onboarding.get("missing_reports", []):
+            warnings.append(f"External onboarding report missing: {missing}")
+
     return {
         "ok": len(errors) == 0,
         "project_root": str(project_root),
         "checks": checks,
         "errors": errors,
         "warnings": warnings,
+        "external_onboarding": external_onboarding,
     }
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Audit governance constitution/runtime alignment.")
     parser.add_argument("--project-root", default=".")
+    parser.add_argument("--external-repo", action="append", default=[])
     parser.add_argument("--format", choices=["human", "json"], default="human")
     args = parser.parse_args()
 
-    result = audit_governance(Path(args.project_root).resolve())
+    result = audit_governance(
+        Path(args.project_root).resolve(),
+        external_repos=[Path(item) for item in args.external_repo],
+    )
 
     if args.format == "json":
         print(json.dumps(result, ensure_ascii=False, indent=2))
     else:
         print(f"ok={result['ok']}")
         print(f"checks={len(result['checks'])}")
+        external_onboarding = result.get("external_onboarding")
+        if external_onboarding is not None:
+            print(f"external_repo_count={external_onboarding['repo_count']}")
+            print(f"external_indexed_count={external_onboarding['indexed_count']}")
         for warning in result["warnings"]:
             print(f"warning: {warning}")
         for error in result["errors"]:

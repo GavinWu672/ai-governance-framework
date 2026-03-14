@@ -245,6 +245,14 @@
   - `tests/test_external_repo_onboarding_index.py` -> `3 passed`
   - `scripts/verify_phase_gates.sh` -> `326 passed`, `4/4 Gates`
 
+## 2026-03-15 - Auditor Integration For External Onboarding
+
+- Extended `governance_tools/governance_auditor.py` so it can optionally include external onboarding state through `--external-repo`.
+- This keeps external repo onboarding drift inside the same high-level governance audit surface instead of creating a fully separate reporting lane.
+- Verification:
+  - `tests/test_governance_auditor.py` -> `4 passed`
+  - `scripts/verify_phase_gates.sh` -> `327 passed`, `4/4 Gates`
+
 ## 2026-03-14 - IC / SoC Governance Direction Recorded
 
 - Recorded a refined future-domain view for IC-related governance.
