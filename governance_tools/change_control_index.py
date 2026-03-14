@@ -6,6 +6,7 @@ Build an index over generated change-control artifacts.
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 
@@ -37,10 +38,46 @@ def _priority_score(summary_line: str | None) -> tuple[int, str]:
     return (risk_rank, -decision_rank - promoted_rank, text)
 
 
+def _load_json(path: Path) -> dict:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _normalize_session_start_payload(payload: dict) -> dict:
+    if payload.get("event_type") == "session_start" and isinstance(payload.get("result"), dict):
+        return payload["result"]
+    return payload
+
+
+def _contract_resolution_suffix(session_start_json: Path | None) -> str:
+    if session_start_json is None or not session_start_json.exists():
+        return ""
+
+    try:
+        payload = _normalize_session_start_payload(_load_json(session_start_json))
+    except (OSError, json.JSONDecodeError):
+        return ""
+
+    contract_resolution = payload.get("contract_resolution") or {}
+    domain_contract = payload.get("domain_contract") or {}
+    domain_raw = domain_contract.get("raw") or {}
+
+    parts = []
+    if contract_resolution.get("source"):
+        parts.append(f"contract_source={contract_resolution['source']}")
+    if domain_contract.get("name"):
+        parts.append(f"contract_name={domain_contract['name']}")
+    if domain_raw.get("domain"):
+        parts.append(f"contract_domain={domain_raw['domain']}")
+    if domain_raw.get("plugin_version"):
+        parts.append(f"plugin_version={domain_raw['plugin_version']}")
+    return " | " + " | ".join(parts) if parts else ""
+
+
 def build_change_control_index(artifacts_dir: Path) -> str:
     summary_files = sorted(artifacts_dir.glob("*_change_control_summary.txt"))
     session_files = sorted(artifacts_dir.glob("*_session_start.txt"))
     json_files = sorted(artifacts_dir.glob("*_session_start.json"))
+    json_lookup = {path.name.replace("_session_start.json", ""): path for path in json_files}
     summary_entries = [(path, _extract_summary_line(path)) for path in summary_files]
     priority_entries = sorted(summary_entries, key=lambda item: _priority_score(item[1]))
 
@@ -63,16 +100,20 @@ def build_change_control_index(artifacts_dir: Path) -> str:
     if priority_entries:
         lines.append("[priority_change_control_summaries]")
         for path, summary_line in priority_entries:
+            session_start_json = json_lookup.get(path.name.replace("_change_control_summary.txt", ""))
+            suffix = _contract_resolution_suffix(session_start_json)
             if summary_line:
-                lines.append(f"{path.name} | {summary_line}")
+                lines.append(f"{path.name} | {summary_line}{suffix}")
             else:
                 lines.append(path.name)
 
     if summary_entries:
         lines.append("[change_control_summaries]")
         for path, summary_line in summary_entries:
+            session_start_json = json_lookup.get(path.name.replace("_change_control_summary.txt", ""))
+            suffix = _contract_resolution_suffix(session_start_json)
             if summary_line:
-                lines.append(f"{path.name} | {summary_line}")
+                lines.append(f"{path.name} | {summary_line}{suffix}")
             else:
                 lines.append(path.name)
 
