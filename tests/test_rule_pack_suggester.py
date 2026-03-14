@@ -69,3 +69,17 @@ def test_rule_pack_suggester_scope_is_advisory_only():
     assert any(item["name"] == "refactor" for item in result["scope_packs"])
     assert all(item.get("advisory_only") is True for item in result["scope_packs"])
     assert "refactor" in result["suggested_rules_preview"]
+
+
+def test_rule_pack_suggester_ignores_contract_scaffolding_language_noise():
+    root = _reset_fixture("contract_scaffolding")
+    _write(root / "contract.yaml", "name: sample-contract\n")
+    _write(root / "validators" / "sample_validator.py", "print('validator')\n")
+    _write(root / "fixtures" / "src" / "driver.c", "void DriverEntry(void) {}\n")
+    _write(root / "README.md", "# sample\n")
+
+    result = suggest_rule_packs(root)
+
+    assert result["language_packs"] == []
+    assert result["suggested_rules"] == ["common"]
+    assert result["suggested_agent"] == "advanced-agent"

@@ -63,9 +63,24 @@ def _iter_files(project_root: Path) -> list[Path]:
     return [path for path in project_root.rglob("*") if path.is_file() and ".git" not in path.parts]
 
 
+def _filter_language_signal_files(files: list[Path], project_root: Path) -> list[Path]:
+    if not (project_root / "contract.yaml").exists():
+        return files
+
+    ignored_roots = {"validators", "fixtures", "memory"}
+    filtered = []
+    for path in files:
+        rel_parts = path.relative_to(project_root).parts
+        if rel_parts and rel_parts[0] in ignored_roots:
+            continue
+        filtered.append(path)
+    return filtered
+
+
 def _detect_languages(files: list[Path], project_root: Path) -> list[dict]:
     suggestions = []
-    rel_paths = [str(path.relative_to(project_root)).replace("\\", "/") for path in files]
+    signal_files = _filter_language_signal_files(files, project_root)
+    rel_paths = [str(path.relative_to(project_root)).replace("\\", "/") for path in signal_files]
 
     for pack, patterns in LANGUAGE_SIGNALS:
         matched = []
