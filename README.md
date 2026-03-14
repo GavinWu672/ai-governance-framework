@@ -23,6 +23,13 @@ AI 在長期專案裡常見的問題不是單次回答不夠聰明，而是：
 
 `AI -> runtime governance -> task execution -> session lifecycle -> memory governance`
 
+目前更精確的定位是：
+
+- 一個可運行的 `AI Coding Runtime Governance Framework prototype`
+- 具備完整的 runtime governance spine，而不是只有靜態 policy 文件
+- 已建立 external domain validator seam，並已跑通第一個 firmware domain vertical slice
+- 仍在持續補強 semantic verification、workflow embedding 與 interception coverage
+
 ## 核心能力
 
 ### 1. 治理憲法
@@ -75,6 +82,9 @@ AI 在長期專案裡常見的問題不是單次回答不夠聰明，而是：
 - `post_task_check`
 - `session_end`
 - Claude Code / Codex / Gemini adapters
+- `session_start -> pre_task_check -> post_task_check -> session_end -> memory pipeline`
+
+這條 runtime governance loop 已經形成，但目前 interception coverage 尚未完全封閉，仍有部分 IDE / local edit / direct commit path 可能繞過。
 
 ### 4. Memory Pipeline
 
@@ -117,6 +127,7 @@ Platform packs:
 - `swift` 聚焦 concurrency 與 native interop boundary
 - `kernel-driver` 聚焦 IRQL、memory boundary、cleanup / unwind 等高權限風險
 - `kernel-driver` 證據應優先來自 SDV / SAL / WDK 類分析結果與 driver-focused tests，而不是自製全能 parser
+- Rule packs 目前比較接近 policy activation layer，而不是完整 policy engine
 - `test_result_ingestor.py` 現在除了 `pytest-text` / `junit-xml`，也可正規化 `sdv-text`、`msbuild-warning-text`、`sarif`、`wdk-analysis-text`
 - `architecture_drift_checker.py` 現在除了 high-signal heuristic，也支援 before/after dependency edge diff
 - `state_generator.py` 現在會附帶 advisory `rule_pack_suggestions`，但不會自動改寫 `runtime_contract.rules`
@@ -140,6 +151,22 @@ Platform packs:
   - evidence forecaster (`expected_validators`, `required_evidence`)
   - impact signals (`concerns`, `recommended_risk`, `recommended_oversight`)
   - 只做 advisory impact estimation，不直接替代治理裁決
+
+### 6. External Domain Seam
+
+目前已支援外部 domain extension seam：
+
+- `contract.yaml` discovery
+- external rule roots
+- validator preflight
+- advisory validator execution
+
+第一個 vertical slice 是 `examples/usb-hub-contract/`，目前已可：
+
+- 載入 firmware domain documents 與 behavior overrides
+- 啟用外部 `hub-firmware` rule pack
+- 執行 `interrupt_safety_validator.py`
+- 從 `diff_text`、unified diff、changed source files、以及 file-based `checks-file` / `diff_file` evidence 推導 interrupt context
 
 ## 本機執行需求
 
@@ -506,12 +533,12 @@ GitHub Actions workflow 在：
 
 ## 目前邊界
 
-這個 repo 的定位是 **governance framework**，不是通用 agent platform。
+這個 repo 的定位是 **runtime governance framework prototype**，不是通用 agent platform。
 
 它專注處理：
 
 - governance constitution
-- runtime interception
+- runtime governance lifecycle
 - session lifecycle close
 - memory governance
 - reviewable project truth

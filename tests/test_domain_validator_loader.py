@@ -182,3 +182,35 @@ void USB_ISR(void) {
     assert payload["changed_functions"] == ["USB_ISR"]
     assert payload["interrupt_functions"] == ["USB_ISR"]
     assert "printf" in payload["isr_code"]
+
+
+def test_build_domain_validation_payload_can_extract_functions_from_diff_file(tmp_path):
+    diff_file = tmp_path / "usb_hub.patch"
+    diff_file.write_text(
+        """
+diff --git a/src/usb_hub.c b/src/usb_hub.c
+index 1111111..2222222 100644
+--- a/src/usb_hub.c
++++ b/src/usb_hub.c
+@@ -40,6 +40,11 @@ static void CFU_Handler(void) {
+     return;
+ }
++
++void USB_ISR(void) {
++    printf("bad");
++}
+""".strip(),
+        encoding="utf-8",
+    )
+
+    payload = build_domain_validation_payload(
+        response_text="response",
+        checks={"diff_file": str(diff_file)},
+        fields={"RULES": "common,hub-firmware"},
+        resolved_rules=["common", "hub-firmware"],
+        domain_contract={"documents": [], "ai_behavior_override": []},
+    )
+
+    assert payload["changed_functions"] == ["USB_ISR"]
+    assert payload["interrupt_functions"] == ["USB_ISR"]
+    assert "printf" in payload["isr_code"]

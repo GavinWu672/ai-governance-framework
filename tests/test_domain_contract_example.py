@@ -230,3 +230,70 @@ def test_usb_hub_example_post_task_cli_can_consume_checks_file_fixture():
     assert "printf" in result["domain_validator_results"][0]["warnings"][0]
     assert result["domain_validator_results"][0]["metadata"]["interrupt_functions"] == ["USB_ISR"]
     assert any("domain-validator:interrupt_safety_validator:" in warning for warning in result["warnings"])
+
+
+def test_usb_hub_example_post_task_cli_can_consume_diff_file_checks(tmp_path):
+    diff_file = tmp_path / "interrupt_regression.patch"
+    diff_file.write_text(
+        """
+diff --git a/src/usb_hub.c b/src/usb_hub.c
+index 1111111..2222222 100644
+--- a/src/usb_hub.c
++++ b/src/usb_hub.c
+@@ -40,6 +40,11 @@ static void CFU_Handler(void) {
+     return;
+ }
++
++void USB_ISR(void) {
++    printf("oops");
++}
+""".strip(),
+        encoding="utf-8",
+    )
+    checks_file = tmp_path / "interrupt_regression_diff_file.checks.json"
+    checks_file.write_text(
+        json.dumps(
+            {
+                "diff_file": str(diff_file.resolve()),
+                "changed_files": [str((EXAMPLE_FIXTURES / "src" / "usb_hub.c").resolve())],
+                "test_names": [
+                    "firmware_tests::test_cfu_failure_path_reports_error",
+                    "firmware_tests::test_interrupt_guard_cleanup_release",
+                ],
+                "warnings": [],
+                "errors": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    command = [
+        sys.executable,
+        "runtime_hooks/core/post_task_check.py",
+        "--file",
+        str((EXAMPLE_FIXTURES / "post_task_response.txt").resolve()),
+        "--risk",
+        "medium",
+        "--oversight",
+        "review-required",
+        "--checks-file",
+        str(checks_file.resolve()),
+        "--contract",
+        str(EXAMPLE_CONTRACT.resolve()),
+        "--format",
+        "json",
+    ]
+
+    completed = subprocess.run(
+        command,
+        cwd=Path(".").resolve(),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert completed.returncode == 0
+    result = json.loads(completed.stdout)
+    assert result["ok"] is True
+    assert "printf" in result["domain_validator_results"][0]["warnings"][0]
+    assert result["domain_validator_results"][0]["metadata"]["interrupt_functions"] == ["USB_ISR"]

@@ -92,6 +92,19 @@ def _normalize_diff_text(text: str) -> str:
     return "\n".join(normalized_lines)
 
 
+def _load_diff_file_texts(checks: dict) -> list[str]:
+    texts = []
+    for item in _normalize_string_list(checks.get("diff_file") or checks.get("diff_files")):
+        path = Path(item)
+        if not path.exists() or not path.is_file():
+            continue
+        try:
+            texts.append(_normalize_diff_text(path.read_text(encoding="utf-8", errors="ignore")))
+        except OSError:
+            continue
+    return texts
+
+
 def _load_changed_file_texts(checks: dict) -> list[str]:
     texts = []
     for item in _normalize_string_list(checks.get("changed_files") or checks.get("files")):
@@ -114,6 +127,7 @@ def _candidate_c_texts(checks: dict) -> list[str]:
                 candidates.append(_normalize_diff_text(value))
             else:
                 candidates.append(value)
+    candidates.extend(_load_diff_file_texts(checks))
     candidates.extend(_load_changed_file_texts(checks))
     return candidates
 
