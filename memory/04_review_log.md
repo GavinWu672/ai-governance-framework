@@ -395,6 +395,15 @@
   - `governance_tools/release_readiness.py --version v1.0.0-alpha --format human`
   - `scripts/verify_phase_gates.sh` -> `335 passed`, `4/4 Gates`
 
+## 2026-03-15 - Release-Aware Governance Auditor
+
+- Extended `governance_tools/governance_auditor.py` so high-level self-audits can optionally include release-facing readiness through `--release-version`.
+- This keeps constitution alignment, runtime enforcement alignment, external onboarding drift, and release-doc alignment on the same audit surface instead of splitting them into unrelated commands.
+- Added auditor regression coverage for the current alpha release baseline.
+- Verification:
+  - `tests/test_governance_auditor.py` -> `5 passed`
+  - `scripts/verify_phase_gates.sh` -> `336 passed`, `4/4 Gates`
+
 ## 2026-03-14 - IC / SoC Governance Direction Recorded
 
 - Recorded a refined future-domain view for IC-related governance.

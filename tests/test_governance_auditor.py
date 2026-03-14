@@ -56,6 +56,14 @@ def test_governance_auditor_passes_on_repo_root():
     assert result["errors"] == []
 
 
+def test_governance_auditor_can_include_release_readiness():
+    result = audit_governance(Path(".").resolve(), release_version="v1.0.0-alpha")
+
+    assert result["ok"] is True
+    assert result["release_readiness"]["ok"] is True
+    assert any(check["name"] == "release:readiness" and check["ok"] for check in result["checks"])
+
+
 def test_governance_auditor_detects_missing_runtime_enforcement():
     root = _reset_fixture("missing_runtime")
     _seed_minimal_project(root)

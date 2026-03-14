@@ -14,6 +14,7 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from governance_tools.external_repo_onboarding_index import build_external_repo_onboarding_index
+from governance_tools.release_readiness import assess_release_readiness
 
 
 REQUIRED_DOCS = [
@@ -41,7 +42,11 @@ def _read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
-def audit_governance(project_root: Path, external_repos: list[Path] | None = None) -> dict:
+def audit_governance(
+    project_root: Path,
+    external_repos: list[Path] | None = None,
+    release_version: str | None = None,
+) -> dict:
     errors: list[str] = []
     warnings: list[str] = []
     checks: list[dict[str, object]] = []
@@ -119,6 +124,16 @@ def audit_governance(project_root: Path, external_repos: list[Path] | None = Non
     if "runtime-enforcement" not in workflow_text:
         warnings.append("Workflow job name 'runtime-enforcement' was not found; enforcement may be harder to locate.")
 
+    release_readiness = None
+    if release_version:
+        release_readiness = assess_release_readiness(project_root, version=release_version)
+        add_check(
+            "release:readiness",
+            release_readiness["ok"],
+            "release-facing docs are not aligned for the requested version",
+        )
+        warnings.extend(release_readiness.get("warnings", []))
+
     external_onboarding = None
     if external_repos:
         external_onboarding = build_external_repo_onboarding_index(external_repos)
@@ -136,6 +151,7 @@ def audit_governance(project_root: Path, external_repos: list[Path] | None = Non
         "checks": checks,
         "errors": errors,
         "warnings": warnings,
+        "release_readiness": release_readiness,
         "external_onboarding": external_onboarding,
     }
 
@@ -144,12 +160,14 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Audit governance constitution/runtime alignment.")
     parser.add_argument("--project-root", default=".")
     parser.add_argument("--external-repo", action="append", default=[])
+    parser.add_argument("--release-version")
     parser.add_argument("--format", choices=["human", "json"], default="human")
     args = parser.parse_args()
 
     result = audit_governance(
         Path(args.project_root).resolve(),
         external_repos=[Path(item) for item in args.external_repo],
+        release_version=args.release_version,
     )
 
     if args.format == "json":
@@ -157,6 +175,10 @@ def main() -> None:
     else:
         print(f"ok={result['ok']}")
         print(f"checks={len(result['checks'])}")
+        release_readiness = result.get("release_readiness")
+        if release_readiness is not None:
+            print(f"release_version={release_readiness['version']}")
+            print(f"release_ready={release_readiness['ok']}")
         external_onboarding = result.get("external_onboarding")
         if external_onboarding is not None:
             print(f"external_repo_count={external_onboarding['repo_count']}")

@@ -254,7 +254,15 @@ Current enforcement and audit helpers:
 Assessment:
 
 - drift detection: `70%`
-- governance self-audit: `70%`
+- governance self-audit: `75%`
+
+Recent improvement:
+
+- `governance_auditor.py` can now optionally combine:
+  - constitution/runtime alignment
+  - external onboarding status
+  - release-facing trust-signal alignment
+  in the same high-level audit pass.
 
 ## Alpha / Seed Areas
 
