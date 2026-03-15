@@ -37,6 +37,7 @@ $env:AI_GOVERNANCE_PYTHON='C:\Path\To\python.exe'
 | [contract_validator.py](#contract_validatorpy) | AI 初始化合規驗證 | CI gate |
 | [quickstart_smoke.py](#quickstart_smokepy) | 最小上手流程驗證 | onboarding / quickstart |
 | [example_readiness.py](#example_readinesspy) | 範例集健康度檢查 | onboarding / examples |
+| [release_package_reader.py](#release_package_readerpy) | release package manifest reader | release prep / artifact consumption |
 | [release_package_summary.py](#release_package_summarypy) | release package 聚合摘要 | release prep / reviewer handoff |
 | [release_package_snapshot.py](#release_package_snapshotpy) | release package snapshot bundle | release prep / artifact publishing |
 | [release_readiness.py](#release_readinesspy) | release-facing 文件對齊檢查 | trust signal / release prep |
@@ -226,6 +227,35 @@ python governance_tools/release_package_summary.py --version v1.0.0-alpha --form
 - release 前最後一次 reviewer handoff
 - 想快速確認「release 這包」缺哪份文件
 - 想把 release-facing commands 收成單一入口，而不是手動翻 checklist
+
+---
+
+## release_package_reader.py
+
+讀取 `release_package_snapshot.py` 產生的 `MANIFEST.json`，把 release package bundle 轉成固定的 reviewer-first summary。
+
+```bash
+python governance_tools/release_package_reader.py \
+  --version v1.0.0-alpha \
+  --file artifacts/release-package/v1.0.0-alpha/MANIFEST.json \
+  --format human
+```
+
+若已經用 `--publish-docs-release` 發布到穩定的 repo-local 路徑，可直接改用：
+
+```bash
+python governance_tools/release_package_reader.py \
+  --version v1.0.0-alpha \
+  --project-root . \
+  --docs-release \
+  --format human
+```
+
+這個工具特別適合用在：
+
+- release 前快速確認最新 package bundle 是否存在且可讀
+- 不想手開 `MANIFEST.json`，只想看 summary 與主要路徑
+- 把 release package 的 publish path 變成穩定 reader flow
 
 ---
 
