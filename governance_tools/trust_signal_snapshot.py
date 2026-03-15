@@ -262,6 +262,100 @@ def write_published_status(snapshot: dict[str, Any], publish_dir: Path) -> dict[
     }
 
 
+def format_publication_index(
+    snapshot: dict[str, Any],
+    *,
+    bundle_paths: dict[str, str] | None = None,
+    published_paths: dict[str, str] | None = None,
+) -> str:
+    lines = [
+        "# Trust Signal Publication Index",
+        "",
+        f"- Generated at: `{snapshot['generated_at']}`",
+        f"- Release version: `{snapshot['release_version']}`",
+        f"- Contract path: `{snapshot.get('contract_path')}`",
+        f"- Strict runtime: `{snapshot['strict_runtime']}`",
+        "",
+        "## Surfaces",
+        "",
+        f"- Bundle published: `{bundle_paths is not None}`",
+        f"- Status pages published: `{published_paths is not None}`",
+    ]
+
+    if bundle_paths:
+        lines.extend(
+            [
+                "",
+                "## Bundle Paths",
+                "",
+                f"- Latest JSON: `{bundle_paths['latest_json']}`",
+                f"- Latest Text: `{bundle_paths['latest_txt']}`",
+                f"- Latest Markdown: `{bundle_paths['latest_md']}`",
+                f"- History JSON: `{bundle_paths['history_json']}`",
+                f"- History Text: `{bundle_paths['history_txt']}`",
+                f"- History Markdown: `{bundle_paths['history_md']}`",
+                f"- Index: `{bundle_paths['index_md']}`",
+                f"- Manifest: `{bundle_paths['manifest_json']}`",
+            ]
+        )
+
+    if published_paths:
+        lines.extend(
+            [
+                "",
+                "## Published Status Paths",
+                "",
+                f"- Latest Markdown: `{published_paths['latest_md']}`",
+                f"- Latest JSON: `{published_paths['latest_json']}`",
+                f"- Readme: `{published_paths['readme_md']}`",
+                f"- History Markdown: `{published_paths['history_md']}`",
+                f"- History JSON: `{published_paths['history_json']}`",
+                f"- Index: `{published_paths['index_md']}`",
+                f"- Manifest: `{published_paths['manifest_json']}`",
+            ]
+        )
+
+    return "\n".join(lines)
+
+
+def write_publication_manifest(
+    snapshot: dict[str, Any],
+    root_dir: Path,
+    *,
+    bundle_paths: dict[str, str] | None = None,
+    published_paths: dict[str, str] | None = None,
+) -> dict[str, str]:
+    root_dir.mkdir(parents=True, exist_ok=True)
+    manifest_json = root_dir / "PUBLICATION_MANIFEST.json"
+    index_md = root_dir / "PUBLICATION_INDEX.md"
+
+    manifest_json.write_text(
+        json.dumps(
+            {
+                "generated_at": snapshot["generated_at"],
+                "release_version": snapshot["release_version"],
+                "contract_path": snapshot.get("contract_path"),
+                "strict_runtime": snapshot["strict_runtime"],
+                "bundle": bundle_paths,
+                "published": published_paths,
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    index_md.write_text(
+        format_publication_index(snapshot, bundle_paths=bundle_paths, published_paths=published_paths) + "\n",
+        encoding="utf-8",
+    )
+
+    return {
+        "manifest_json": str(manifest_json),
+        "index_md": str(index_md),
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Generate a trust-signal snapshot bundle.")
     parser.add_argument("--project-root", default=".")
@@ -303,12 +397,35 @@ def main() -> int:
             print("[snapshot_bundle]")
             for key, value in paths.items():
                 print(f"{key}={value}")
+    else:
+        paths = None
     if args.publish_status_dir:
         published = write_published_status(snapshot, Path(args.publish_status_dir))
         if args.format == "human":
             print("")
             print("[published_status]")
             for key, value in published.items():
+                print(f"{key}={value}")
+    else:
+        published = None
+
+    publication = None
+    publication_root = None
+    if args.write_bundle:
+        publication_root = Path(args.write_bundle)
+    elif args.publish_status_dir:
+        publication_root = Path(args.publish_status_dir)
+    if publication_root is not None:
+        publication = write_publication_manifest(
+            snapshot,
+            publication_root,
+            bundle_paths=paths,
+            published_paths=published,
+        )
+        if args.format == "human":
+            print("")
+            print("[publication_manifest]")
+            for key, value in publication.items():
                 print(f"{key}={value}")
 
     print(rendered)

@@ -427,7 +427,7 @@ python governance_tools/trust_signal_snapshot.py --project-root . --plan PLAN.md
 ```
 
 CI now also generates trust-signal snapshot bundles, so this high-level view is not limited to local terminal output.
-Each bundle now also includes manifest metadata and published history/index pages, so tools or readers can tell which snapshot is current without inferring from filenames alone.
+Each bundle now also includes manifest metadata, published history/index pages, and a publication-level manifest/index, so tools or readers can tell which snapshot is current without inferring from filenames alone.
 
 ### Minimum Viable Setup
 

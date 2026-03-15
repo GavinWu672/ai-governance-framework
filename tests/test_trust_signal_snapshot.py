@@ -8,7 +8,9 @@ from governance_tools.trust_signal_snapshot import (
     build_trust_signal_snapshot,
     format_published_status_page,
     format_published_index,
+    format_publication_index,
     format_index,
+    write_publication_manifest,
     write_published_status,
     write_snapshot_bundle,
 )
@@ -122,3 +124,46 @@ def test_format_published_index_handles_empty_history(tmp_path):
 
     assert "# Published Trust Signal Index" in rendered
     assert "- Reports: `0`" in rendered
+
+
+def test_write_publication_manifest_links_bundle_and_published(tmp_path):
+    project_root = Path(".").resolve()
+    contract_file = project_root / "examples" / "usb-hub-contract" / "contract.yaml"
+    snapshot = build_trust_signal_snapshot(
+        project_root=project_root,
+        plan_path=project_root / "PLAN.md",
+        release_version="v1.0.0-alpha",
+        contract_file=contract_file,
+    )
+    bundle = write_snapshot_bundle(snapshot, tmp_path / "status")
+    published = write_published_status(snapshot, tmp_path / "status" / "published")
+
+    publication = write_publication_manifest(
+        snapshot,
+        tmp_path / "status",
+        bundle_paths=bundle,
+        published_paths=published,
+    )
+
+    assert Path(publication["manifest_json"]).is_file()
+    assert Path(publication["index_md"]).is_file()
+    manifest_payload = json.loads(Path(publication["manifest_json"]).read_text(encoding="utf-8"))
+    assert manifest_payload["bundle"]["latest_json"].endswith("latest.json")
+    assert manifest_payload["published"]["latest_md"].endswith("trust-signal-latest.md")
+
+
+def test_format_publication_index_is_summary_like():
+    rendered = format_publication_index(
+        {
+            "generated_at": "2026-03-15T00:00:00+00:00",
+            "release_version": "v1.0.0-alpha",
+            "contract_path": "example/contract.yaml",
+            "strict_runtime": True,
+        },
+        bundle_paths={"latest_json": "a.json", "latest_txt": "a.txt", "latest_md": "a.md", "history_json": "h.json", "history_txt": "h.txt", "history_md": "h.md", "index_md": "INDEX.md", "manifest_json": "MANIFEST.json"},
+        published_paths={"latest_md": "p.md", "latest_json": "p.json", "readme_md": "README.md", "history_md": "ph.md", "history_json": "ph.json", "index_md": "PINDEX.md", "manifest_json": "pmanifest.json"},
+    )
+
+    assert "# Trust Signal Publication Index" in rendered
+    assert "- Bundle published: `True`" in rendered
+    assert "- Status pages published: `True`" in rendered

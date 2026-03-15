@@ -505,6 +505,13 @@
   - `published/INDEX.md`
 - This makes the publication side behave more like the bundle side: latest remains easy to link, but historical published snapshots are now also reviewable.
 
+## 2026-03-15 - Trust Signal Publication Index
+
+- Extended the trust-signal publisher again so it now emits:
+  - `PUBLICATION_MANIFEST.json`
+  - `PUBLICATION_INDEX.md`
+- This publication-level layer links the bundle side and the published side together, reducing the need to know internal directory layout before consuming the latest status output.
+
 ## 2026-03-14 - IC / SoC Governance Direction Recorded
 
 - Recorded a refined future-domain view for IC-related governance.

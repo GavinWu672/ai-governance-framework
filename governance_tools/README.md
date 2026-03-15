@@ -246,6 +246,8 @@ python governance_tools/trust_signal_snapshot.py \
 - `history/*.md`
 - `INDEX.md`
 - `MANIFEST.json`
+- `PUBLICATION_MANIFEST.json`
+- `PUBLICATION_INDEX.md`
 - published status pages such as:
   - `published/trust-signal-latest.md`
   - `published/trust-signal-latest.json`

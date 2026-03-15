@@ -62,6 +62,7 @@
 - The trust-signal publisher now also supports `publish-status-dir`, so bundle generation and publish-style status pages can be emitted from the same command.
 - Trust-signal snapshot outputs now also include manifest JSON, making it easier for future tooling to resolve the current published snapshot without inferring from filenames alone.
 - Published trust-signal outputs now also keep `published/history/*` and `published/INDEX.md`, so the publication surface can be browsed historically instead of showing only the latest page.
+- Trust-signal publishing now also emits a publication-level manifest/index, so bundle and published surfaces can be discovered through one stable metadata layer.
 
 ## Next Steps
 

@@ -57,6 +57,8 @@ CI now emits trust-signal snapshot artifacts under:
 - `artifacts/trust-signals/history/*`
 - `artifacts/trust-signals/INDEX.md`
 - `artifacts/trust-signals/MANIFEST.json`
+- `artifacts/trust-signals/PUBLICATION_MANIFEST.json`
+- `artifacts/trust-signals/PUBLICATION_INDEX.md`
 - `artifacts/trust-signals/published/*`
 - `artifacts/trust-signals/published/history/*`
 - `artifacts/trust-signals/published/INDEX.md`
