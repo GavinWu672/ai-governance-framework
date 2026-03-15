@@ -328,21 +328,22 @@ def write_publication_manifest(
     root_dir.mkdir(parents=True, exist_ok=True)
     manifest_json = root_dir / "PUBLICATION_MANIFEST.json"
     index_md = root_dir / "PUBLICATION_INDEX.md"
+    manifest_payload = {
+        "ok": snapshot["ok"],
+        "generated_at": snapshot["generated_at"],
+        "project_root": snapshot["project_root"],
+        "publication_root": str(root_dir),
+        "release_version": snapshot["release_version"],
+        "contract_path": snapshot.get("contract_path"),
+        "strict_runtime": snapshot["strict_runtime"],
+        "bundle_published": bundle_paths is not None,
+        "status_pages_published": published_paths is not None,
+        "bundle": bundle_paths,
+        "published": published_paths,
+    }
 
     manifest_json.write_text(
-        json.dumps(
-            {
-                "generated_at": snapshot["generated_at"],
-                "release_version": snapshot["release_version"],
-                "contract_path": snapshot.get("contract_path"),
-                "strict_runtime": snapshot["strict_runtime"],
-                "bundle": bundle_paths,
-                "published": published_paths,
-            },
-            ensure_ascii=False,
-            indent=2,
-        )
-        + "\n",
+        json.dumps(manifest_payload, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
     index_md.write_text(

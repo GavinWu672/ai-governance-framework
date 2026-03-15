@@ -39,6 +39,7 @@ $env:AI_GOVERNANCE_PYTHON='C:\Path\To\python.exe'
 | [example_readiness.py](#example_readinesspy) | 範例集健康度檢查 | onboarding / examples |
 | [release_readiness.py](#release_readinesspy) | release-facing 文件對齊檢查 | trust signal / release prep |
 | [trust_signal_snapshot.py](#trust_signal_snapshotpy) | trust signal snapshot bundle 產生器 | release / status publishing |
+| [trust_signal_publication_reader.py](#trust_signal_publication_readerpy) | publication manifest reader | release / status consumption |
 | [trust_signal_overview.py](#trust_signal_overviewpy) | 高層 trust signal 總覽 | adoption / release / audit |
 | [plan_freshness.py](#plan_freshnesspy) | PLAN.md 新鮮度檢查 | CI gate / Git hook |
 | [state_generator.py](#state_generatorpy) | .governance-state.yaml 生成 | 狀態快照 |
@@ -261,6 +262,28 @@ python governance_tools/trust_signal_snapshot.py \
 - CI / release pipeline 中保存高層狀態快照
 - 需要追蹤信號是否退化，而不是只看當次終端輸出
 - 把 trust signal 從「一次性命令」提升成「可追蹤 artifact」
+
+---
+
+## trust_signal_publication_reader.py
+
+讀取 `trust_signal_snapshot.py` 產生的 `PUBLICATION_MANIFEST.json`，把 bundle / published status surfaces 轉成固定的 reviewer-first summary。
+
+```bash
+python governance_tools/trust_signal_publication_reader.py \
+  --file artifacts/trust-signals/PUBLICATION_MANIFEST.json \
+  --format human
+```
+
+若不指定 `--file`，會預設讀取：
+
+- `artifacts/trust-signals/PUBLICATION_MANIFEST.json`
+
+這個工具適合用在：
+
+- 想快速知道目前 trust-signal publication 是否健康
+- 想從 publication metadata 反查 bundle 與 published status 頁面
+- 需要一條穩定 reader 命令，而不是直接解析 JSON 檔案
 
 ---
 

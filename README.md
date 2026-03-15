@@ -426,6 +426,12 @@ If you want the same view persisted as a latest/history/index bundle:
 python governance_tools/trust_signal_snapshot.py --project-root . --plan PLAN.md --release-version v1.0.0-alpha --contract examples/usb-hub-contract/contract.yaml --write-bundle artifacts/trust-signals --publish-status-dir artifacts/trust-signals/published --format human
 ```
 
+If you want a stable reader over the generated publication metadata:
+
+```bash
+python governance_tools/trust_signal_publication_reader.py --file artifacts/trust-signals/PUBLICATION_MANIFEST.json --format human
+```
+
 CI now also generates trust-signal snapshot bundles, so this high-level view is not limited to local terminal output.
 Each bundle now also includes manifest metadata, published history/index pages, and a publication-level manifest/index, so tools or readers can tell which snapshot is current without inferring from filenames alone.
 
@@ -502,6 +508,7 @@ python governance_tools/refactor_evidence_validator.py --file checks.json --form
 python governance_tools/rule_pack_suggester.py --project-root . --task "Refactor Avalonia view model boundary"
 python governance_tools/governance_auditor.py --format json
 python governance_tools/trust_signal_snapshot.py --project-root . --plan PLAN.md --release-version v1.0.0-alpha --contract examples/usb-hub-contract/contract.yaml --write-bundle artifacts/trust-signals --format human
+python governance_tools/trust_signal_publication_reader.py --file artifacts/trust-signals/PUBLICATION_MANIFEST.json --format human
 python governance_tools/trust_signal_overview.py --project-root . --plan PLAN.md --release-version v1.0.0-alpha --contract examples/usb-hub-contract/contract.yaml --format human
 ```
 

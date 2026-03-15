@@ -77,6 +77,7 @@ TOOLS=(
     "quickstart_smoke.py"
     "release_readiness.py"
     "trust_signal_snapshot.py"
+    "trust_signal_publication_reader.py"
     "trust_signal_overview.py"
     "plan_freshness.py"
     "memory_janitor.py"
@@ -125,6 +126,12 @@ if "${PYTHON_CMD[@]}" governance_tools/trust_signal_snapshot.py --project-root .
     ok "trust_signal_snapshot.py bundle publishing"
 else
     fail "trust_signal_snapshot.py bundle publishing 失敗"
+    ALL_OK=0
+fi
+if "${PYTHON_CMD[@]}" governance_tools/trust_signal_publication_reader.py --file artifacts/trust-signals/phase-gate-smoke/PUBLICATION_MANIFEST.json --format human > /dev/null 2>&1; then
+    ok "trust_signal_publication_reader.py publication manifest"
+else
+    fail "trust_signal_publication_reader.py publication manifest 失敗"
     ALL_OK=0
 fi
 if [ "$ALL_OK" -eq 1 ]; then

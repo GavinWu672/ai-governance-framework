@@ -47,6 +47,14 @@ python governance_tools/trust_signal_snapshot.py \
   --format human
 ```
 
+If you want to read the latest publication metadata as a compact summary:
+
+```bash
+python governance_tools/trust_signal_publication_reader.py \
+  --file artifacts/trust-signals/PUBLICATION_MANIFEST.json \
+  --format human
+```
+
 ## CI Artifacts
 
 CI now emits trust-signal snapshot artifacts under:
@@ -59,11 +67,12 @@ CI now emits trust-signal snapshot artifacts under:
 - `artifacts/trust-signals/MANIFEST.json`
 - `artifacts/trust-signals/PUBLICATION_MANIFEST.json`
 - `artifacts/trust-signals/PUBLICATION_INDEX.md`
+- `artifacts/trust-signals/published/manifest.json`
 - `artifacts/trust-signals/published/*`
 - `artifacts/trust-signals/published/history/*`
 - `artifacts/trust-signals/published/INDEX.md`
 
-The bundle and published directories now also include manifest JSON so downstream tools can identify the current snapshot directly.
+The bundle and published directories now also include manifest JSON so downstream tools and the publication reader can identify the current snapshot directly.
 
 These artifacts are the generated status snapshot bundle.
 

@@ -158,6 +158,20 @@
   - `tests/test_hook_install_validator.py` -> `4 passed`
   - `scripts/verify_phase_gates.sh` -> `314 passed`, `4/4 Gates`
 
+## 2026-03-15 - Trust Signal Publication Reader
+
+- Extended `governance_tools/trust_signal_snapshot.py` so `PUBLICATION_MANIFEST.json` now carries publication-level status fields such as:
+  - `ok`
+  - `project_root`
+  - `publication_root`
+  - `bundle_published`
+  - `status_pages_published`
+- Added `governance_tools/trust_signal_publication_reader.py` as the stable reader over publication metadata.
+- The reader now provides a reviewer-first `summary=...` human output and can be pointed either at an explicit manifest file or the default `artifacts/trust-signals/PUBLICATION_MANIFEST.json`.
+- `scripts/verify_phase_gates.sh` now checks both snapshot publishing and the publication reader path, so trust-signal publishing has both a producer and consumer regression surface.
+- Verification:
+  - `tests/test_trust_signal_snapshot.py tests/test_trust_signal_publication_reader.py` -> `12 passed`
+
 ## 2026-03-14 - Install-And-Verify Hook Flow
 
 - Updated `scripts/install-hooks.sh` so real installs now auto-run `hook_install_validator.py` by default.

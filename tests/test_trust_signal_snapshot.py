@@ -148,6 +148,10 @@ def test_write_publication_manifest_links_bundle_and_published(tmp_path):
     assert Path(publication["manifest_json"]).is_file()
     assert Path(publication["index_md"]).is_file()
     manifest_payload = json.loads(Path(publication["manifest_json"]).read_text(encoding="utf-8"))
+    assert manifest_payload["ok"] is True
+    assert manifest_payload["bundle_published"] is True
+    assert manifest_payload["status_pages_published"] is True
+    assert manifest_payload["project_root"] == str(project_root)
     assert manifest_payload["bundle"]["latest_json"].endswith("latest.json")
     assert manifest_payload["published"]["latest_md"].endswith("trust-signal-latest.md")
 
