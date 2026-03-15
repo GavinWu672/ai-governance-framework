@@ -545,6 +545,16 @@
   - `PUBLICATION_INDEX.md`
 - This publication-level layer links the bundle side and the published side together, reducing the need to know internal directory layout before consuming the latest status output.
 
+## 2026-03-15 - Domain Validator Hard-Stop Enforcement
+
+- Closed the remaining gap between domain-validator execution and governance enforcement.
+- `runtime_hooks/core/post_task_check.py` still treats domain-validator findings as advisory by default, but now reads optional contract-level `hard_stop_rules`.
+- When a validator returns a `violation` whose `rule_ids` intersect `hard_stop_rules`, the result is now merged into `errors` instead of only `warnings`.
+- Added targeted tests covering both:
+  - advisory-only contract behavior
+  - hard-stop escalation behavior
+- This shifts the framework from "validators run but only warn" to "validators run, and selected rule IDs can now block post-task success without changing the discovery seam."
+
 ## 2026-03-14 - IC / SoC Governance Direction Recorded
 
 - Recorded a refined future-domain view for IC-related governance.

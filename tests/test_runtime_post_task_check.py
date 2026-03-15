@@ -1,6 +1,7 @@
 import sys
 from pathlib import Path
 import shutil
+import textwrap
 
 import pytest
 
@@ -335,3 +336,105 @@ def test_post_task_check_can_auto_discover_domain_contract_from_project_root(tmp
     assert result["resolved_contract_file"] == str(contract_file.resolve())
     output = format_human_result(result)
     assert "contract=firmware/medium" in output or "contract=usb-hub-firmware/medium" in output
+
+
+def test_post_task_check_domain_validator_violation_is_advisory_without_hard_stop(tmp_path):
+    (tmp_path / "rules" / "temp-domain").mkdir(parents=True)
+    (tmp_path / "rules" / "temp-domain" / "safety.md").write_text("# Temp rule\n", encoding="utf-8")
+    (tmp_path / "validators").mkdir(parents=True)
+    (tmp_path / "validators" / "temp_validator.py").write_text(
+        textwrap.dedent(
+            """
+            from governance_tools.validator_interface import DomainValidator, ValidatorResult
+
+            class TempValidator(DomainValidator):
+                @property
+                def rule_ids(self):
+                    return ["temp-domain", "TMP-001"]
+
+                def validate(self, payload: dict) -> ValidatorResult:
+                    return ValidatorResult(
+                        ok=False,
+                        rule_ids=self.rule_ids,
+                        violations=["TMP-VIOLATION-001"],
+                        evidence_summary="temp violation",
+                    )
+            """
+        ).strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    contract_file = tmp_path / "contract.yaml"
+    contract_file.write_text(
+        "name: temp-domain\n"
+        "domain: temp-domain\n"
+        "rule_roots:\n"
+        "  - rules\n"
+        "validators:\n"
+        "  - validators/temp_validator.py\n",
+        encoding="utf-8",
+    )
+
+    result = run_post_task_check(
+        _contract(RULES="common,temp-domain"),
+        risk="medium",
+        oversight="review-required",
+        contract_file=contract_file,
+    )
+
+    assert result["ok"] is True
+    assert result["errors"] == []
+    assert any("domain-validator:temp_validator: TMP-VIOLATION-001" in warning for warning in result["warnings"])
+
+
+def test_post_task_check_domain_validator_violation_can_trigger_hard_stop(tmp_path):
+    (tmp_path / "rules" / "temp-domain").mkdir(parents=True)
+    (tmp_path / "rules" / "temp-domain" / "safety.md").write_text("# Temp rule\n", encoding="utf-8")
+    (tmp_path / "validators").mkdir(parents=True)
+    (tmp_path / "validators" / "temp_validator.py").write_text(
+        textwrap.dedent(
+            """
+            from governance_tools.validator_interface import DomainValidator, ValidatorResult
+
+            class TempValidator(DomainValidator):
+                @property
+                def rule_ids(self):
+                    return ["temp-domain", "TMP-001"]
+
+                def validate(self, payload: dict) -> ValidatorResult:
+                    return ValidatorResult(
+                        ok=False,
+                        rule_ids=self.rule_ids,
+                        violations=["TMP-VIOLATION-001"],
+                        evidence_summary="temp violation",
+                    )
+            """
+        ).strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    contract_file = tmp_path / "contract.yaml"
+    contract_file.write_text(
+        "name: temp-domain\n"
+        "domain: temp-domain\n"
+        "rule_roots:\n"
+        "  - rules\n"
+        "validators:\n"
+        "  - validators/temp_validator.py\n"
+        "hard_stop_rules:\n"
+        "  - TMP-001\n",
+        encoding="utf-8",
+    )
+
+    result = run_post_task_check(
+        _contract(RULES="common,temp-domain"),
+        risk="medium",
+        oversight="review-required",
+        contract_file=contract_file,
+    )
+
+    assert result["ok"] is False
+    assert result["domain_hard_stop_rules"] == ["TMP-001"]
+    assert any("domain-validator:temp_validator: TMP-VIOLATION-001" in error for error in result["errors"])
+    output = format_human_result(result)
+    assert "domain_hard_stop_rules=TMP-001" in output

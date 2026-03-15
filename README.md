@@ -222,7 +222,8 @@ The framework currently supports an external domain extension seam with:
 - `contract.yaml` discovery
 - external rule roots
 - validator preflight
-- advisory validator execution
+- validator execution
+- contract-level hard-stop escalation for selected validator rule IDs
 
 The built-in example is `examples/usb-hub-contract/`, which can currently:
 
@@ -238,7 +239,7 @@ This seam has already been validated with two external contract repos:
   - already running through `session_start`, `pre_task_check`, and `post_task_check`
 - `Kernel-Driver-Contract`
   - the second low-level domain slice
-  - already running through contract loading, validator preflight, external rule activation, and a multi-validator advisory post-task loop
+  - already running through contract loading, validator preflight, external rule activation, and a multi-validator post-task loop with contract-driven hard-stop escalation
 
 To reduce adoption friction, runtime hooks now support contract auto-discovery:
 

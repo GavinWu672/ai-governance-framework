@@ -90,7 +90,7 @@ Domain validator handoff:
 
 - `governance_tools/validator_interface.py` defines the shared `DomainValidator` / `ValidatorResult` interface
 - `governance_tools/domain_validator_loader.py` performs validator discovery, import isolation, preflight checks, and advisory execution routing
-- `post_task_check.py` currently merges domain-validator findings as advisory warnings first
+- `post_task_check.py` now merges domain-validator findings as advisory warnings by default, while allowing selected rule IDs to escalate into hard-stop errors through contract-level `hard_stop_rules`
 - validator import or execution failures are wrapped into structured runtime errors instead of crashing the governance engine
 
 Dispatcher:
@@ -133,7 +133,7 @@ validators:
 
 - document and validator paths are resolved relative to `contract.yaml`
 - external rule packs are merged with the built-in `governance/rules/` packs
-- current validator execution is advisory-first; policy escalation can later move selected rules toward hard-stop without changing the discovery seam
+- current validator execution remains advisory-first by default, but `contract.yaml` can now declare `hard_stop_rules` so selected domain-validator violations escalate into `post_task_check` errors without changing the discovery seam
 
 Examples:
 

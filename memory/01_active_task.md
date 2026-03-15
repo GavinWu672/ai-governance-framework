@@ -18,6 +18,7 @@
 - `scripts/verify_phase_gates.sh` now passes locally, and `scripts/run-runtime-governance.sh --mode smoke` completes successfully with the same interpreter override.
 - `contract.yaml`-based domain plugin discovery now exists for `pre_task_check`, `session_start`, and `post_task_check`, including external documents, rule roots, and validator metadata.
 - A minimal `examples/usb-hub-contract/` sample now validates the dual-repo seam with `contract.yaml`, domain documents, behavior overrides, external rules, validator preflight, advisory validator execution, and firmware-focused payload extraction.
+- `post_task_check.py` now closes the domain-validator enforcement gap: validator findings still default to advisory, but contract-level `hard_stop_rules` can escalate selected rule violations into blocking errors.
 - USB-Hub advisory validation can now infer interrupt context from `diff_text`, unified diff snippets, and changed C file contents, not just manually supplied `isr_code`.
 - The example now includes `post_task_check --checks-file` fixtures so the advisory validator path can be exercised through a file-based runtime entrypoint.
 - Cross-repo git hooks can now write and reuse a framework-root pointer under `.git/hooks/ai-governance-framework-root`, so external contract repos can call back into `ai-governance-framework` instead of assuming the governance scripts live inside the target repo.
@@ -74,7 +75,7 @@
 - Use the restored local execution baseline before any USB-Hub contract integration work.
 - Extend the USB-Hub example into the real `USB-Hub-Firmware-Architecture-Contract` repository with its actual `start_session.md` / checklist content.
 - Prepare the integration path between `ai-governance-framework` and `USB-Hub-Firmware-Architecture-Contract` as a dual-repo layered model.
-- Promote the new advisory validator path into the real USB-Hub contract repo and refine payload shape from real firmware evidence and git patch needs.
+- Refine domain enforcement policy now that validator execution is closed, especially around which domain rule IDs should remain advisory versus move into `hard_stop_rules`.
 - Extend the manual USB-Hub startup workflow around the new `contract.yaml` seam and `start_session.md` document handoff.
 - Exercise the real USB-Hub advisory path against repo-native patch/evidence artifacts instead of example fixtures.
 - Deepen semantic verification, especially public API compatibility and architecture drift reasoning.

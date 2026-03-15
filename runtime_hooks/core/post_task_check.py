@@ -100,12 +100,31 @@ def _merge_driver_evidence_checks(errors: list[str], warnings: list[str], checks
     return result
 
 
-def _merge_domain_validator_results(errors: list[str], warnings: list[str], results: list[dict]) -> None:
+def _domain_hard_stop_rules(domain_contract: dict | None) -> set[str]:
+    raw = (domain_contract or {}).get("raw") or {}
+    values = raw.get("hard_stop_rules") or []
+    if isinstance(values, list):
+        return {str(value) for value in values if str(value).strip()}
+    if values:
+        return {str(values)}
+    return set()
+
+
+def _merge_domain_validator_results(
+    errors: list[str],
+    warnings: list[str],
+    results: list[dict],
+    *,
+    hard_stop_rules: set[str],
+) -> None:
     for item in results:
         for warning in item.get("warnings", []):
             warnings.append(f"domain-validator:{item['name']}: {warning}")
         for violation in item.get("violations", []):
-            warnings.append(f"domain-validator:{item['name']}: {violation}")
+            if set(item.get("rule_ids", [])) & hard_stop_rules:
+                errors.append(f"domain-validator:{item['name']}: {violation}")
+            else:
+                warnings.append(f"domain-validator:{item['name']}: {violation}")
         for error in item.get("errors", []):
             errors.append(f"domain-validator:{item['name']}: {error}")
 
@@ -183,6 +202,7 @@ def run_post_task_check(
     refactor_evidence = _merge_refactor_evidence_checks(errors, warnings, effective_checks, resolved_rules)
     driver_evidence = _merge_driver_evidence_checks(errors, warnings, effective_checks, resolved_rules)
     domain_validator_results = []
+    domain_hard_stop_rules = _domain_hard_stop_rules(domain_contract)
     if domain_contract:
         domain_payload = build_domain_validation_payload(
             response_text=response_text,
@@ -196,7 +216,12 @@ def run_post_task_check(
             payload=domain_payload,
             active_rule_ids=resolved_rules,
         )
-        _merge_domain_validator_results(errors, warnings, domain_validator_results)
+        _merge_domain_validator_results(
+            errors,
+            warnings,
+            domain_validator_results,
+            hard_stop_rules=domain_hard_stop_rules,
+        )
 
     if create_snapshot and validation.contract_found and validation.compliant and not errors:
         if memory_root is None:
@@ -232,6 +257,7 @@ def run_post_task_check(
         "refactor_evidence": refactor_evidence,
         "driver_evidence": driver_evidence,
         "domain_validator_results": domain_validator_results,
+        "domain_hard_stop_rules": sorted(domain_hard_stop_rules),
         "domain_contract": domain_contract,
         "rule_packs": resolved_rule_packs,
         "errors": errors,
@@ -277,6 +303,8 @@ def format_human_result(result: dict) -> str:
         lines.append(f"driver_evidence_ok={result['driver_evidence']['ok']}")
     if result.get("domain_validator_results"):
         lines.append(f"domain_validator_count={len(result['domain_validator_results'])}")
+    if result.get("domain_hard_stop_rules"):
+        lines.append(f"domain_hard_stop_rules={','.join(result['domain_hard_stop_rules'])}")
     contract_resolution = result.get("contract_resolution") or {}
     if contract_resolution.get("source"):
         lines.append(f"contract_source={contract_resolution['source']}")
