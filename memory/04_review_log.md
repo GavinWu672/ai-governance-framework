@@ -248,6 +248,21 @@
   - `governance_tools/external_repo_smoke.py --repo D:\Kernel-Driver-Contract --format human`
   - `scripts/verify_phase_gates.sh` -> `320 passed`, `4/4 Gates`
 
+## 2026-03-15 - External Onboarding Smoke Now Replays Compliant Post-Task Fixtures
+
+- Extended `governance_tools/external_repo_smoke.py` so it no longer stops at startup-only checks when a repo already exposes:
+  - `fixtures/post_task_response.txt`
+  - compliant `fixtures/*.checks.json` baselines
+- The smoke now replays compliant post-task fixtures through `post_task_check`, records `post_task_ok`, and captures per-fixture `domain_validator_count`.
+- The selection logic is intentionally smoke-oriented:
+  - it tries compliant/known/clean/safe baselines
+  - it succeeds when at least one compliant baseline passes
+  - it does not fail onboarding just because some other compliant-looking fixtures are incomplete for the full framework evidence model
+- This makes external onboarding closer to a true domain-validator chain check instead of only a `session_start` / `pre_task_check` liveness probe.
+- Verification:
+  - `tests/test_external_repo_smoke.py tests/test_external_repo_onboarding_report.py tests/test_external_repo_onboarding_index.py` -> `10 passed`
+  - `governance_tools/external_repo_smoke.py --repo D:\Kernel-Driver-Contract --format human` -> `ok=True`, `post_task_ok=True`
+
 ## 2026-03-15 - Onboarding Report Artifact
 
 - Added `governance_tools/external_repo_onboarding_report.py` to combine readiness and governance-smoke results into a single report.

@@ -33,8 +33,10 @@ def _entry_priority(entry: dict) -> tuple[int, int, str]:
     ok_rank = 0 if entry.get("ok") is False else 1
     smoke_ok = (entry.get("smoke") or {}).get("ok")
     smoke_rank = 0 if smoke_ok is False else 1
+    post_task_ok = (entry.get("smoke") or {}).get("post_task_ok")
+    post_task_rank = 0 if post_task_ok is False else 1
     repo_root = entry.get("_repo_root", "")
-    return (ok_rank, smoke_rank, repo_root)
+    return (ok_rank, smoke_rank, post_task_rank, repo_root)
 
 
 def _suggested_command(entry: dict) -> str:
@@ -44,6 +46,8 @@ def _suggested_command(entry: dict) -> str:
         reasons.append("readiness")
     if entry.get("smoke_ok") is False:
         reasons.append("smoke")
+    if entry.get("post_task_ok") is False:
+        reasons.append("post-task")
     if not reasons:
         reasons.append("report")
 
@@ -52,6 +56,8 @@ def _suggested_command(entry: dict) -> str:
     if "readiness" in reasons:
         return f"python governance_tools/external_repo_readiness.py --repo {repo_root} --format human"
     if "smoke" in reasons:
+        return f"python governance_tools/external_repo_smoke.py --repo {repo_root} --format human"
+    if "post-task" in reasons:
         return f"python governance_tools/external_repo_smoke.py --repo {repo_root} --format human"
     return f"python governance_tools/external_repo_onboarding_index.py --repo {repo_root} --format human"
 
@@ -77,6 +83,7 @@ def build_external_repo_onboarding_index(repo_roots: list[Path]) -> dict:
                 "contract_path": payload.get("contract_path"),
                 "readiness_ready": readiness.get("ready"),
                 "smoke_ok": smoke.get("ok"),
+                "post_task_ok": smoke.get("post_task_ok"),
                 "rules": smoke.get("rules") or [],
                 "readiness_errors": len(readiness.get("errors") or []),
                 "smoke_errors": len(smoke.get("errors") or []),
@@ -93,6 +100,8 @@ def build_external_repo_onboarding_index(repo_roots: list[Path]) -> dict:
             reasons.append("readiness")
         if entry.get("smoke_ok") is False:
             reasons.append("smoke")
+        if entry.get("post_task_ok") is False:
+            reasons.append("post-task")
         if not reasons:
             reasons.append("report")
         top_issues.append(
@@ -146,6 +155,7 @@ def format_human(result: dict) -> str:
                         f"ok={entry['ok']}",
                         f"readiness={entry['readiness_ready']}",
                         f"smoke={entry['smoke_ok']}",
+                        f"post_task={entry['post_task_ok']}",
                         f"rules={','.join(entry['rules'])}",
                         f"generated_at={entry['generated_at']}",
                     ]

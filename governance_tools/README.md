@@ -868,7 +868,7 @@ bash scripts/install-hooks.sh
 `scripts/install-hooks.sh` 預設會在安裝後自動執行這個 validator，讓 external repo 的接入流程更接近 install-and-verify。
 若要檢查整體 external repo readiness，也可跑 `governance_tools/external_repo_readiness.py --repo /path/to/repo`，一次看 hooks / PLAN / contract 狀態。
 若要直接走 onboarding flow，也可用 `scripts/onboard-external-repo.sh --target /path/to/repo`，把 hook 安裝與 readiness report 串成一條命令。
-onboarding flow 預設還會再跑一個最小 governance smoke，驗證 external contract 是否真的能通過 `session_start` 與 `pre_task_check`。
+onboarding flow 預設還會再跑一個最小 governance smoke，驗證 external contract 是否真的能通過 `session_start`、`pre_task_check`，以及在 repo 內存在 compliant fixture 時的 `post_task_check` replay。
 預設也會把 JSON onboarding report 寫到 target repo 的 `memory/governance_onboarding/latest.json`，讓接入狀態不只存在於當下終端輸出。
 現在也會同步維護 `latest.txt`、`history/`、與 `INDEX.txt`，讓 external repo onboarding 狀態有基本的時間序列與索引。
 若要在 framework repo 端集中查看多個 external repo 的 onboarding 狀態，可用 `governance_tools/external_repo_onboarding_index.py --repo /path/to/repo1 --repo /path/to/repo2`。

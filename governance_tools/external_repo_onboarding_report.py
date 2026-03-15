@@ -68,6 +68,8 @@ def build_onboarding_report(
             "contract_path": smoke.contract_path,
             "pre_task_ok": smoke.pre_task_ok,
             "session_start_ok": smoke.session_start_ok,
+            "post_task_ok": smoke.post_task_ok,
+            "post_task_cases": smoke.post_task_cases,
             "warnings": smoke.warnings,
             "errors": smoke.errors,
         },
@@ -97,8 +99,22 @@ def format_human(report: ExternalRepoOnboardingReport) -> str:
             f"rules             = {','.join(report.smoke.get('rules') or [])}",
             f"pre_task_ok       = {report.smoke.get('pre_task_ok')}",
             f"session_start_ok  = {report.smoke.get('session_start_ok')}",
+            f"post_task_ok      = {report.smoke.get('post_task_ok')}",
         ]
     )
+    post_task_cases = report.smoke.get("post_task_cases") or []
+    if post_task_cases:
+        lines.append("[post_task_cases]")
+        for item in post_task_cases:
+            lines.append(
+                " | ".join(
+                    [
+                        Path(item.get("checks_file", "")).name,
+                        f"ok={item.get('ok')}",
+                        f"domain_validators={item.get('domain_validator_count')}",
+                    ]
+                )
+            )
 
     all_errors = [
         *(f"readiness: {item}" for item in (report.readiness.get("errors") or [])),

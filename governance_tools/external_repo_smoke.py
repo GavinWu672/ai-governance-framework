@@ -17,6 +17,7 @@ if __package__ in (None, ""):
 from governance_tools.contract_resolver import resolve_contract
 from governance_tools.domain_contract_loader import load_domain_contract
 from governance_tools.rule_pack_loader import available_rule_packs, parse_rule_list
+from runtime_hooks.core.post_task_check import run_post_task_check
 from runtime_hooks.core.pre_task_check import run_pre_task_check
 from runtime_hooks.core.session_start import build_session_start_context
 
@@ -30,6 +31,8 @@ class ExternalRepoSmokeResult:
     rules: list[str] = field(default_factory=list)
     session_start_ok: bool = False
     pre_task_ok: bool = False
+    post_task_ok: bool | None = None
+    post_task_cases: list[dict] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
 
@@ -41,6 +44,30 @@ def infer_smoke_rules(contract: dict | None) -> list[str]:
     rule_roots = [Path(path) for path in contract.get("rule_roots", [])]
     external_packs = sorted(available_rule_packs(rule_roots))
     return parse_rule_list(["common", *external_packs])
+
+
+_COMPLIANT_FIXTURE_MARKERS = ("compliant", "known", "clean", "safe")
+
+
+def discover_post_task_smoke_fixtures(repo_root: Path) -> tuple[Path | None, list[Path], list[str]]:
+    fixtures_root = repo_root / "fixtures"
+    warnings: list[str] = []
+    response_file = fixtures_root / "post_task_response.txt"
+    checks_files = sorted(fixtures_root.glob("*.checks.json"))
+
+    if not response_file.exists():
+        if checks_files:
+            warnings.append("Post-task checks fixtures exist, but fixtures/post_task_response.txt is missing.")
+        return None, [], warnings
+
+    compliant = [
+        path
+        for path in checks_files
+        if any(marker in path.name.lower() for marker in _COMPLIANT_FIXTURE_MARKERS)
+    ]
+    if not compliant and checks_files:
+        warnings.append("No compliant post-task checks fixture was found; skipping post-task replay smoke.")
+    return response_file, compliant, warnings
 
 
 def run_external_repo_smoke(
@@ -75,6 +102,8 @@ def run_external_repo_smoke(
 
     session_start_ok = False
     pre_task_ok = False
+    post_task_ok: bool | None = None
+    post_task_cases: list[dict] = []
     if not errors:
         pre_task = run_pre_task_check(
             project_root=repo_root,
@@ -103,17 +132,51 @@ def run_external_repo_smoke(
         warnings.extend(session_start.get("pre_task_check", {}).get("warnings", []))
         errors.extend(session_start.get("pre_task_check", {}).get("errors", []))
 
+        response_file, checks_files, fixture_warnings = discover_post_task_smoke_fixtures(repo_root)
+        warnings.extend(fixture_warnings)
+        if response_file and checks_files:
+            response_text = response_file.read_text(encoding="utf-8")
+            post_task_ok = False
+            for checks_file in checks_files:
+                checks = json.loads(checks_file.read_text(encoding="utf-8"))
+                result = run_post_task_check(
+                    response_text=response_text,
+                    risk=risk,
+                    oversight=oversight,
+                    memory_mode=memory_mode,
+                    create_snapshot=False,
+                    checks=checks,
+                    contract_file=contract_path,
+                    project_root=repo_root,
+                    evidence_paths=[response_file.resolve(), checks_file.resolve()],
+                )
+                case = {
+                    "checks_file": str(checks_file),
+                    "ok": result["ok"],
+                    "domain_validator_count": len(result.get("domain_validator_results") or []),
+                    "warnings": result.get("warnings") or [],
+                    "errors": result.get("errors") or [],
+                }
+                post_task_cases.append(case)
+                if case["ok"]:
+                    post_task_ok = True
+                    break
+            if post_task_ok is False:
+                errors.append("No compliant post-task smoke fixture passed.")
+
     # keep ordering stable while deduplicating
     deduped_warnings = list(dict.fromkeys(warnings))
     deduped_errors = list(dict.fromkeys(errors))
     return ExternalRepoSmokeResult(
-        ok=(len(deduped_errors) == 0 and session_start_ok and pre_task_ok),
+        ok=(len(deduped_errors) == 0 and session_start_ok and pre_task_ok and post_task_ok is not False),
         repo_root=str(repo_root),
         plan_path=str(plan_path),
         contract_path=str(contract_path) if contract_path else None,
         rules=rules,
         session_start_ok=session_start_ok,
         pre_task_ok=pre_task_ok,
+        post_task_ok=post_task_ok,
+        post_task_cases=post_task_cases,
         warnings=deduped_warnings,
         errors=deduped_errors,
     )
@@ -130,7 +193,25 @@ def format_human(result: ExternalRepoSmokeResult) -> str:
         f"rules             = {','.join(result.rules)}",
         f"pre_task_ok       = {result.pre_task_ok}",
         f"session_start_ok  = {result.session_start_ok}",
+        f"post_task_ok      = {result.post_task_ok}",
     ]
+    if result.post_task_cases:
+        lines.append("")
+        lines.append("[post_task_cases]")
+        for item in result.post_task_cases:
+            lines.append(
+                " | ".join(
+                    [
+                        Path(item["checks_file"]).name,
+                        f"ok={item['ok']}",
+                        f"domain_validators={item['domain_validator_count']}",
+                    ]
+                )
+            )
+            for warning in item.get("warnings") or []:
+                lines.append(f"  warning: {warning}")
+            for error in item.get("errors") or []:
+                lines.append(f"  error: {error}")
     if result.errors:
         lines.append("")
         lines.append(f"errors: {len(result.errors)}")
@@ -154,6 +235,8 @@ def format_json(result: ExternalRepoSmokeResult) -> str:
             "rules": result.rules,
             "pre_task_ok": result.pre_task_ok,
             "session_start_ok": result.session_start_ok,
+            "post_task_ok": result.post_task_ok,
+            "post_task_cases": result.post_task_cases,
             "warnings": result.warnings,
             "errors": result.errors,
         },
