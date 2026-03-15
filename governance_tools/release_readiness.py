@@ -22,6 +22,7 @@ def assess_release_readiness(project_root: Path, *, version: str) -> dict:
     changelog_path = project_root / "CHANGELOG.md"
     release_note_path = project_root / "docs" / "releases" / f"{version}.md"
     github_release_draft_path = project_root / "docs" / "releases" / f"{version}-github-release.md"
+    publish_checklist_path = project_root / "docs" / "releases" / f"{version}-publish-checklist.md"
     alpha_checklist_path = project_root / "docs" / "releases" / "alpha-checklist.md"
     limitations_path = project_root / "docs" / "LIMITATIONS.md"
     status_path = project_root / "docs" / "status" / "runtime-governance-status.md"
@@ -40,6 +41,7 @@ def assess_release_readiness(project_root: Path, *, version: str) -> dict:
 
     add_check("release_note", release_note_path.is_file(), "missing docs/releases release note")
     add_check("github_release_draft", github_release_draft_path.is_file(), "missing docs/releases github release draft")
+    add_check("publish_checklist", publish_checklist_path.is_file(), "missing docs/releases publish checklist")
     add_check("alpha_checklist", alpha_checklist_path.is_file(), "missing docs/releases/alpha-checklist.md")
     add_check("changelog", changelog_path.is_file(), "missing CHANGELOG.md")
     add_check("limitations", limitations_path.is_file(), "missing docs/LIMITATIONS.md")
@@ -54,6 +56,7 @@ def assess_release_readiness(project_root: Path, *, version: str) -> dict:
     github_release_draft_text = (
         github_release_draft_path.read_text(encoding="utf-8") if github_release_draft_path.is_file() else ""
     )
+    publish_checklist_text = publish_checklist_path.read_text(encoding="utf-8") if publish_checklist_path.is_file() else ""
     alpha_checklist_text = alpha_checklist_path.read_text(encoding="utf-8") if alpha_checklist_path.is_file() else ""
     status_index_text = status_index_path.read_text(encoding="utf-8") if status_index_path.is_file() else ""
     trust_dashboard_text = trust_dashboard_path.read_text(encoding="utf-8") if trust_dashboard_path.is_file() else ""
@@ -121,6 +124,28 @@ def assess_release_readiness(project_root: Path, *, version: str) -> dict:
         if "prototype" not in github_release_draft_text.lower():
             warnings.append("GitHub release draft no longer mentions the prototype boundary")
 
+    if publish_checklist_text:
+        add_check(
+            "publish_checklist_release_version",
+            version in publish_checklist_text,
+            "publish checklist does not mention the requested version",
+        )
+        add_check(
+            "publish_checklist_snapshot_publish",
+            "--publish-docs-status" in publish_checklist_text,
+            "publish checklist does not mention docs-status snapshot publishing",
+        )
+        add_check(
+            "publish_checklist_docs_reader",
+            "--docs-status" in publish_checklist_text,
+            "publish checklist does not mention the docs-status reader path",
+        )
+        add_check(
+            "publish_checklist_phase_gates",
+            "verify_phase_gates.sh" in publish_checklist_text,
+            "publish checklist does not mention phase gates verification",
+        )
+
     if alpha_checklist_text:
         add_check(
             "alpha_checklist_version",
@@ -151,6 +176,11 @@ def assess_release_readiness(project_root: Path, *, version: str) -> dict:
             "alpha_checklist_github_release_draft",
             f"{version}-github-release.md" in alpha_checklist_text,
             "alpha checklist does not mention the GitHub release draft",
+        )
+        add_check(
+            "alpha_checklist_publish_checklist",
+            f"{version}-publish-checklist.md" in alpha_checklist_text,
+            "alpha checklist does not mention the publish checklist",
         )
 
     if trust_dashboard_text:
@@ -211,6 +241,7 @@ def assess_release_readiness(project_root: Path, *, version: str) -> dict:
             "changelog": str(changelog_path),
             "release_note": str(release_note_path),
             "github_release_draft": str(github_release_draft_path),
+            "publish_checklist": str(publish_checklist_path),
             "alpha_checklist": str(alpha_checklist_path),
             "limitations": str(limitations_path),
             "status_doc": str(status_path),

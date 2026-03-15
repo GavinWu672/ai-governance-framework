@@ -654,6 +654,15 @@
   - its heading matches the current version
   - it references the generated status path and status index
 
+## 2026-03-15 - Publish Checklist Added To Release Surface
+
+- Added `docs/releases/v1.0.0-alpha-publish-checklist.md` as a repo-tracked checklist for the actual release publication step.
+- Updated the changelog, alpha release note, GitHub release draft, and alpha checklist so the publish checklist is now part of the visible release package.
+- Extended `release_readiness.py` so it now verifies the publish checklist exists and still references:
+  - docs-status publishing
+  - docs-status reader flow
+  - `verify_phase_gates.sh`
+
 ## 2026-03-14 - IC / SoC Governance Direction Recorded
 
 - Recorded a refined future-domain view for IC-related governance.
