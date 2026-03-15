@@ -57,6 +57,14 @@
   - a complete runtime governance skeleton
   - an external domain validator seam
   - a first firmware domain vertical slice
+- The closest comparison class is not generic prompt frameworks, but AI coding governance systems that combine:
+  - repo-aware rules
+  - runtime gates
+  - reviewer-facing audit surfaces
+- The repository's strongest differentiation remains:
+  - external domain contracts across separate repos
+  - mixed enforcement
+  - trust/release/reviewer publication surfaces
 
 ## Planned Integration Direction
 

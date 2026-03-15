@@ -799,6 +799,7 @@ It is not currently trying to become:
 
 ## Further Reading
 
+- `docs/competitive-landscape.md`
 - `docs/runtime-governance-update.md`
 - `runtime_hooks/README.md`
 - `memory_pipeline/README.md`

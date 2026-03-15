@@ -289,6 +289,18 @@
   - deeper semantic verification beyond pattern-based checks
 - Tightened the repository boundary statement so future status docs do not imply token-by-token AI output interception as an in-scope goal.
 
+## 2026-03-15 - Competitive Landscape Memo
+
+- Added `docs/competitive-landscape.md` as a stable positioning memo over the closest known reference projects.
+- Grouped nearby projects into:
+  - closest open-source references
+  - adjacent but not direct peers
+- Recorded the main differentiation of this repository as the combination of:
+  - external domain contracts across separate repos
+  - mixed enforcement
+  - reviewer/audit publication surfaces
+- Added the new landscape doc to README further-reading links so future release/status messaging can reuse the same positioning source.
+
 ## 2026-03-15 - Onboarding Report Artifact
 
 - Added `governance_tools/external_repo_onboarding_report.py` to combine readiness and governance-smoke results into a single report.
