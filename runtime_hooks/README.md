@@ -103,6 +103,7 @@ Dispatcher:
 - `smoke_test.py` now also accepts `--contract`, `--project-root`, and `--plan-path`, so the documented example payloads can be replayed against a real external contract repo without editing the example JSON files first
 - when a contract is supplied, smoke-test human output also surfaces `contract_source`, `contract_path`, and `domain_contract`
 - `../scripts/run-runtime-governance.sh` is the shared enforcement entrypoint for hooks and CI
+- `../scripts/run-runtime-governance.sh` now also forwards `--contract`, `--project-root`, and `--plan-path` into its smoke flows, so the shared shell wrapper can replay the built-in runtime examples against an external contract repo too
 
 Session close:
 

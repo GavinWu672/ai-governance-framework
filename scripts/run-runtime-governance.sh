@@ -8,6 +8,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 MODE="enforce"
 PYTEST_ARGS=()
+CONTRACT_PATH=""
+PROJECT_ROOT_OVERRIDE=""
+PLAN_PATH_OVERRIDE=""
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -15,12 +18,24 @@ while [[ $# -gt 0 ]]; do
             MODE="$2"
             shift 2
             ;;
+        --contract)
+            CONTRACT_PATH="$2"
+            shift 2
+            ;;
+        --project-root)
+            PROJECT_ROOT_OVERRIDE="$2"
+            shift 2
+            ;;
+        --plan-path)
+            PLAN_PATH_OVERRIDE="$2"
+            shift 2
+            ;;
         --pytest-arg)
             PYTEST_ARGS+=("$2")
             shift 2
             ;;
         *)
-            echo "Usage: bash scripts/run-runtime-governance.sh [--mode enforce|smoke|ci] [--pytest-arg ARG]"
+            echo "Usage: bash scripts/run-runtime-governance.sh [--mode enforce|smoke|ci] [--contract /path/to/contract.yaml] [--project-root /path/to/repo] [--plan-path /path/to/PLAN.md] [--pytest-arg ARG]"
             exit 1
             ;;
     esac
@@ -32,17 +47,28 @@ if ! set_python_cmd; then
 fi
 
 run_smoke() {
-    "${PYTHON_CMD[@]}" runtime_hooks/smoke_test.py --harness claude_code --event-type session_start --output artifacts/runtime/smoke/claude_session_start.txt --json-output artifacts/runtime/smoke/claude_session_start.json
+    local smoke_overrides=()
+    if [[ -n "$CONTRACT_PATH" ]]; then
+        smoke_overrides+=(--contract "$CONTRACT_PATH")
+    fi
+    if [[ -n "$PROJECT_ROOT_OVERRIDE" ]]; then
+        smoke_overrides+=(--project-root "$PROJECT_ROOT_OVERRIDE")
+    fi
+    if [[ -n "$PLAN_PATH_OVERRIDE" ]]; then
+        smoke_overrides+=(--plan-path "$PLAN_PATH_OVERRIDE")
+    fi
+
+    "${PYTHON_CMD[@]}" runtime_hooks/smoke_test.py --harness claude_code --event-type session_start "${smoke_overrides[@]}" --output artifacts/runtime/smoke/claude_session_start.txt --json-output artifacts/runtime/smoke/claude_session_start.json
     "${PYTHON_CMD[@]}" governance_tools/change_control_summary.py --session-start-file artifacts/runtime/smoke/claude_session_start.json --output artifacts/runtime/smoke/claude_change_control_summary.txt
-    "${PYTHON_CMD[@]}" runtime_hooks/smoke_test.py --harness claude_code --event-type pre_task
-    "${PYTHON_CMD[@]}" runtime_hooks/smoke_test.py --harness claude_code --event-type post_task
-    "${PYTHON_CMD[@]}" runtime_hooks/smoke_test.py --harness codex --event-type session_start --output artifacts/runtime/smoke/codex_session_start.txt --json-output artifacts/runtime/smoke/codex_session_start.json
+    "${PYTHON_CMD[@]}" runtime_hooks/smoke_test.py --harness claude_code --event-type pre_task "${smoke_overrides[@]}"
+    "${PYTHON_CMD[@]}" runtime_hooks/smoke_test.py --harness claude_code --event-type post_task "${smoke_overrides[@]}"
+    "${PYTHON_CMD[@]}" runtime_hooks/smoke_test.py --harness codex --event-type session_start "${smoke_overrides[@]}" --output artifacts/runtime/smoke/codex_session_start.txt --json-output artifacts/runtime/smoke/codex_session_start.json
     "${PYTHON_CMD[@]}" governance_tools/change_control_summary.py --session-start-file artifacts/runtime/smoke/codex_session_start.json --output artifacts/runtime/smoke/codex_change_control_summary.txt
-    "${PYTHON_CMD[@]}" runtime_hooks/smoke_test.py --harness codex --event-type post_task
-    "${PYTHON_CMD[@]}" runtime_hooks/smoke_test.py --harness gemini --event-type session_start --output artifacts/runtime/smoke/gemini_session_start.txt --json-output artifacts/runtime/smoke/gemini_session_start.json
+    "${PYTHON_CMD[@]}" runtime_hooks/smoke_test.py --harness codex --event-type post_task "${smoke_overrides[@]}"
+    "${PYTHON_CMD[@]}" runtime_hooks/smoke_test.py --harness gemini --event-type session_start "${smoke_overrides[@]}" --output artifacts/runtime/smoke/gemini_session_start.txt --json-output artifacts/runtime/smoke/gemini_session_start.json
     "${PYTHON_CMD[@]}" governance_tools/change_control_summary.py --session-start-file artifacts/runtime/smoke/gemini_session_start.json --output artifacts/runtime/smoke/gemini_change_control_summary.txt
-    "${PYTHON_CMD[@]}" runtime_hooks/smoke_test.py --harness gemini --event-type post_task
-    "${PYTHON_CMD[@]}" runtime_hooks/smoke_test.py --event-type session_start --output artifacts/runtime/smoke/shared_session_start.txt --json-output artifacts/runtime/smoke/shared_session_start.json
+    "${PYTHON_CMD[@]}" runtime_hooks/smoke_test.py --harness gemini --event-type post_task "${smoke_overrides[@]}"
+    "${PYTHON_CMD[@]}" runtime_hooks/smoke_test.py --event-type session_start "${smoke_overrides[@]}" --output artifacts/runtime/smoke/shared_session_start.txt --json-output artifacts/runtime/smoke/shared_session_start.json
     "${PYTHON_CMD[@]}" governance_tools/change_control_summary.py --session-start-file artifacts/runtime/smoke/shared_session_start.json --output artifacts/runtime/smoke/shared_change_control_summary.txt
     "${PYTHON_CMD[@]}" governance_tools/change_control_index.py --artifacts-dir artifacts/runtime/smoke --output artifacts/runtime/smoke/INDEX.txt
 }
