@@ -106,6 +106,7 @@
 - `scripts/verify_phase_gates.sh` now directly runs that contract-aware wrapper smoke path, so the shared shell entrypoint is part of the normal regression surface rather than a documentation-only convenience.
 - `runtime_hooks/dispatcher.py` now mirrors the same contract-aware override path, and phase gates exercise that shared-event route too.
 - When only `--contract` is supplied to those runtime demo entrypoints, they now default `project_root` and `plan_path` from the contract repo itself only when that repo also exposes `PLAN.md`, reducing manual flags for real external repo trials without breaking bundled examples.
+- Shared runtime demo entrypoints now also accept `--response-file` and `--checks-file`, so post-task fixture replay can use file-based evidence instead of only the bundled response example.
 
 ## Next Steps
 

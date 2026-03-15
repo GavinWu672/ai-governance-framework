@@ -38,6 +38,13 @@ def normalize_payload(payload: dict, harness: str, event_type: str) -> dict:
         "transcript_path",
         "result_file",
     )
+    checks_file = _first_value(
+        payload,
+        "checks_file",
+        "checks_path",
+        "evidence_file",
+        "evidence_path",
+    )
 
     normalized = {
         "event_type": event_type,
@@ -64,6 +71,8 @@ def normalize_payload(payload: dict, harness: str, event_type: str) -> dict:
     contract = _first_value(payload, "contract", "contract_file")
     if contract not in (None, ""):
         normalized["contract"] = contract
+    if checks_file not in (None, ""):
+        normalized["checks_file"] = checks_file
     return normalized
 
 

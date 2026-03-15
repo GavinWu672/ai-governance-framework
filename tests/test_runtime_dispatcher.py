@@ -216,6 +216,37 @@ def test_dispatcher_cli_can_infer_project_root_and_plan_from_contract(tmp_path):
     assert payload["result"]["contract_resolution"]["source"] == "explicit"
 
 
+def test_dispatcher_cli_can_apply_post_task_response_and_checks_overrides(tmp_path):
+    result = subprocess.run(
+        [
+            sys.executable,
+            "runtime_hooks/dispatcher.py",
+            "--file",
+            "runtime_hooks/examples/shared/post_task.shared.json",
+            "--project-root",
+            str(tmp_path.resolve()),
+            "--contract",
+            str(Path("examples/usb-hub-contract/contract.yaml").resolve()),
+            "--response-file",
+            str(Path("examples/usb-hub-contract/fixtures/post_task_response.txt").resolve()),
+            "--checks-file",
+            str(Path("examples/usb-hub-contract/fixtures/interrupt_regression.checks.json").resolve()),
+            "--format",
+            "json",
+        ],
+        cwd=Path(__file__).parent.parent,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert result.returncode == 0
+    payload = json.loads(result.stdout)
+    assert payload["result"]["contract_resolution"]["source"] == "explicit"
+    assert any("interrupt_safety_validator" in warning for warning in payload["result"]["warnings"])
+    assert payload["result"]["domain_validator_results"][0]["name"] == "interrupt_safety_validator"
+    assert "HUB-ISR-001" in payload["result"]["domain_validator_results"][0]["warnings"][0]
+
+
 def test_native_example_files_exist():
     example_paths = [
         Path("runtime_hooks/examples/claude_code/pre_task.native.json"),

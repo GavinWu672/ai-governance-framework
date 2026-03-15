@@ -63,6 +63,9 @@
     "response_file": {
       "type": ["string", "null"]
     },
+    "checks_file": {
+      "type": ["string", "null"]
+    },
     "create_snapshot": {
       "type": "boolean"
     },

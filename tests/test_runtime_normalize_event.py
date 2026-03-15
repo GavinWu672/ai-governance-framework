@@ -35,10 +35,12 @@ def test_codex_normalize_event_maps_post_task_fields():
         "oversight": "review-required",
         "memory_mode": "candidate",
         "output_file": "out.txt",
+        "checks_path": "checks.json",
         "run_id": "run-123",
     }
     normalized = normalize_codex(payload, "post_task")
     assert normalized["response_file"] == "out.txt"
+    assert normalized["checks_file"] == "checks.json"
     assert normalized["create_snapshot"] is True
     assert normalized["metadata"]["harness"] == "codex"
 

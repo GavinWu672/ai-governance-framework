@@ -53,6 +53,8 @@ def run_smoke(
     project_root: Path | None = None,
     plan_path: Path | None = None,
     contract_file: Path | None = None,
+    response_file: Path | None = None,
+    checks_file: Path | None = None,
 ) -> dict:
     normalize_event = NORMALIZERS[harness]
     payload_path = payload_file or DEFAULT_EXAMPLES[(harness, event_type)]
@@ -62,6 +64,8 @@ def run_smoke(
         project_root=project_root,
         plan_path=plan_path,
         contract_file=contract_file,
+        response_file=response_file,
+        checks_file=checks_file,
     )
     envelope = run_adapter_event(normalize_event, event_type=event_type, payload=payload)
     envelope["payload_file"] = str(payload_path)
@@ -75,6 +79,8 @@ def run_shared_smoke(
     project_root: Path | None = None,
     plan_path: Path | None = None,
     contract_file: Path | None = None,
+    response_file: Path | None = None,
+    checks_file: Path | None = None,
 ) -> dict:
     payload_path = payload_file or DEFAULT_SHARED_EXAMPLES[event_type]
     event = json.loads(payload_path.read_text(encoding="utf-8"))
@@ -83,6 +89,8 @@ def run_shared_smoke(
         project_root=project_root,
         plan_path=plan_path,
         contract_file=contract_file,
+        response_file=response_file,
+        checks_file=checks_file,
     )
     envelope = dispatch_event(event)
     envelope["payload_file"] = str(payload_path)
@@ -171,6 +179,8 @@ def main() -> None:
     parser.add_argument("--project-root", help="Override project_root in the example payload.")
     parser.add_argument("--plan-path", help="Override plan_path in the example payload.")
     parser.add_argument("--contract", help="Explicit contract.yaml path for the smoke flow.")
+    parser.add_argument("--response-file", help="Override response_file in the example payload.")
+    parser.add_argument("--checks-file", help="Override checks_file in the example payload.")
     parser.add_argument("--format", choices=["human", "json"], default="human")
     parser.add_argument("--output", help="Write rendered smoke output to a file.")
     parser.add_argument("--json-output", help="Write the full smoke envelope as JSON to a file.")
@@ -183,6 +193,8 @@ def main() -> None:
             project_root=Path(args.project_root).resolve() if args.project_root else None,
             plan_path=Path(args.plan_path).resolve() if args.plan_path else None,
             contract_file=Path(args.contract).resolve() if args.contract else None,
+            response_file=Path(args.response_file).resolve() if args.response_file else None,
+            checks_file=Path(args.checks_file).resolve() if args.checks_file else None,
         )
     else:
         if not args.harness:
@@ -194,6 +206,8 @@ def main() -> None:
             project_root=Path(args.project_root).resolve() if args.project_root else None,
             plan_path=Path(args.plan_path).resolve() if args.plan_path else None,
             contract_file=Path(args.contract).resolve() if args.contract else None,
+            response_file=Path(args.response_file).resolve() if args.response_file else None,
+            checks_file=Path(args.checks_file).resolve() if args.checks_file else None,
         )
 
     if args.format == "json":

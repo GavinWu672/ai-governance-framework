@@ -82,6 +82,7 @@ def test_run_adapter_event_session_start(local_runtime_root):
 
 def test_run_adapter_event_post_task_creates_snapshot(local_runtime_root):
     response_file = local_runtime_root / "response.txt"
+    checks_file = local_runtime_root / "checks.json"
     response_file.write_text(
         "[Governance Contract]\n"
         "LANG = C++\nLEVEL = L2\nSCOPE = feature\nPLAN = PLAN.md\n"
@@ -89,6 +90,19 @@ def test_run_adapter_event_post_task_creates_snapshot(local_runtime_root):
         "CONTEXT = repo -> runtime-governance; NOT: platform rewrite\n"
         "PRESSURE = SAFE (20/200)\nRULES = common,python\nRISK = medium\n"
         "OVERSIGHT = review-required\nMEMORY_MODE = candidate\n",
+        encoding="utf-8",
+    )
+    checks_file.write_text(
+        json.dumps(
+            {
+                "warnings": [],
+                "errors": [],
+                "test_names": ["runtime_tests::test_failure_cleanup_path"],
+                "exception_verified": True,
+                "cleanup_verified": True,
+            }
+        )
+        + "\n",
         encoding="utf-8",
     )
     payload = {
@@ -99,11 +113,16 @@ def test_run_adapter_event_post_task_creates_snapshot(local_runtime_root):
         "oversight": "review-required",
         "memory_mode": "candidate",
         "output_file": str(response_file),
+        "checks_file": str(checks_file),
         "snapshot": True,
     }
     from runtime_hooks.adapters.codex.normalize_event import normalize_event as normalize_codex
 
     envelope = run_adapter_event(normalize_codex, "post_task", payload)
     assert envelope["result"]["ok"] is True
+    assert envelope["result"]["checks"]["warnings"] == []
+    assert envelope["result"]["checks"]["errors"] == []
+    assert envelope["result"]["checks"]["exception_verified"] is True
+    assert envelope["result"]["checks"]["cleanup_verified"] is True
     assert envelope["result"]["snapshot"] is not None
     assert Path(envelope["result"]["snapshot"]["snapshot_path"]).exists()

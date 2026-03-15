@@ -108,6 +108,7 @@ Dispatcher:
 - `dispatcher.py` now also accepts the same `--contract`, `--project-root`, and `--plan-path` overrides, so shared event JSON files can be replayed against an external contract repo without editing the event payload first
 - when only `--contract` is supplied, `dispatcher.py` now uses the contract repo as `project_root` and defaults `plan_path` to `<contract-root>/PLAN.md` only when that contract root actually contains `PLAN.md`
 - when a contract is supplied, dispatcher human output also surfaces `contract_source`, `contract_path`, and `domain_contract`
+- both `smoke_test.py` and `dispatcher.py` now also accept `--response-file` and `--checks-file`, so shared post-task examples can replay file-based evidence fixtures instead of only the bundled raw response text
 
 Session close:
 

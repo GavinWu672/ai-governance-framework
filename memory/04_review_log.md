@@ -810,6 +810,10 @@
   - `plan_path = <contract-root>/PLAN.md`
   when only `--contract` is supplied and the contract repo itself exposes `PLAN.md`.
 - This reduces the lowest-friction external repo trial path from "contract + project-root + plan-path" to just "contract" for the common runtime demo entrypoints.
+- Extended the same shared runtime entrypoints so post-task replay can now override:
+  - `response_file`
+  - `checks_file`
+- This moves the shared runtime demo path closer to real evidence-driven workflows, because a domain contract can now be exercised with a raw governance response plus structured evidence fixtures in one command.
 
 ## 2026-03-14 - IC / SoC Governance Direction Recorded
 

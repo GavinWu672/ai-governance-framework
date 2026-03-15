@@ -103,6 +103,27 @@ def test_smoke_test_pre_task_can_use_explicit_contract_and_surface_it_in_output(
     assert "domain_contract=usb-hub-firmware-contract" in output
 
 
+def test_smoke_test_post_task_can_use_checks_file_with_usb_hub_contract(tmp_path):
+    contract_file = Path("examples/usb-hub-contract/contract.yaml").resolve()
+    response_file = Path("examples/usb-hub-contract/fixtures/post_task_response.txt").resolve()
+    checks_file = Path("examples/usb-hub-contract/fixtures/interrupt_regression.checks.json").resolve()
+
+    envelope = run_shared_smoke(
+        "post_task",
+        payload_file=Path("runtime_hooks/examples/shared/post_task.shared.json"),
+        project_root=tmp_path,
+        contract_file=contract_file,
+        response_file=response_file,
+        checks_file=checks_file,
+    )
+
+    assert envelope["result"]["ok"] is True
+    assert envelope["result"]["contract_resolution"]["source"] == "explicit"
+    assert any("domain-validator:interrupt_safety_validator" in warning for warning in envelope["result"]["warnings"])
+    assert envelope["result"]["domain_validator_results"][0]["name"] == "interrupt_safety_validator"
+    assert "HUB-ISR-001" in envelope["result"]["domain_validator_results"][0]["warnings"][0]
+
+
 def test_smoke_test_handoff_summary_can_be_written(tmp_path):
     envelope = run_shared_smoke("session_start")
     output_file = tmp_path / "session_start.txt"

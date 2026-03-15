@@ -59,6 +59,10 @@ def run_adapter_event(
         response_file = normalized.get("response_file")
         if response_file:
             response_text = Path(response_file).read_text(encoding="utf-8")
+        checks = None
+        checks_file = normalized.get("checks_file")
+        if checks_file:
+            checks = json.loads(Path(checks_file).read_text(encoding="utf-8"))
 
         result = run_post_task_check(
             response_text=response_text,
@@ -69,8 +73,10 @@ def run_adapter_event(
             snapshot_task=normalized.get("task"),
             snapshot_summary=normalized.get("snapshot_summary"),
             create_snapshot=normalized.get("create_snapshot", False),
+            checks=checks,
             contract_file=Path(normalized["contract"]).resolve() if normalized.get("contract") else None,
             project_root=Path(normalized["project_root"]),
+            evidence_paths=[Path(path).resolve() for path in [response_file, checks_file] if path],
         )
 
     return {

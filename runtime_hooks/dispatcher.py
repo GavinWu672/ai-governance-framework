@@ -52,6 +52,10 @@ def dispatch_event(event: dict) -> dict:
         response_file = event.get("response_file")
         if response_file:
             response_text = Path(response_file).read_text(encoding="utf-8")
+        checks = None
+        checks_file = event.get("checks_file")
+        if checks_file:
+            checks = json.loads(Path(checks_file).read_text(encoding="utf-8"))
 
         result = run_post_task_check(
             response_text=response_text,
@@ -62,8 +66,10 @@ def dispatch_event(event: dict) -> dict:
             snapshot_task=event.get("task"),
             snapshot_summary=event.get("snapshot_summary"),
             create_snapshot=event.get("create_snapshot", False),
+            checks=checks,
             contract_file=Path(event["contract"]).resolve() if event.get("contract") else None,
             project_root=Path(event["project_root"]),
+            evidence_paths=[Path(path).resolve() for path in [response_file, checks_file] if path],
         )
     else:
         raise ValueError(f"Unsupported event_type: {event_type}")
@@ -107,6 +113,8 @@ def main() -> None:
     parser.add_argument("--project-root", help="Override project_root in the shared event.")
     parser.add_argument("--plan-path", help="Override plan_path in the shared event.")
     parser.add_argument("--contract", help="Explicit contract.yaml path for the shared event.")
+    parser.add_argument("--response-file", help="Override response_file in the shared event.")
+    parser.add_argument("--checks-file", help="Override checks_file in the shared event.")
     parser.add_argument("--format", choices=["human", "json"], default="human")
     args = parser.parse_args()
 
@@ -116,6 +124,8 @@ def main() -> None:
         project_root=Path(args.project_root).resolve() if args.project_root else None,
         plan_path=Path(args.plan_path).resolve() if args.plan_path else None,
         contract_file=Path(args.contract).resolve() if args.contract else None,
+        response_file=Path(args.response_file).resolve() if args.response_file else None,
+        checks_file=Path(args.checks_file).resolve() if args.checks_file else None,
     )
     envelope = dispatch_event(event)
 

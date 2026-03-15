@@ -80,6 +80,7 @@ Required fields:
   "oversight": "review-required",
   "memory_mode": "candidate",
   "response_file": "ai_response.txt",
+  "checks_file": "checks.json",
   "create_snapshot": true,
   "snapshot_summary": "Candidate memory from task output",
   "metadata": {
@@ -100,6 +101,7 @@ Required fields:
 Additional rule:
 
 - `response_file` is required for `post_task` unless the adapter provides response text directly through another wrapper layer.
+- `checks_file` is optional, but recommended when the post-task flow should replay structured evidence (test results, diff-derived checks, SARIF-like warnings, domain fixtures) instead of only the raw assistant response.
 
 ## Adapter Rule
 

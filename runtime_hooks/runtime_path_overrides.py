@@ -14,6 +14,8 @@ def apply_runtime_path_overrides(
     project_root: Path | None = None,
     plan_path: Path | None = None,
     contract_file: Path | None = None,
+    response_file: Path | None = None,
+    checks_file: Path | None = None,
 ) -> dict:
     updated = dict(payload)
 
@@ -36,5 +38,9 @@ def apply_runtime_path_overrides(
         updated["plan_path"] = str(effective_plan_path)
     if effective_contract is not None:
         updated["contract"] = str(effective_contract)
+    if response_file is not None:
+        updated["response_file"] = str(response_file.resolve())
+    if checks_file is not None:
+        updated["checks_file"] = str(checks_file.resolve())
 
     return updated

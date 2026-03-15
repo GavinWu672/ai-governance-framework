@@ -723,6 +723,7 @@ python runtime_hooks/smoke_test.py --event-type session_start
 If only `--contract` is supplied, it now defaults `project_root` and `plan_path` from the contract repo only when that contract root also contains `PLAN.md`; otherwise it preserves the example payload's original root/plan.
 The shared shell wrapper `scripts/run-runtime-governance.sh` now forwards the same overrides into its smoke flows, so the common hook/CI entrypoint can replay those examples against an external contract repo too.
 `runtime_hooks/dispatcher.py` now mirrors the same override pattern for shared event JSON, so the lowest-level shared-event path no longer requires hand-editing the payload just to point at a different contract or repo root.
+Both runtime entrypoints now also accept `--response-file` and `--checks-file`, making it easier to replay file-based post-task evidence against a real domain contract instead of only the bundled response fixture.
 
 `session_start` smoke output now shows startup handoff summaries directly, including the active contract, expected validators, and required evidence.
 Shared enforcement now also preserves:
