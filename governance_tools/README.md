@@ -246,7 +246,10 @@ CI 也會把它寫到：
 - `artifacts/reviewer-handoff/v1.0.0-alpha/latest.json`
 - `artifacts/reviewer-handoff/v1.0.0-alpha/latest.md`
 - `artifacts/reviewer-handoff/v1.0.0-alpha/MANIFEST.json`
-- `artifacts/reviewer-handoff/v1.0.0-alpha/PUBLICATION_MANIFEST.json`
+- `artifacts/reviewer-handoff/published/reviewer-handoff-latest.md`
+- `artifacts/reviewer-handoff/published/reviewer-handoff-latest.json`
+- `artifacts/reviewer-handoff/PUBLICATION_MANIFEST.json`
+- `artifacts/reviewer-handoff/PUBLICATION_INDEX.md`
 
 ---
 
@@ -272,9 +275,28 @@ python governance_tools/reviewer_handoff_snapshot.py \
 - `history/*`
 - `INDEX.md`
 - `MANIFEST.json`
-- `PUBLICATION_MANIFEST.json`
-- `PUBLICATION_INDEX.md`
 - `README.md`
+
+若同時加上：
+
+```bash
+--publish-status-dir artifacts/reviewer-handoff/published \
+--publication-root artifacts/reviewer-handoff
+```
+
+也會再寫出：
+
+- root publication:
+  - `PUBLICATION_MANIFEST.json`
+  - `PUBLICATION_INDEX.md`
+  - `README.md`
+- published site:
+  - `published/reviewer-handoff-latest.md`
+  - `published/reviewer-handoff-latest.json`
+  - `published/history/*`
+  - `published/INDEX.md`
+  - `published/manifest.json`
+  - `published/README.md`
 
 這個工具特別適合用在：
 
@@ -314,13 +336,13 @@ python governance_tools/reviewer_handoff_reader.py \
 ```bash
 python governance_tools/reviewer_handoff_publication_reader.py \
   --release-version v1.0.0-alpha \
-  --file artifacts/reviewer-handoff/v1.0.0-alpha/PUBLICATION_MANIFEST.json \
+  --file artifacts/reviewer-handoff/PUBLICATION_MANIFEST.json \
   --format human
 ```
 
 若不指定 `--file`，預設會讀：
 
-- `artifacts/reviewer-handoff/v1.0.0-alpha/PUBLICATION_MANIFEST.json`
+- `artifacts/reviewer-handoff/PUBLICATION_MANIFEST.json`
 
 這個工具特別適合用在：
 

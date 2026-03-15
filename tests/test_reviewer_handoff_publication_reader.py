@@ -10,7 +10,12 @@ from governance_tools.reviewer_handoff_publication_reader import (
     default_manifest_path,
     format_human_result,
 )
-from governance_tools.reviewer_handoff_snapshot import build_reviewer_handoff_snapshot, write_snapshot_bundle
+from governance_tools.reviewer_handoff_snapshot import (
+    build_reviewer_handoff_snapshot,
+    write_publication_manifest,
+    write_published_status,
+    write_snapshot_bundle,
+)
 
 
 def test_assess_publication_manifest_reads_generated_bundle(tmp_path):
@@ -22,15 +27,23 @@ def test_assess_publication_manifest_reads_generated_bundle(tmp_path):
         release_version="v1.0.0-alpha",
         contract_file=contract_file,
     )
-    bundle = write_snapshot_bundle(snapshot, tmp_path / "reviewer-handoff")
+    bundle = write_snapshot_bundle(snapshot, tmp_path / "reviewer-handoff" / "v1.0.0-alpha")
+    published = write_published_status(snapshot, tmp_path / "reviewer-handoff" / "published")
+    publication = write_publication_manifest(
+        snapshot,
+        tmp_path / "reviewer-handoff",
+        bundle_paths=bundle,
+        published_paths=published,
+    )
 
-    result = assess_publication_manifest(Path(bundle["publication_manifest_json"]))
+    result = assess_publication_manifest(Path(publication["manifest_json"]))
 
     assert result["ok"] is True
     assert result["exists"] is True
-    assert result["publication_scope"] == "bundle"
+    assert result["publication_scope"] == "reviewer-handoff-root"
+    assert result["bundle_published"] is True
+    assert result["status_pages_published"] is True
     assert result["release_version"] == "v1.0.0-alpha"
-    assert result["latest_md"].endswith("latest.md")
 
 
 def test_format_human_result_surfaces_publication_scope_and_paths(tmp_path):
@@ -42,7 +55,7 @@ def test_format_human_result_surfaces_publication_scope_and_paths(tmp_path):
                 "generated_at": "2026-03-15T00:00:00+00:00",
                 "project_root": "D:/ai-governance-framework",
                 "publication_root": str(tmp_path),
-                "publication_scope": "bundle",
+                "publication_scope": "reviewer-handoff-root",
                 "plan_path": "D:/ai-governance-framework/PLAN.md",
                 "release_version": "v1.0.0-alpha",
                 "contract_path": "examples/usb-hub-contract/contract.yaml",
@@ -51,14 +64,27 @@ def test_format_human_result_surfaces_publication_scope_and_paths(tmp_path):
                 "strict_runtime": False,
                 "trust_ok": True,
                 "release_ok": True,
-                "latest_json": "latest.json",
-                "latest_txt": "latest.txt",
-                "latest_md": "latest.md",
-                "history_json": "history.json",
-                "history_txt": "history.txt",
-                "history_md": "history.md",
-                "index_md": "INDEX.md",
-                "manifest_json": "MANIFEST.json",
+                "bundle_published": True,
+                "status_pages_published": True,
+                "bundle": {
+                    "latest_json": "bundle/latest.json",
+                    "latest_txt": "bundle/latest.txt",
+                    "latest_md": "bundle/latest.md",
+                    "history_json": "bundle/history.json",
+                    "history_txt": "bundle/history.txt",
+                    "history_md": "bundle/history.md",
+                    "index_md": "bundle/INDEX.md",
+                    "manifest_json": "bundle/MANIFEST.json",
+                },
+                "published": {
+                    "latest_json": "published/reviewer-handoff-latest.json",
+                    "latest_md": "published/reviewer-handoff-latest.md",
+                    "readme_md": "published/README.md",
+                    "history_json": "published/history.json",
+                    "history_md": "published/history.md",
+                    "index_md": "published/INDEX.md",
+                    "manifest_json": "published/manifest.json",
+                },
                 "readme_md": "README.md",
             },
             ensure_ascii=False,
@@ -70,9 +96,12 @@ def test_format_human_result_surfaces_publication_scope_and_paths(tmp_path):
 
     rendered = format_human_result(assess_publication_manifest(manifest_path))
 
-    assert rendered.startswith("summary=ok=True | scope=bundle | trust=True | release=True | release_version=v1.0.0-alpha")
+    assert rendered.startswith("summary=ok=True | scope=reviewer-handoff-root | trust=True | release=True | release_version=v1.0.0-alpha")
     assert "[reviewer_handoff_publication_reader]" in rendered
-    assert "manifest_json=MANIFEST.json" in rendered
+    assert "bundle_published=True" in rendered
+    assert "status_pages_published=True" in rendered
+    assert "[bundle]" in rendered
+    assert "[published]" in rendered
     assert "readme_md=README.md" in rendered
 
 
@@ -81,7 +110,7 @@ def test_default_manifest_path_points_to_artifacts_reviewer_handoff_publication(
 
     resolved = default_manifest_path(project_root, release_version="v1.0.0-alpha")
 
-    assert resolved == project_root / "artifacts" / "reviewer-handoff" / "v1.0.0-alpha" / "PUBLICATION_MANIFEST.json"
+    assert resolved == project_root / "artifacts" / "reviewer-handoff" / "PUBLICATION_MANIFEST.json"
 
 
 def test_reviewer_handoff_publication_reader_cli_supports_direct_script_invocation(tmp_path):
@@ -93,7 +122,14 @@ def test_reviewer_handoff_publication_reader_cli_supports_direct_script_invocati
         release_version="v1.0.0-alpha",
         contract_file=contract_file,
     )
-    bundle = write_snapshot_bundle(snapshot, tmp_path / "reviewer-handoff")
+    bundle = write_snapshot_bundle(snapshot, tmp_path / "reviewer-handoff" / "v1.0.0-alpha")
+    published = write_published_status(snapshot, tmp_path / "reviewer-handoff" / "published")
+    publication = write_publication_manifest(
+        snapshot,
+        tmp_path / "reviewer-handoff",
+        bundle_paths=bundle,
+        published_paths=published,
+    )
 
     result = subprocess.run(
         [
@@ -102,7 +138,7 @@ def test_reviewer_handoff_publication_reader_cli_supports_direct_script_invocati
             "--release-version",
             "v1.0.0-alpha",
             "--file",
-            bundle["publication_manifest_json"],
+            publication["manifest_json"],
             "--format",
             "human",
         ],
@@ -111,5 +147,5 @@ def test_reviewer_handoff_publication_reader_cli_supports_direct_script_invocati
         text=True,
     )
 
-    assert "summary=ok=True | scope=bundle | trust=True | release=True | release_version=v1.0.0-alpha" in result.stdout
+    assert "summary=ok=True | scope=reviewer-handoff-root | trust=True | release=True | release_version=v1.0.0-alpha" in result.stdout
     assert "[reviewer_handoff_publication_reader]" in result.stdout

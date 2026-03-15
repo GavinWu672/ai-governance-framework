@@ -99,7 +99,7 @@
   - CI now preserves reviewer-handoff output as a versioned latest/history/index/manifest bundle instead of only three flat files.
 - Reviewer handoff now also has a publication-layer reader:
   - `governance_tools/reviewer_handoff_publication_reader.py`
-  - reviewer packet bundles now emit `PUBLICATION_MANIFEST.json` / `PUBLICATION_INDEX.md`
+  - reviewer packet publishing now also maintains a root publication manifest/index plus a small published site under `artifacts/reviewer-handoff/published/`
 
 ## Next Steps
 

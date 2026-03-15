@@ -155,13 +155,13 @@ else
     fail "reviewer_handoff_summary.py $RELEASE_VERSION 失敗"
     ALL_OK=0
 fi
-if "${PYTHON_CMD[@]}" governance_tools/reviewer_handoff_snapshot.py --project-root . --plan PLAN.md --release-version "$RELEASE_VERSION" --contract examples/usb-hub-contract/contract.yaml --release-bundle-manifest artifacts/release-package/phase-gate-smoke/MANIFEST.json --release-publication-manifest artifacts/release-package/phase-gate-smoke/PUBLICATION_MANIFEST.json --write-bundle artifacts/reviewer-handoff/phase-gate-smoke --format human > /dev/null 2>&1; then
+if "${PYTHON_CMD[@]}" governance_tools/reviewer_handoff_snapshot.py --project-root . --plan PLAN.md --release-version "$RELEASE_VERSION" --contract examples/usb-hub-contract/contract.yaml --release-bundle-manifest artifacts/release-package/phase-gate-smoke/MANIFEST.json --release-publication-manifest artifacts/release-package/phase-gate-smoke/PUBLICATION_MANIFEST.json --write-bundle artifacts/reviewer-handoff/phase-gate-smoke/"$RELEASE_VERSION" --publish-status-dir artifacts/reviewer-handoff/phase-gate-smoke/published --publication-root artifacts/reviewer-handoff/phase-gate-smoke --format human > /dev/null 2>&1; then
     ok "reviewer_handoff_snapshot.py $RELEASE_VERSION"
 else
     fail "reviewer_handoff_snapshot.py $RELEASE_VERSION 失敗"
     ALL_OK=0
 fi
-if "${PYTHON_CMD[@]}" governance_tools/reviewer_handoff_reader.py --release-version "$RELEASE_VERSION" --file artifacts/reviewer-handoff/phase-gate-smoke/MANIFEST.json --format human > /dev/null 2>&1; then
+if "${PYTHON_CMD[@]}" governance_tools/reviewer_handoff_reader.py --release-version "$RELEASE_VERSION" --file artifacts/reviewer-handoff/phase-gate-smoke/"$RELEASE_VERSION"/MANIFEST.json --format human > /dev/null 2>&1; then
     ok "reviewer_handoff_reader.py $RELEASE_VERSION"
 else
     fail "reviewer_handoff_reader.py $RELEASE_VERSION 失敗"

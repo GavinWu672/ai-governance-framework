@@ -18,7 +18,7 @@ from governance_tools.human_summary import build_summary_line
 
 
 def default_manifest_path(project_root: Path, *, release_version: str) -> Path:
-    return project_root / "artifacts" / "reviewer-handoff" / release_version / "PUBLICATION_MANIFEST.json"
+    return project_root / "artifacts" / "reviewer-handoff" / "PUBLICATION_MANIFEST.json"
 
 
 def assess_publication_manifest(manifest_path: Path) -> dict[str, Any]:
@@ -56,6 +56,8 @@ def assess_publication_manifest(manifest_path: Path) -> dict[str, Any]:
         "strict_runtime": payload.get("strict_runtime"),
         "trust_ok": payload.get("trust_ok"),
         "release_ok": payload.get("release_ok"),
+        "bundle_published": bool(payload.get("bundle_published", payload.get("bundle") is not None)),
+        "status_pages_published": bool(payload.get("status_pages_published", payload.get("published") is not None)),
         "latest_json": payload.get("latest_json"),
         "latest_txt": payload.get("latest_txt"),
         "latest_md": payload.get("latest_md"),
@@ -65,6 +67,8 @@ def assess_publication_manifest(manifest_path: Path) -> dict[str, Any]:
         "index_md": payload.get("index_md"),
         "manifest_json": payload.get("manifest_json"),
         "readme_md": payload.get("readme_md"),
+        "bundle": payload.get("bundle"),
+        "published": payload.get("published"),
     }
 
 
@@ -91,6 +95,8 @@ def format_human_result(result: dict[str, Any]) -> str:
         f"strict_runtime={result.get('strict_runtime')}",
         f"trust_ok={result.get('trust_ok')}",
         f"release_ok={result.get('release_ok')}",
+        f"bundle_published={result.get('bundle_published')}",
+        f"status_pages_published={result.get('status_pages_published')}",
     ]
 
     if result.get("error"):
@@ -99,20 +105,61 @@ def format_human_result(result: dict[str, Any]) -> str:
 
     lines.extend(
         [
-            "[latest]",
-            f"json={result.get('latest_json')}",
-            f"text={result.get('latest_txt')}",
-            f"markdown={result.get('latest_md')}",
-            "[history]",
-            f"json={result.get('history_json')}",
-            f"text={result.get('history_txt')}",
-            f"markdown={result.get('history_md')}",
             "[paths]",
             f"index_md={result.get('index_md')}",
             f"manifest_json={result.get('manifest_json')}",
             f"readme_md={result.get('readme_md')}",
         ]
     )
+    if result.get("latest_json") or result.get("latest_txt") or result.get("latest_md"):
+        lines.extend(
+            [
+                "[latest]",
+                f"json={result.get('latest_json')}",
+                f"text={result.get('latest_txt')}",
+                f"markdown={result.get('latest_md')}",
+            ]
+        )
+    if result.get("history_json") or result.get("history_txt") or result.get("history_md"):
+        lines.extend(
+            [
+                "[history]",
+                f"json={result.get('history_json')}",
+                f"text={result.get('history_txt')}",
+                f"markdown={result.get('history_md')}",
+            ]
+        )
+    bundle = result.get("bundle")
+    if isinstance(bundle, dict):
+        lines.append("[bundle]")
+        for key in (
+            "latest_json",
+            "latest_txt",
+            "latest_md",
+            "history_json",
+            "history_txt",
+            "history_md",
+            "index_md",
+            "manifest_json",
+        ):
+            value = bundle.get(key)
+            if value:
+                lines.append(f"{key}={value}")
+    published = result.get("published")
+    if isinstance(published, dict):
+        lines.append("[published]")
+        for key in (
+            "latest_json",
+            "latest_md",
+            "readme_md",
+            "history_json",
+            "history_md",
+            "index_md",
+            "manifest_json",
+        ):
+            value = published.get(key)
+            if value:
+                lines.append(f"{key}={value}")
     return "\n".join(lines)
 
 

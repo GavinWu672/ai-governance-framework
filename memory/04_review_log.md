@@ -780,8 +780,10 @@
 ## 2026-03-15 - Reviewer Handoff Publication Reader
 
 - Extended `governance_tools/reviewer_handoff_snapshot.py` so reviewer-handoff bundles now also emit:
-  - `PUBLICATION_MANIFEST.json`
-  - `PUBLICATION_INDEX.md`
+  - bundle-level publication metadata
+  - root-level `PUBLICATION_MANIFEST.json`
+  - root-level `PUBLICATION_INDEX.md`
+  - published site pages under `published/`
 - Added `governance_tools/reviewer_handoff_publication_reader.py` so the reviewer packet now has a publication-layer reader flow, matching the pattern already used by trust-signal and release-package artifacts.
 - Updated phase gates, CI, and release-readiness checks so this publication layer is part of the normal regression surface instead of a documentation-only convention.
 

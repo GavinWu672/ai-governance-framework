@@ -72,6 +72,31 @@ def resolve_bundle_dir(
     return project_root / "artifacts" / "reviewer-handoff" / release_version
 
 
+def resolve_publication_paths(
+    *,
+    project_root: Path,
+    release_version: str,
+    write_bundle: str | None = None,
+    publish_status_dir: str | None = None,
+    publication_root: str | None = None,
+) -> tuple[Path | None, Path | None, Path | None]:
+    bundle_path = resolve_bundle_dir(
+        project_root=project_root,
+        release_version=release_version,
+        write_bundle=write_bundle,
+    )
+    published_path = Path(publish_status_dir).resolve() if publish_status_dir else None
+    publication_path = Path(publication_root).resolve() if publication_root else None
+
+    if publication_path is None:
+        if bundle_path is not None:
+            publication_path = bundle_path.parent
+        elif published_path is not None:
+            publication_path = published_path.parent
+
+    return bundle_path, published_path, publication_path
+
+
 def format_index(history_dir: Path) -> str:
     json_files = sorted(history_dir.glob("*.json"))
     lines = ["[reviewer_handoff_snapshot_index]", f"history_dir={history_dir}", f"reports={len(json_files)}"]
@@ -264,6 +289,273 @@ def write_snapshot_bundle(snapshot: dict[str, Any], bundle_dir: Path) -> dict[st
     }
 
 
+def format_published_status_page(snapshot: dict[str, Any]) -> str:
+    handoff = snapshot["handoff"]
+    lines = [
+        "# Published Reviewer Handoff",
+        "",
+        "> This page is generated. Rebuild it with `governance_tools/reviewer_handoff_snapshot.py`.",
+        "",
+        f"- Generated at: `{snapshot['generated_at']}`",
+        f"- Release version: `{snapshot['release_version']}`",
+        f"- Project root: `{snapshot['project_root']}`",
+        f"- Contract path: `{snapshot.get('contract_path')}`",
+        f"- External contract repos: `{len(snapshot.get('external_contract_repos') or [])}`",
+        f"- Strict runtime: `{snapshot['strict_runtime']}`",
+        "",
+        format_markdown_result(handoff),
+    ]
+    return "\n".join(lines)
+
+
+def format_published_index(history_dir: Path) -> str:
+    json_files = sorted(history_dir.glob("*.json"))
+    lines = ["# Published Reviewer Handoff Index", "", f"- History dir: `{history_dir}`", f"- Reports: `{len(json_files)}`"]
+    if json_files:
+        lines.extend(["", "| Snapshot | OK | Release | Contract | Generated |", "| --- | --- | --- | --- | --- |"])
+        for path in reversed(json_files):
+            try:
+                payload = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                lines.append(f"| `{path.name}` | unreadable | - | - | - |")
+                continue
+            lines.append(
+                " | ".join(
+                    [
+                        f"| `{path.name}`",
+                        f"`{payload.get('ok')}`",
+                        f"`{payload.get('release_version')}`",
+                        f"`{payload.get('contract_path')}`",
+                        f"`{payload.get('generated_at')}` |",
+                    ]
+                )
+            )
+    return "\n".join(lines)
+
+
+def write_published_status(snapshot: dict[str, Any], publish_dir: Path) -> dict[str, str]:
+    publish_dir.mkdir(parents=True, exist_ok=True)
+    history_dir = publish_dir / "history"
+    history_dir.mkdir(parents=True, exist_ok=True)
+    stem = _history_stem(snapshot)
+    latest_md = publish_dir / "reviewer-handoff-latest.md"
+    latest_json = publish_dir / "reviewer-handoff-latest.json"
+    readme_md = publish_dir / "README.md"
+    history_md = history_dir / f"{stem}.md"
+    history_json = history_dir / f"{stem}.json"
+    index_md = publish_dir / "INDEX.md"
+    manifest_json = publish_dir / "manifest.json"
+
+    markdown_text = format_published_status_page(snapshot) + "\n"
+    json_text = json.dumps(snapshot, ensure_ascii=False, indent=2) + "\n"
+
+    latest_md.write_text(markdown_text, encoding="utf-8")
+    latest_json.write_text(json_text, encoding="utf-8")
+    history_md.write_text(markdown_text, encoding="utf-8")
+    history_json.write_text(json_text, encoding="utf-8")
+    index_md.write_text(format_published_index(history_dir) + "\n", encoding="utf-8")
+    readme_md.write_text(
+        "\n".join(
+            [
+                "# Published Reviewer Handoff Index",
+                "",
+                "This directory contains generated reviewer-handoff status pages.",
+                "",
+                "- [Latest Markdown Snapshot](reviewer-handoff-latest.md)",
+                "- [Latest JSON Snapshot](reviewer-handoff-latest.json)",
+                "- [History Index](INDEX.md)",
+                "- `manifest.json`",
+                "",
+                f"Latest generated_at: `{snapshot['generated_at']}`",
+                f"Release version: `{snapshot['release_version']}`",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    manifest_json.write_text(
+        json.dumps(
+            {
+                "generated_at": snapshot["generated_at"],
+                "release_version": snapshot["release_version"],
+                "contract_path": snapshot.get("contract_path"),
+                "external_contract_repos": snapshot.get("external_contract_repos") or [],
+                "external_contract_repo_count": len(snapshot.get("external_contract_repos") or []),
+                "strict_runtime": snapshot["strict_runtime"],
+                "trust_ok": snapshot["handoff"].get("trust_signal", {}).get("ok"),
+                "release_ok": snapshot["handoff"].get("release_surface", {}).get("ok"),
+                "published": {
+                    "markdown": str(latest_md),
+                    "json": str(latest_json),
+                    "readme": str(readme_md),
+                    "index": str(index_md),
+                },
+                "history": {
+                    "markdown": str(history_md),
+                    "json": str(history_json),
+                },
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    return {
+        "latest_md": str(latest_md),
+        "latest_json": str(latest_json),
+        "readme_md": str(readme_md),
+        "history_md": str(history_md),
+        "history_json": str(history_json),
+        "index_md": str(index_md),
+        "manifest_json": str(manifest_json),
+    }
+
+
+def format_publication_index(
+    snapshot: dict[str, Any],
+    *,
+    bundle_paths: dict[str, str] | None = None,
+    published_paths: dict[str, str] | None = None,
+) -> str:
+    lines = [
+        "# Reviewer Handoff Publication Index",
+        "",
+        f"- Generated at: `{snapshot['generated_at']}`",
+        f"- Release version: `{snapshot['release_version']}`",
+        f"- Contract path: `{snapshot.get('contract_path')}`",
+        f"- External contract repos: `{len(snapshot.get('external_contract_repos') or [])}`",
+        f"- Strict runtime: `{snapshot['strict_runtime']}`",
+        "",
+        "## Surfaces",
+        "",
+        f"- Bundle published: `{bundle_paths is not None}`",
+        f"- Status pages published: `{published_paths is not None}`",
+    ]
+
+    if bundle_paths:
+        lines.extend(
+            [
+                "",
+                "## Bundle Paths",
+                "",
+                f"- Latest JSON: `{bundle_paths['latest_json']}`",
+                f"- Latest Text: `{bundle_paths['latest_txt']}`",
+                f"- Latest Markdown: `{bundle_paths['latest_md']}`",
+                f"- History JSON: `{bundle_paths['history_json']}`",
+                f"- History Text: `{bundle_paths['history_txt']}`",
+                f"- History Markdown: `{bundle_paths['history_md']}`",
+                f"- Index: `{bundle_paths['index_md']}`",
+                f"- Manifest: `{bundle_paths['manifest_json']}`",
+            ]
+        )
+
+    if published_paths:
+        lines.extend(
+            [
+                "",
+                "## Published Status Paths",
+                "",
+                f"- Latest Markdown: `{published_paths['latest_md']}`",
+                f"- Latest JSON: `{published_paths['latest_json']}`",
+                f"- Readme: `{published_paths['readme_md']}`",
+                f"- History Markdown: `{published_paths['history_md']}`",
+                f"- History JSON: `{published_paths['history_json']}`",
+                f"- Index: `{published_paths['index_md']}`",
+                f"- Manifest: `{published_paths['manifest_json']}`",
+            ]
+        )
+
+    return "\n".join(lines)
+
+
+def write_publication_manifest(
+    snapshot: dict[str, Any],
+    root_dir: Path,
+    *,
+    bundle_paths: dict[str, str] | None = None,
+    published_paths: dict[str, str] | None = None,
+) -> dict[str, str]:
+    root_dir.mkdir(parents=True, exist_ok=True)
+    manifest_json = root_dir / "PUBLICATION_MANIFEST.json"
+    index_md = root_dir / "PUBLICATION_INDEX.md"
+    readme_md = root_dir / "README.md"
+    manifest_payload = {
+        "ok": snapshot["ok"],
+        "generated_at": snapshot["generated_at"],
+        "project_root": snapshot["project_root"],
+        "publication_root": str(root_dir),
+        "publication_scope": "reviewer-handoff-root",
+        "release_version": snapshot["release_version"],
+        "contract_path": snapshot.get("contract_path"),
+        "external_contract_repos": snapshot.get("external_contract_repos") or [],
+        "external_contract_repo_count": len(snapshot.get("external_contract_repos") or []),
+        "strict_runtime": snapshot["strict_runtime"],
+        "trust_ok": snapshot["handoff"].get("trust_signal", {}).get("ok"),
+        "release_ok": snapshot["handoff"].get("release_surface", {}).get("ok"),
+        "bundle_published": bundle_paths is not None,
+        "status_pages_published": published_paths is not None,
+        "bundle": bundle_paths,
+        "published": published_paths,
+        "readme_md": str(readme_md),
+    }
+
+    manifest_json.write_text(
+        json.dumps(manifest_payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    index_md.write_text(
+        format_publication_index(snapshot, bundle_paths=bundle_paths, published_paths=published_paths) + "\n",
+        encoding="utf-8",
+    )
+    lines = [
+        "# Generated Reviewer Handoff",
+        "",
+        f"- Summary: `ok={snapshot['ok']} | trust={snapshot['handoff'].get('trust_signal', {}).get('ok')} | release={snapshot['handoff'].get('release_surface', {}).get('ok')}`",
+        f"- Generated at: `{snapshot['generated_at']}`",
+        f"- Release version: `{snapshot['release_version']}`",
+        "",
+        "This directory is the stable root for generated reviewer-handoff publication outputs.",
+        "",
+        "## Entry Points",
+        "",
+        "- [Publication Index](PUBLICATION_INDEX.md)",
+        "- [Publication Manifest](PUBLICATION_MANIFEST.json)",
+    ]
+    if bundle_paths:
+        lines.extend(
+            [
+                "",
+                "## Bundle",
+                "",
+                f"- Bundle manifest: `{Path(bundle_paths['manifest_json']).name}`",
+                f"- Latest text: `{Path(bundle_paths['latest_txt']).name}`",
+                f"- Latest markdown: `{Path(bundle_paths['latest_md']).name}`",
+                f"- Bundle index: `{Path(bundle_paths['index_md']).name}`",
+            ]
+        )
+    if published_paths:
+        lines.extend(
+            [
+                "",
+                "## Published Site",
+                "",
+                f"- Site manifest: `{Path(published_paths['manifest_json']).name}`",
+                f"- Site readme: `{Path(published_paths['readme_md']).parent.name}/{Path(published_paths['readme_md']).name}`",
+                f"- Site latest markdown: `{Path(published_paths['latest_md']).parent.name}/{Path(published_paths['latest_md']).name}`",
+                f"- Site index: `{Path(published_paths['index_md']).parent.name}/{Path(published_paths['index_md']).name}`",
+            ]
+        )
+    readme_md.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    return {
+        "manifest_json": str(manifest_json),
+        "index_md": str(index_md),
+        "readme_md": str(readme_md),
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Generate a reviewer-handoff snapshot bundle.")
     parser.add_argument("--project-root", default=".")
@@ -277,6 +569,8 @@ def main() -> int:
     parser.add_argument("--format", choices=("human", "json", "markdown"), default="human")
     parser.add_argument("--output")
     parser.add_argument("--write-bundle")
+    parser.add_argument("--publish-status-dir")
+    parser.add_argument("--publication-root")
     args = parser.parse_args()
 
     project_root = Path(args.project_root).resolve()
@@ -305,19 +599,44 @@ def main() -> int:
         output_path.parent.mkdir(parents=True, exist_ok=True)
         output_path.write_text(rendered + "\n", encoding="utf-8")
 
-    print(rendered)
-
-    bundle_dir = resolve_bundle_dir(
+    bundle_dir, published_dir, publication_root = resolve_publication_paths(
         project_root=project_root,
         release_version=args.release_version,
         write_bundle=args.write_bundle,
+        publish_status_dir=args.publish_status_dir,
+        publication_root=args.publication_root,
     )
+    print(rendered)
+
     if bundle_dir is not None:
         paths = write_snapshot_bundle(snapshot, bundle_dir)
         if args.format == "human":
             print("")
             print("[reviewer_handoff_snapshot]")
             for key, value in paths.items():
+                print(f"{key}={value}")
+    else:
+        paths = None
+    if published_dir is not None:
+        published = write_published_status(snapshot, published_dir)
+        if args.format == "human":
+            print("")
+            print("[reviewer_handoff_published]")
+            for key, value in published.items():
+                print(f"{key}={value}")
+    else:
+        published = None
+    if publication_root is not None:
+        publication = write_publication_manifest(
+            snapshot,
+            publication_root,
+            bundle_paths=paths,
+            published_paths=published,
+        )
+        if args.format == "human":
+            print("")
+            print("[reviewer_handoff_publication]")
+            for key, value in publication.items():
                 print(f"{key}={value}")
 
     return 0 if snapshot["ok"] else 1
