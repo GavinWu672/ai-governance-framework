@@ -747,6 +747,12 @@
 - This closes a clean-workspace CI bug where `trust_signal_publication_reader.py --file artifacts/trust-signals/.../PUBLICATION_MANIFEST.json` could fail even though local reruns passed because an old manifest already existed.
 - Added regression coverage in `tests/test_trust_signal_snapshot.py` for the new default publication-root behavior.
 
+## 2026-03-15 - CI Release Surface Artifacts
+
+- Extended GitHub Actions and GitLab CI so the phase-gates flow now also emits `artifacts/release-surface/`.
+- The new artifact preserves `release_surface_overview.py` in human / JSON / Markdown forms, so reviewers have a single high-level release handoff surface inside CI instead of only local CLI output.
+- Updated release docs, README, and tool docs so this new artifact path is part of the visible alpha review surface.
+
 ## 2026-03-14 - IC / SoC Governance Direction Recorded
 
 - Recorded a refined future-domain view for IC-related governance.

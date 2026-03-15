@@ -236,6 +236,12 @@ python governance_tools/release_surface_overview.py \
 - reviewer 想知道 release docs、package、publication surface 是否同時就緒
 - release prep 想避免在 `summary / reader / publication reader` 之間手動跳來跳去
 
+CI 也會把這個 overview 寫到：
+
+- `artifacts/release-surface/release_surface_overview.txt`
+- `artifacts/release-surface/release_surface_overview.json`
+- `artifacts/release-surface/release_surface_overview.md`
+
 ---
 
 ## release_package_summary.py

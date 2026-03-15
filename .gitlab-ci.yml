@@ -64,11 +64,15 @@ phase-gates:
     - python governance_tools/trust_signal_snapshot.py --project-root . --plan PLAN.md --release-version v1.0.0-alpha --contract examples/usb-hub-contract/contract.yaml --strict-runtime --write-bundle artifacts/trust-signals --publish-status-dir artifacts/trust-signals/published --format human
     - python governance_tools/release_package_snapshot.py --version v1.0.0-alpha --write-bundle artifacts/release-package/v1.0.0-alpha --format human
     - python governance_tools/release_package_publication_reader.py --file artifacts/release-package/v1.0.0-alpha/PUBLICATION_MANIFEST.json --format human
+    - python governance_tools/release_surface_overview.py --version v1.0.0-alpha --bundle-manifest artifacts/release-package/v1.0.0-alpha/MANIFEST.json --publication-manifest artifacts/release-package/v1.0.0-alpha/PUBLICATION_MANIFEST.json --format human --output artifacts/release-surface/release_surface_overview.txt
+    - python governance_tools/release_surface_overview.py --version v1.0.0-alpha --bundle-manifest artifacts/release-package/v1.0.0-alpha/MANIFEST.json --publication-manifest artifacts/release-package/v1.0.0-alpha/PUBLICATION_MANIFEST.json --format json --output artifacts/release-surface/release_surface_overview.json
+    - python governance_tools/release_surface_overview.py --version v1.0.0-alpha --bundle-manifest artifacts/release-package/v1.0.0-alpha/MANIFEST.json --publication-manifest artifacts/release-package/v1.0.0-alpha/PUBLICATION_MANIFEST.json --format markdown --output artifacts/release-surface/release_surface_overview.md
   artifacts:
     when: always
     paths:
       - artifacts/trust-signals/
       - artifacts/release-package/
+      - artifacts/release-surface/
     expire_in: 7 days
   rules:
     - if: '$CI_PIPELINE_SOURCE == "push"'

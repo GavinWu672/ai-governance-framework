@@ -491,6 +491,7 @@ CI now also generates trust-signal snapshot bundles, so this high-level view is 
 Each bundle now also includes manifest metadata, published history/index pages, and a publication-level manifest/index, so tools or readers can tell which snapshot is current without inferring from filenames alone. When external contract repos are provided, those manifests also carry a compact cross-domain enforcement summary instead of only a yes/no policy flag.
 The published status surface now also emits a dedicated domain-enforcement matrix page, so cross-domain hard-stop posture can be shared without opening the full trust-signal dashboard.
 CI now also generates release-package bundles under `artifacts/release-package/`, so alpha-facing docs, status surfaces, and verification commands can be reviewed as a preserved artifact instead of only local CLI output.
+CI now also emits a release-surface overview under `artifacts/release-surface/`, so reviewers can consume the current release readiness/package/publication posture without manually opening multiple manifests.
 
 ### Minimum Viable Setup
 

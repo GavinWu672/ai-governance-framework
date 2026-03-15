@@ -22,6 +22,7 @@ def test_release_package_summary_passes_for_current_alpha():
     assert result["existing_status_docs"] >= 4
     assert any(item["name"] == "release_note" and item["exists"] for item in result["release_docs"])
     assert any(item["name"] == "generated_status_root" for item in result["status_docs"])
+    assert any(item["name"] == "release_surface_overview" for item in result["commands"])
     assert any(item["name"] == "phase_gates" for item in result["commands"])
 
 
@@ -35,6 +36,7 @@ def test_release_package_summary_human_output_is_summary_first():
     assert "[release_docs]" in rendered
     assert "[status_docs]" in rendered
     assert "[commands]" in rendered
+    assert "release_surface_overview=python governance_tools/release_surface_overview.py --version v1.0.0-alpha --format human" in rendered
     assert "release_readiness=python governance_tools/release_readiness.py --version v1.0.0-alpha --format human" in rendered
 
 

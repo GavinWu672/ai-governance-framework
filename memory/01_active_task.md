@@ -90,6 +90,7 @@
 - CI now also emits `artifacts/release-package/`, so release-package evidence is preserved even when generated docs paths are not used locally.
 - The release surface now also has a single reviewer-first aggregator via `governance_tools/release_surface_overview.py`, reducing the need to manually jump between release readiness, package summary, and publication readers during release prep.
 - Trust-signal artifact publication now also defaults its `publication_root` when bundle/published outputs are requested, closing a clean-workspace CI gap where `trust_signal_publication_reader.py` could fail despite local runs passing with stale manifests.
+- CI now also emits that same release-surface overview under `artifacts/release-surface/`, so the reviewer entrypoint is preserved after the run instead of only at local CLI time.
 
 ## Next Steps
 

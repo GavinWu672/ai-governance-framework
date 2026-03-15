@@ -50,6 +50,10 @@ def assess_release_package(project_root: Path, *, version: str) -> dict[str, Any
             "command": f"python governance_tools/release_readiness.py --version {version} --format human",
         },
         {
+            "name": "release_surface_overview",
+            "command": f"python governance_tools/release_surface_overview.py --version {version} --format human",
+        },
+        {
             "name": "trust_signal_overview",
             "command": "python governance_tools/trust_signal_overview.py --project-root . --plan PLAN.md "
             f"--release-version {version} --contract examples/usb-hub-contract/contract.yaml --format human",
