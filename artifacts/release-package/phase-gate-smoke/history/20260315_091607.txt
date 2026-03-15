@@ -1,0 +1,23 @@
+summary=ok=True | version=v1.0.0-alpha | release_docs=5/5 | status_docs=4/5 | readiness_checks=47
+[release_package_summary]
+project_root=D:\ai-governance-framework
+version=v1.0.0-alpha
+ok=True
+[release_docs]
+release_note | exists=True | path=D:\ai-governance-framework\docs\releases\v1.0.0-alpha.md
+github_release_draft | exists=True | path=D:\ai-governance-framework\docs\releases\v1.0.0-alpha-github-release.md
+publish_checklist | exists=True | path=D:\ai-governance-framework\docs\releases\v1.0.0-alpha-publish-checklist.md
+alpha_checklist | exists=True | path=D:\ai-governance-framework\docs\releases\alpha-checklist.md
+changelog | exists=True | path=D:\ai-governance-framework\CHANGELOG.md
+[status_docs]
+status_index | exists=True | required=True | path=D:\ai-governance-framework\docs\status\README.md
+trust_signal_dashboard | exists=True | required=True | path=D:\ai-governance-framework\docs\status\trust-signal-dashboard.md
+runtime_status | exists=True | required=True | path=D:\ai-governance-framework\docs\status\runtime-governance-status.md
+domain_enforcement_matrix | exists=True | required=True | path=D:\ai-governance-framework\docs\status\domain-enforcement-matrix.md
+generated_status_root | exists=False | required=False | path=D:\ai-governance-framework\docs\status\generated\README.md
+[commands]
+release_readiness=python governance_tools/release_readiness.py --version v1.0.0-alpha --format human
+trust_signal_overview=python governance_tools/trust_signal_overview.py --project-root . --plan PLAN.md --release-version v1.0.0-alpha --contract examples/usb-hub-contract/contract.yaml --format human
+trust_signal_snapshot_docs_status=python governance_tools/trust_signal_snapshot.py --project-root . --plan PLAN.md --release-version v1.0.0-alpha --contract examples/usb-hub-contract/contract.yaml --publish-docs-status --format human
+trust_signal_publication_reader_docs_status=python governance_tools/trust_signal_publication_reader.py --project-root . --docs-status --format human
+phase_gates=bash scripts/verify_phase_gates.sh

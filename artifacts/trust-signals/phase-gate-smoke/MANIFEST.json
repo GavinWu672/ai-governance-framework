@@ -1,0 +1,23 @@
+{
+  "generated_at": "2026-03-15T15:49:19.675846+00:00",
+  "release_version": "v1.0.0-alpha",
+  "contract_path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\contract.yaml",
+  "external_contract_repos": [],
+  "external_contract_policy_ok": null,
+  "external_contract_repo_count": 0,
+  "external_contract_profile_counts": {},
+  "external_contract_policies": [],
+  "strict_runtime": false,
+  "latest": {
+    "json": "D:\\ai-governance-framework\\artifacts\\trust-signals\\phase-gate-smoke\\latest.json",
+    "text": "D:\\ai-governance-framework\\artifacts\\trust-signals\\phase-gate-smoke\\latest.txt",
+    "markdown": "D:\\ai-governance-framework\\artifacts\\trust-signals\\phase-gate-smoke\\latest.md"
+  },
+  "history": {
+    "json": "D:\\ai-governance-framework\\artifacts\\trust-signals\\phase-gate-smoke\\history\\20260315_154919.json",
+    "text": "D:\\ai-governance-framework\\artifacts\\trust-signals\\phase-gate-smoke\\history\\20260315_154919.txt",
+    "markdown": "D:\\ai-governance-framework\\artifacts\\trust-signals\\phase-gate-smoke\\history\\20260315_154919.md"
+  },
+  "external_contract_policy_artifacts": null,
+  "index": "D:\\ai-governance-framework\\artifacts\\trust-signals\\phase-gate-smoke\\INDEX.md"
+}

@@ -1,0 +1,30 @@
+{
+  "ok": true,
+  "generated_at": "2026-03-15T06:23:33.827454+00:00",
+  "project_root": "D:\\ai-governance-framework",
+  "publication_root": "artifacts\\trust-signals\\reader-smoke",
+  "release_version": "v1.0.0-alpha",
+  "contract_path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\contract.yaml",
+  "strict_runtime": false,
+  "bundle_published": true,
+  "status_pages_published": true,
+  "bundle": {
+    "latest_json": "artifacts\\trust-signals\\reader-smoke\\latest.json",
+    "latest_txt": "artifacts\\trust-signals\\reader-smoke\\latest.txt",
+    "latest_md": "artifacts\\trust-signals\\reader-smoke\\latest.md",
+    "history_json": "artifacts\\trust-signals\\reader-smoke\\history\\20260315_062333.json",
+    "history_txt": "artifacts\\trust-signals\\reader-smoke\\history\\20260315_062333.txt",
+    "history_md": "artifacts\\trust-signals\\reader-smoke\\history\\20260315_062333.md",
+    "index_md": "artifacts\\trust-signals\\reader-smoke\\INDEX.md",
+    "manifest_json": "artifacts\\trust-signals\\reader-smoke\\MANIFEST.json"
+  },
+  "published": {
+    "latest_md": "artifacts\\trust-signals\\reader-smoke\\published\\trust-signal-latest.md",
+    "latest_json": "artifacts\\trust-signals\\reader-smoke\\published\\trust-signal-latest.json",
+    "readme_md": "artifacts\\trust-signals\\reader-smoke\\published\\README.md",
+    "history_md": "artifacts\\trust-signals\\reader-smoke\\published\\history\\20260315_062333.md",
+    "history_json": "artifacts\\trust-signals\\reader-smoke\\published\\history\\20260315_062333.json",
+    "index_md": "artifacts\\trust-signals\\reader-smoke\\published\\INDEX.md",
+    "manifest_json": "artifacts\\trust-signals\\reader-smoke\\published\\manifest.json"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "ok": true,
+  "generated_at": "2026-03-15T15:49:15.461949+00:00",
+  "project_root": "D:\\ai-governance-framework",
+  "publication_root": "D:\\ai-governance-framework\\artifacts\\reviewer-handoff\\phase-gate-smoke",
+  "publication_scope": "reviewer-handoff-root",
+  "release_version": "v1.0.0-alpha",
+  "contract_path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\contract.yaml",
+  "external_contract_repos": [],
+  "external_contract_repo_count": 0,
+  "strict_runtime": false,
+  "trust_ok": true,
+  "release_ok": true,
+  "bundle_published": true,
+  "status_pages_published": true,
+  "bundle": {
+    "latest_json": "D:\\ai-governance-framework\\artifacts\\reviewer-handoff\\phase-gate-smoke\\v1.0.0-alpha\\latest.json",
+    "latest_txt": "D:\\ai-governance-framework\\artifacts\\reviewer-handoff\\phase-gate-smoke\\v1.0.0-alpha\\latest.txt",
+    "latest_md": "D:\\ai-governance-framework\\artifacts\\reviewer-handoff\\phase-gate-smoke\\v1.0.0-alpha\\latest.md",
+    "history_json": "D:\\ai-governance-framework\\artifacts\\reviewer-handoff\\phase-gate-smoke\\v1.0.0-alpha\\history\\20260315_154915.json",
+    "history_txt": "D:\\ai-governance-framework\\artifacts\\reviewer-handoff\\phase-gate-smoke\\v1.0.0-alpha\\history\\20260315_154915.txt",
+    "history_md": "D:\\ai-governance-framework\\artifacts\\reviewer-handoff\\phase-gate-smoke\\v1.0.0-alpha\\history\\20260315_154915.md",
+    "index_md": "D:\\ai-governance-framework\\artifacts\\reviewer-handoff\\phase-gate-smoke\\v1.0.0-alpha\\INDEX.md",
+    "manifest_json": "D:\\ai-governance-framework\\artifacts\\reviewer-handoff\\phase-gate-smoke\\v1.0.0-alpha\\MANIFEST.json",
+    "publication_manifest_json": "D:\\ai-governance-framework\\artifacts\\reviewer-handoff\\phase-gate-smoke\\v1.0.0-alpha\\PUBLICATION_MANIFEST.json",
+    "publication_index_md": "D:\\ai-governance-framework\\artifacts\\reviewer-handoff\\phase-gate-smoke\\v1.0.0-alpha\\PUBLICATION_INDEX.md",
+    "readme_md": "D:\\ai-governance-framework\\artifacts\\reviewer-handoff\\phase-gate-smoke\\v1.0.0-alpha\\README.md"
+  },
+  "published": {
+    "latest_md": "D:\\ai-governance-framework\\artifacts\\reviewer-handoff\\phase-gate-smoke\\published\\reviewer-handoff-latest.md",
+    "latest_json": "D:\\ai-governance-framework\\artifacts\\reviewer-handoff\\phase-gate-smoke\\published\\reviewer-handoff-latest.json",
+    "readme_md": "D:\\ai-governance-framework\\artifacts\\reviewer-handoff\\phase-gate-smoke\\published\\README.md",
+    "history_md": "D:\\ai-governance-framework\\artifacts\\reviewer-handoff\\phase-gate-smoke\\published\\history\\20260315_154915.md",
+    "history_json": "D:\\ai-governance-framework\\artifacts\\reviewer-handoff\\phase-gate-smoke\\published\\history\\20260315_154915.json",
+    "index_md": "D:\\ai-governance-framework\\artifacts\\reviewer-handoff\\phase-gate-smoke\\published\\INDEX.md",
+    "manifest_json": "D:\\ai-governance-framework\\artifacts\\reviewer-handoff\\phase-gate-smoke\\published\\manifest.json"
+  },
+  "readme_md": "D:\\ai-governance-framework\\artifacts\\reviewer-handoff\\phase-gate-smoke\\README.md"
+}

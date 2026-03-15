@@ -1,0 +1,28 @@
+summary=ok=True | trust=True | release=True | release_version=v1.0.0-alpha | contract=D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml
+[reviewer_handoff_summary]
+project_root=D:\ai-governance-framework
+plan_path=PLAN.md
+release_version=v1.0.0-alpha
+contract_path=D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml
+strict_runtime=False
+external_contract_repo_count=0
+[trust_signal]
+ok=True
+quickstart_ok=True
+examples_ok=True
+release_ok=True
+auditor_ok=True
+[release_surface]
+ok=True
+readiness_ok=True
+package_ok=True
+bundle_available=True
+publication_available=True
+bundle_source=explicit
+publication_source=explicit
+bundle_manifest_file=D:\ai-governance-framework\artifacts\release-package\phase-gate-smoke\MANIFEST.json
+publication_manifest_file=D:\ai-governance-framework\artifacts\release-package\phase-gate-smoke\PUBLICATION_MANIFEST.json
+[commands]
+trust_signal_overview=python governance_tools/trust_signal_overview.py --project-root . --plan PLAN.md --release-version v1.0.0-alpha --contract D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml --format human
+release_surface_overview=python governance_tools/release_surface_overview.py --version v1.0.0-alpha --format human
+phase_gates=bash scripts/verify_phase_gates.sh

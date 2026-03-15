@@ -1,0 +1,410 @@
+{
+  "ok": true,
+  "generated_at": "2026-03-15T11:06:17.707894+00:00",
+  "project_root": "D:\\ai-governance-framework",
+  "version": "v1.0.0-alpha",
+  "package": {
+    "ok": true,
+    "project_root": "D:\\ai-governance-framework",
+    "version": "v1.0.0-alpha",
+    "readiness": {
+      "ok": true,
+      "project_root": "D:\\ai-governance-framework",
+      "version": "v1.0.0-alpha",
+      "checks": [
+        {
+          "name": "release_note",
+          "ok": true,
+          "detail": "missing docs/releases release note"
+        },
+        {
+          "name": "release_index",
+          "ok": true,
+          "detail": "missing docs/releases/README.md"
+        },
+        {
+          "name": "github_release_draft",
+          "ok": true,
+          "detail": "missing docs/releases github release draft"
+        },
+        {
+          "name": "publish_checklist",
+          "ok": true,
+          "detail": "missing docs/releases publish checklist"
+        },
+        {
+          "name": "alpha_checklist",
+          "ok": true,
+          "detail": "missing docs/releases/alpha-checklist.md"
+        },
+        {
+          "name": "generated_release_root",
+          "ok": true,
+          "detail": "missing docs/releases/generated/README.md"
+        },
+        {
+          "name": "changelog",
+          "ok": true,
+          "detail": "missing CHANGELOG.md"
+        },
+        {
+          "name": "limitations",
+          "ok": true,
+          "detail": "missing docs/LIMITATIONS.md"
+        },
+        {
+          "name": "status_doc",
+          "ok": true,
+          "detail": "missing runtime-governance status doc"
+        },
+        {
+          "name": "status_index",
+          "ok": true,
+          "detail": "missing docs/status/README.md"
+        },
+        {
+          "name": "reviewer_handoff_doc",
+          "ok": true,
+          "detail": "missing docs/status/reviewer-handoff.md"
+        },
+        {
+          "name": "trust_signal_dashboard",
+          "ok": true,
+          "detail": "missing docs/status/trust-signal-dashboard.md"
+        },
+        {
+          "name": "domain_enforcement_matrix",
+          "ok": true,
+          "detail": "missing docs/status/domain-enforcement-matrix.md"
+        },
+        {
+          "name": "readme_exists",
+          "ok": true,
+          "detail": "missing README.md"
+        },
+        {
+          "name": "readme_version_badge",
+          "ok": true,
+          "detail": "README.md does not mention the current release version"
+        },
+        {
+          "name": "readme_release_link",
+          "ok": true,
+          "detail": "README.md does not link to the current release note"
+        },
+        {
+          "name": "changelog_version_entry",
+          "ok": true,
+          "detail": "CHANGELOG.md does not contain a heading for the requested version"
+        },
+        {
+          "name": "changelog_release_link",
+          "ok": true,
+          "detail": "CHANGELOG.md does not link to the release note"
+        },
+        {
+          "name": "release_index_version_link",
+          "ok": true,
+          "detail": "release index does not link to the current release note"
+        },
+        {
+          "name": "release_index_generated_root_link",
+          "ok": true,
+          "detail": "release index does not link to the generated release root"
+        },
+        {
+          "name": "release_note_version_heading",
+          "ok": true,
+          "detail": "release note heading does not match the requested version"
+        },
+        {
+          "name": "release_note_generated_status_path",
+          "ok": true,
+          "detail": "release note does not mention the generated status path"
+        },
+        {
+          "name": "release_note_generated_release_path",
+          "ok": true,
+          "detail": "release note does not mention the generated release path"
+        },
+        {
+          "name": "github_release_draft_version_heading",
+          "ok": true,
+          "detail": "GitHub release draft heading does not match the requested version"
+        },
+        {
+          "name": "github_release_draft_generated_status_path",
+          "ok": true,
+          "detail": "GitHub release draft does not mention the generated status path"
+        },
+        {
+          "name": "github_release_draft_status_links",
+          "ok": true,
+          "detail": "GitHub release draft does not link to the status index"
+        },
+        {
+          "name": "github_release_draft_generated_release_path",
+          "ok": true,
+          "detail": "GitHub release draft does not mention the generated release path"
+        },
+        {
+          "name": "publish_checklist_release_version",
+          "ok": true,
+          "detail": "publish checklist does not mention the requested version"
+        },
+        {
+          "name": "publish_checklist_snapshot_publish",
+          "ok": true,
+          "detail": "publish checklist does not mention docs-status snapshot publishing"
+        },
+        {
+          "name": "publish_checklist_docs_reader",
+          "ok": true,
+          "detail": "publish checklist does not mention the docs-status reader path"
+        },
+        {
+          "name": "publish_checklist_release_package_snapshot",
+          "ok": true,
+          "detail": "publish checklist does not mention release package snapshot publishing"
+        },
+        {
+          "name": "publish_checklist_release_package_reader",
+          "ok": true,
+          "detail": "publish checklist does not mention the release package reader"
+        },
+        {
+          "name": "publish_checklist_release_surface_overview",
+          "ok": true,
+          "detail": "publish checklist does not mention the release surface overview"
+        },
+        {
+          "name": "publish_checklist_phase_gates",
+          "ok": true,
+          "detail": "publish checklist does not mention phase gates verification"
+        },
+        {
+          "name": "alpha_checklist_version",
+          "ok": true,
+          "detail": "alpha checklist does not mention the requested version"
+        },
+        {
+          "name": "alpha_checklist_quickstart",
+          "ok": true,
+          "detail": "alpha checklist does not mention quickstart verification"
+        },
+        {
+          "name": "alpha_checklist_auditor",
+          "ok": true,
+          "detail": "alpha checklist does not mention governance self-audit"
+        },
+        {
+          "name": "alpha_checklist_snapshot_publish",
+          "ok": true,
+          "detail": "alpha checklist does not mention docs-status snapshot publishing"
+        },
+        {
+          "name": "alpha_checklist_docs_reader",
+          "ok": true,
+          "detail": "alpha checklist does not mention the docs-status reader path"
+        },
+        {
+          "name": "alpha_checklist_release_package_snapshot",
+          "ok": true,
+          "detail": "alpha checklist does not mention release package snapshot publishing"
+        },
+        {
+          "name": "alpha_checklist_release_package_reader",
+          "ok": true,
+          "detail": "alpha checklist does not mention the release package reader path"
+        },
+        {
+          "name": "alpha_checklist_release_surface_overview",
+          "ok": true,
+          "detail": "alpha checklist does not mention the release surface overview"
+        },
+        {
+          "name": "alpha_checklist_github_release_draft",
+          "ok": true,
+          "detail": "alpha checklist does not mention the GitHub release draft"
+        },
+        {
+          "name": "alpha_checklist_publish_checklist",
+          "ok": true,
+          "detail": "alpha checklist does not mention the publish checklist"
+        },
+        {
+          "name": "trust_dashboard_release_version",
+          "ok": true,
+          "detail": "trust-signal dashboard does not mention the requested version"
+        },
+        {
+          "name": "trust_dashboard_overview_command",
+          "ok": true,
+          "detail": "trust-signal dashboard does not mention the overview command"
+        },
+        {
+          "name": "trust_dashboard_domain_matrix_link",
+          "ok": true,
+          "detail": "trust-signal dashboard does not link to the domain enforcement matrix"
+        },
+        {
+          "name": "status_index_reviewer_handoff_link",
+          "ok": true,
+          "detail": "status index does not link to the reviewer handoff page"
+        },
+        {
+          "name": "status_index_dashboard_link",
+          "ok": true,
+          "detail": "status index does not link to the trust-signal dashboard"
+        },
+        {
+          "name": "status_index_domain_matrix_link",
+          "ok": true,
+          "detail": "status index does not link to the domain enforcement matrix"
+        },
+        {
+          "name": "status_index_generated_readme_link",
+          "ok": true,
+          "detail": "status index does not mention the generated status landing page"
+        },
+        {
+          "name": "status_index_generated_site_link",
+          "ok": true,
+          "detail": "status index does not mention the generated site readme"
+        },
+        {
+          "name": "reviewer_handoff_command",
+          "ok": true,
+          "detail": "reviewer handoff page does not mention the reviewer handoff tool"
+        },
+        {
+          "name": "reviewer_handoff_artifact_path",
+          "ok": true,
+          "detail": "reviewer handoff page does not mention the reviewer-handoff artifact path"
+        },
+        {
+          "name": "generated_release_root_latest_link",
+          "ok": true,
+          "detail": "generated release root does not mention the latest release package entry"
+        },
+        {
+          "name": "domain_matrix_mentions_external_policy_tool",
+          "ok": true,
+          "detail": "domain enforcement matrix does not mention the policy index tool"
+        }
+      ],
+      "warnings": [],
+      "errors": [],
+      "paths": {
+        "readme": "D:\\ai-governance-framework\\README.md",
+        "changelog": "D:\\ai-governance-framework\\CHANGELOG.md",
+        "release_index": "D:\\ai-governance-framework\\docs\\releases\\README.md",
+        "release_note": "D:\\ai-governance-framework\\docs\\releases\\v1.0.0-alpha.md",
+        "github_release_draft": "D:\\ai-governance-framework\\docs\\releases\\v1.0.0-alpha-github-release.md",
+        "publish_checklist": "D:\\ai-governance-framework\\docs\\releases\\v1.0.0-alpha-publish-checklist.md",
+        "alpha_checklist": "D:\\ai-governance-framework\\docs\\releases\\alpha-checklist.md",
+        "generated_release_root": "D:\\ai-governance-framework\\docs\\releases\\generated\\README.md",
+        "limitations": "D:\\ai-governance-framework\\docs\\LIMITATIONS.md",
+        "status_doc": "D:\\ai-governance-framework\\docs\\status\\runtime-governance-status.md",
+        "status_index": "D:\\ai-governance-framework\\docs\\status\\README.md",
+        "reviewer_handoff_doc": "D:\\ai-governance-framework\\docs\\status\\reviewer-handoff.md",
+        "trust_signal_dashboard": "D:\\ai-governance-framework\\docs\\status\\trust-signal-dashboard.md",
+        "domain_enforcement_matrix": "D:\\ai-governance-framework\\docs\\status\\domain-enforcement-matrix.md"
+      }
+    },
+    "release_docs": [
+      {
+        "name": "release_note",
+        "path": "D:\\ai-governance-framework\\docs\\releases\\v1.0.0-alpha.md",
+        "exists": true,
+        "required": true
+      },
+      {
+        "name": "github_release_draft",
+        "path": "D:\\ai-governance-framework\\docs\\releases\\v1.0.0-alpha-github-release.md",
+        "exists": true,
+        "required": true
+      },
+      {
+        "name": "publish_checklist",
+        "path": "D:\\ai-governance-framework\\docs\\releases\\v1.0.0-alpha-publish-checklist.md",
+        "exists": true,
+        "required": true
+      },
+      {
+        "name": "alpha_checklist",
+        "path": "D:\\ai-governance-framework\\docs\\releases\\alpha-checklist.md",
+        "exists": true,
+        "required": true
+      },
+      {
+        "name": "changelog",
+        "path": "D:\\ai-governance-framework\\CHANGELOG.md",
+        "exists": true,
+        "required": true
+      }
+    ],
+    "status_docs": [
+      {
+        "name": "status_index",
+        "path": "D:\\ai-governance-framework\\docs\\status\\README.md",
+        "exists": true,
+        "required": true
+      },
+      {
+        "name": "trust_signal_dashboard",
+        "path": "D:\\ai-governance-framework\\docs\\status\\trust-signal-dashboard.md",
+        "exists": true,
+        "required": true
+      },
+      {
+        "name": "runtime_status",
+        "path": "D:\\ai-governance-framework\\docs\\status\\runtime-governance-status.md",
+        "exists": true,
+        "required": true
+      },
+      {
+        "name": "domain_enforcement_matrix",
+        "path": "D:\\ai-governance-framework\\docs\\status\\domain-enforcement-matrix.md",
+        "exists": true,
+        "required": true
+      },
+      {
+        "name": "generated_status_root",
+        "path": "D:\\ai-governance-framework\\docs\\status\\generated\\README.md",
+        "exists": false,
+        "required": false
+      }
+    ],
+    "commands": [
+      {
+        "name": "release_readiness",
+        "command": "python governance_tools/release_readiness.py --version v1.0.0-alpha --format human"
+      },
+      {
+        "name": "release_surface_overview",
+        "command": "python governance_tools/release_surface_overview.py --version v1.0.0-alpha --format human"
+      },
+      {
+        "name": "trust_signal_overview",
+        "command": "python governance_tools/trust_signal_overview.py --project-root . --plan PLAN.md --release-version v1.0.0-alpha --contract examples/usb-hub-contract/contract.yaml --format human"
+      },
+      {
+        "name": "trust_signal_snapshot_docs_status",
+        "command": "python governance_tools/trust_signal_snapshot.py --project-root . --plan PLAN.md --release-version v1.0.0-alpha --contract examples/usb-hub-contract/contract.yaml --publish-docs-status --format human"
+      },
+      {
+        "name": "trust_signal_publication_reader_docs_status",
+        "command": "python governance_tools/trust_signal_publication_reader.py --project-root . --docs-status --format human"
+      },
+      {
+        "name": "phase_gates",
+        "command": "bash scripts/verify_phase_gates.sh"
+      }
+    ],
+    "release_doc_count": 5,
+    "status_doc_count": 5,
+    "existing_release_docs": 5,
+    "existing_status_docs": 4
+  }
+}

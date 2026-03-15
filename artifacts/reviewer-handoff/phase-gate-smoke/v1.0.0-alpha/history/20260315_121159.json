@@ -1,0 +1,2755 @@
+{
+  "ok": true,
+  "generated_at": "2026-03-15T12:11:59.267555+00:00",
+  "project_root": "D:\\ai-governance-framework",
+  "plan_path": "PLAN.md",
+  "release_version": "v1.0.0-alpha",
+  "contract_path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\contract.yaml",
+  "external_contract_repos": [],
+  "strict_runtime": false,
+  "handoff": {
+    "ok": true,
+    "project_root": "D:\\ai-governance-framework",
+    "plan_path": "PLAN.md",
+    "release_version": "v1.0.0-alpha",
+    "contract_path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\contract.yaml",
+    "external_contract_repos": [],
+    "strict_runtime": false,
+    "trust_signal": {
+      "ok": true,
+      "project_root": "D:\\ai-governance-framework",
+      "plan_path": "PLAN.md",
+      "release_version": "v1.0.0-alpha",
+      "contract_path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\contract.yaml",
+      "external_contract_repos": [],
+      "strict_runtime": false,
+      "quickstart": {
+        "ok": true,
+        "project_root": "D:\\ai-governance-framework",
+        "plan_path": "PLAN.md",
+        "contract_path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\contract.yaml",
+        "contract_context": {
+          "source": "explicit",
+          "path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\contract.yaml",
+          "name": "usb-hub-firmware-contract",
+          "domain": "firmware",
+          "plugin_version": "1.0.0",
+          "risk_tier": "medium"
+        },
+        "pre_task_ok": true,
+        "session_start_ok": true,
+        "pre_task": {
+          "ok": true,
+          "project_root": "D:\\ai-governance-framework",
+          "plan_path": "D:\\ai-governance-framework\\PLAN.md",
+          "freshness": {
+            "status": "FRESH",
+            "days_since_update": 0,
+            "threshold_days": 7
+          },
+          "runtime_contract": {
+            "rules": [
+              "common"
+            ],
+            "risk": "low",
+            "oversight": "review-required",
+            "memory_mode": "candidate"
+          },
+          "suggested_rules_preview": [
+            "common",
+            "csharp",
+            "swift",
+            "python",
+            "avalonia"
+          ],
+          "suggested_skills": [
+            "code-style",
+            "governance-runtime",
+            "python"
+          ],
+          "suggested_agent": "python-agent",
+          "rule_pack_suggestions": {
+            "project_root": "D:\\ai-governance-framework",
+            "language_packs": [
+              {
+                "name": "csharp",
+                "category": "language",
+                "confidence": "high",
+                "reasons": [
+                  "tests/_tmp_debug_public_api/after.cs",
+                  "tests/_tmp_debug_public_api/before.cs",
+                  "tests/_tmp_rule_pack_suggester/csharp_avalonia/App.sln",
+                  "tests/_tmp_rule_pack_suggester/csharp_avalonia/App/App.csproj",
+                  "tests/_tmp_rule_pack_suggester/csharp_avalonia/App/MainWindowViewModel.cs"
+                ]
+              },
+              {
+                "name": "swift",
+                "category": "language",
+                "confidence": "high",
+                "reasons": [
+                  "tests/_tmp_rule_pack_suggester/swift/Package.swift",
+                  "tests/_tmp_rule_pack_suggester/swift/Sources/Feature.swift",
+                  "tests/_tmp_public_api_diff/added_signature/after.swift",
+                  "tests/_tmp_public_api_diff/added_signature/before.swift"
+                ]
+              },
+              {
+                "name": "python",
+                "category": "language",
+                "confidence": "high",
+                "reasons": [
+                  "requirements.txt",
+                  "governance_tools/architecture_drift_checker.py",
+                  "governance_tools/architecture_impact_estimator.py",
+                  "governance_tools/change_control_index.py",
+                  "governance_tools/change_control_summary.py"
+                ]
+              }
+            ],
+            "framework_packs": [
+              {
+                "name": "avalonia",
+                "category": "framework",
+                "confidence": "medium",
+                "reasons": [
+                  "Avalonia",
+                  "Dispatcher\\.UIThread"
+                ]
+              }
+            ],
+            "scope_packs": [],
+            "suggested_skills": [
+              "code-style",
+              "governance-runtime",
+              "python"
+            ],
+            "suggested_agent": "python-agent",
+            "suggested_rules": [
+              "common",
+              "csharp",
+              "swift",
+              "python",
+              "avalonia"
+            ],
+            "suggested_rules_preview": [
+              "common",
+              "csharp",
+              "swift",
+              "python",
+              "avalonia"
+            ],
+            "notes": [
+              "language/framework packs are auto-suggested from repository signals",
+              "scope packs are advisory only and should be confirmed by the contract or human reviewer",
+              "suggested_rules_preview includes advisory scope packs for convenience, but does not mutate the contract",
+              "suggested_skills and suggested_agent are advisory only and do not auto-activate agent behavior"
+            ]
+          },
+          "architecture_impact_preview": null,
+          "rule_packs": {
+            "requested": [
+              "common"
+            ],
+            "resolved": [
+              {
+                "name": "common",
+                "category": "scope",
+                "files": [
+                  "governance\\rules\\common\\core.md"
+                ]
+              }
+            ],
+            "missing": [],
+            "valid": true
+          },
+          "active_rules": {
+            "requested": [
+              "common"
+            ],
+            "active_rules": [
+              {
+                "name": "common",
+                "category": "scope",
+                "files": [
+                  {
+                    "path": "governance\\rules\\common\\core.md",
+                    "title": "Common Rule Pack",
+                    "content": "# Common Rule Pack\n\n- Follow the active PLAN scope before implementation.\n- Escalate immediately when architecture or safety red lines are unclear.\n- Prefer the smallest reversible change that satisfies the task."
+                  }
+                ]
+              }
+            ],
+            "missing": [],
+            "valid": true
+          },
+          "contract_resolution": {
+            "source": "not_found",
+            "path": null,
+            "warnings": [],
+            "error": null
+          },
+          "domain_contract": null,
+          "resolved_contract_file": null,
+          "errors": [],
+          "warnings": [
+            "Suggested language pack 'csharp' is not active; repo signals: tests/_tmp_debug_public_api/after.cs, tests/_tmp_debug_public_api/before.cs",
+            "Suggested language pack 'swift' is not active; repo signals: tests/_tmp_rule_pack_suggester/swift/Package.swift, tests/_tmp_rule_pack_suggester/swift/Sources/Feature.swift",
+            "Suggested language pack 'python' is not active; repo signals: requirements.txt, governance_tools/architecture_drift_checker.py",
+            "Suggested framework pack 'avalonia' is not active; repo signals: Avalonia, Dispatcher\\.UIThread"
+          ]
+        },
+        "session_start": {
+          "ok": true,
+          "project_root": "D:\\ai-governance-framework",
+          "task_text": "Trust-signal overview quickstart",
+          "runtime_contract": {
+            "rules": [
+              "common",
+              "hub-firmware"
+            ],
+            "risk": "medium",
+            "oversight": "review-required",
+            "memory_mode": "candidate"
+          },
+          "suggested_rules_preview": [
+            "common",
+            "csharp",
+            "swift",
+            "python",
+            "avalonia"
+          ],
+          "suggested_skills": [
+            "code-style",
+            "governance-runtime",
+            "python"
+          ],
+          "suggested_agent": "python-agent",
+          "rule_pack_suggestions": {
+            "project_root": "D:\\ai-governance-framework",
+            "language_packs": [
+              {
+                "name": "csharp",
+                "category": "language",
+                "confidence": "high",
+                "reasons": [
+                  "tests/_tmp_debug_public_api/after.cs",
+                  "tests/_tmp_debug_public_api/before.cs",
+                  "tests/_tmp_rule_pack_suggester/csharp_avalonia/App.sln",
+                  "tests/_tmp_rule_pack_suggester/csharp_avalonia/App/App.csproj",
+                  "tests/_tmp_rule_pack_suggester/csharp_avalonia/App/MainWindowViewModel.cs"
+                ]
+              },
+              {
+                "name": "swift",
+                "category": "language",
+                "confidence": "high",
+                "reasons": [
+                  "tests/_tmp_rule_pack_suggester/swift/Package.swift",
+                  "tests/_tmp_rule_pack_suggester/swift/Sources/Feature.swift",
+                  "tests/_tmp_public_api_diff/added_signature/after.swift",
+                  "tests/_tmp_public_api_diff/added_signature/before.swift"
+                ]
+              },
+              {
+                "name": "python",
+                "category": "language",
+                "confidence": "high",
+                "reasons": [
+                  "requirements.txt",
+                  "governance_tools/architecture_drift_checker.py",
+                  "governance_tools/architecture_impact_estimator.py",
+                  "governance_tools/change_control_index.py",
+                  "governance_tools/change_control_summary.py"
+                ]
+              }
+            ],
+            "framework_packs": [
+              {
+                "name": "avalonia",
+                "category": "framework",
+                "confidence": "medium",
+                "reasons": [
+                  "Avalonia",
+                  "Dispatcher\\.UIThread"
+                ]
+              }
+            ],
+            "scope_packs": [],
+            "suggested_skills": [
+              "code-style",
+              "governance-runtime",
+              "python"
+            ],
+            "suggested_agent": "python-agent",
+            "suggested_rules": [
+              "common",
+              "csharp",
+              "swift",
+              "python",
+              "avalonia"
+            ],
+            "suggested_rules_preview": [
+              "common",
+              "csharp",
+              "swift",
+              "python",
+              "avalonia"
+            ],
+            "notes": [
+              "language/framework packs are auto-suggested from repository signals",
+              "scope packs are advisory only and should be confirmed by the contract or human reviewer",
+              "suggested_rules_preview includes advisory scope packs for convenience, but does not mutate the contract",
+              "suggested_skills and suggested_agent are advisory only and do not auto-activate agent behavior"
+            ]
+          },
+          "architecture_impact_preview": null,
+          "proposal_guidance": null,
+          "change_proposal": {
+            "task": "Trust-signal overview quickstart",
+            "project_root": "D:\\ai-governance-framework",
+            "requested_rules": [
+              "common",
+              "hub-firmware"
+            ],
+            "suggested_rules_preview": [
+              "common",
+              "csharp",
+              "swift",
+              "python",
+              "avalonia"
+            ],
+            "rule_pack_suggestions": {
+              "project_root": "D:\\ai-governance-framework",
+              "language_packs": [
+                {
+                  "name": "csharp",
+                  "category": "language",
+                  "confidence": "high",
+                  "reasons": [
+                    "tests/_tmp_debug_public_api/after.cs",
+                    "tests/_tmp_debug_public_api/before.cs",
+                    "tests/_tmp_rule_pack_suggester/csharp_avalonia/App.sln",
+                    "tests/_tmp_rule_pack_suggester/csharp_avalonia/App/App.csproj",
+                    "tests/_tmp_rule_pack_suggester/csharp_avalonia/App/MainWindowViewModel.cs"
+                  ]
+                },
+                {
+                  "name": "swift",
+                  "category": "language",
+                  "confidence": "high",
+                  "reasons": [
+                    "tests/_tmp_rule_pack_suggester/swift/Package.swift",
+                    "tests/_tmp_rule_pack_suggester/swift/Sources/Feature.swift",
+                    "tests/_tmp_public_api_diff/added_signature/after.swift",
+                    "tests/_tmp_public_api_diff/added_signature/before.swift"
+                  ]
+                },
+                {
+                  "name": "python",
+                  "category": "language",
+                  "confidence": "high",
+                  "reasons": [
+                    "requirements.txt",
+                    "governance_tools/architecture_drift_checker.py",
+                    "governance_tools/architecture_impact_estimator.py",
+                    "governance_tools/change_control_index.py",
+                    "governance_tools/change_control_summary.py"
+                  ]
+                }
+              ],
+              "framework_packs": [
+                {
+                  "name": "avalonia",
+                  "category": "framework",
+                  "confidence": "medium",
+                  "reasons": [
+                    "Avalonia",
+                    "Dispatcher\\.UIThread"
+                  ]
+                }
+              ],
+              "scope_packs": [],
+              "suggested_skills": [
+                "code-style",
+                "governance-runtime",
+                "python"
+              ],
+              "suggested_agent": "python-agent",
+              "suggested_rules": [
+                "common",
+                "csharp",
+                "swift",
+                "python",
+                "avalonia"
+              ],
+              "suggested_rules_preview": [
+                "common",
+                "csharp",
+                "swift",
+                "python",
+                "avalonia"
+              ],
+              "notes": [
+                "language/framework packs are auto-suggested from repository signals",
+                "scope packs are advisory only and should be confirmed by the contract or human reviewer",
+                "suggested_rules_preview includes advisory scope packs for convenience, but does not mutate the contract",
+                "suggested_skills and suggested_agent are advisory only and do not auto-activate agent behavior"
+              ]
+            },
+            "architecture_impact_preview": null,
+            "proposal_guidance": null,
+            "proposal_summary": {
+              "task": "Trust-signal overview quickstart",
+              "requested_rules": [
+                "common",
+                "hub-firmware"
+              ],
+              "suggested_rules_preview": [
+                "common",
+                "csharp",
+                "swift",
+                "python",
+                "avalonia"
+              ],
+              "recommended_risk": null,
+              "recommended_oversight": null,
+              "expected_validators": [],
+              "required_evidence": [],
+              "concerns": []
+            }
+          },
+          "proposal_summary": {
+            "task": "Trust-signal overview quickstart",
+            "requested_rules": [
+              "common",
+              "hub-firmware"
+            ],
+            "suggested_rules_preview": [
+              "common",
+              "csharp",
+              "swift",
+              "python",
+              "avalonia"
+            ],
+            "recommended_risk": null,
+            "recommended_oversight": null,
+            "expected_validators": [],
+            "required_evidence": [],
+            "concerns": []
+          },
+          "resolved_contract_file": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\contract.yaml",
+          "contract_resolution": {
+            "source": "explicit",
+            "path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\contract.yaml",
+            "warnings": [],
+            "error": null
+          },
+          "domain_contract": {
+            "name": "usb-hub-firmware-contract",
+            "contract_path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\contract.yaml",
+            "contract_root": "D:\\ai-governance-framework\\examples\\usb-hub-contract",
+            "documents": [
+              {
+                "path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\USB_HUB_FW_CHECKLIST.md",
+                "exists": true,
+                "content": "# USB Hub Firmware Checklist\n\n- Board family: RTD-based USB hub controller\n- CFU requests must produce matching CFU responses in order\n- D+/D- routing must remain unchanged during firmware update handling\n- Any pointer arithmetic touching endpoint buffers requires an interrupt safety review"
+              },
+              {
+                "path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\USB_HUB_ARCHITECTURE.md",
+                "exists": true,
+                "content": "# USB Hub Firmware Architecture\n\n- Update orchestration lives above transport-specific register writes\n- ISR and deferred work boundaries must stay explicit\n- Shared buffer ownership must be visible at module boundaries"
+              }
+            ],
+            "ai_behavior_override": [
+              {
+                "path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\AGENTS.md",
+                "exists": true,
+                "content": "# USB-Hub Firmware Agent Rules\n\n- Treat interrupt safety and rollback symmetry as non-negotiable.\n- Do not change CFU response sequencing without explicit evidence.\n- Prefer narrow patches over controller-wide rewrites."
+              }
+            ],
+            "rule_roots": [
+              "D:\\ai-governance-framework\\examples\\usb-hub-contract\\rules"
+            ],
+            "validators": [
+              {
+                "name": "interrupt_safety_validator",
+                "path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\validators\\interrupt_safety_validator.py",
+                "exists": true
+              }
+            ],
+            "raw": {
+              "name": "usb-hub-firmware-contract",
+              "plugin_version": "1.0.0",
+              "framework_interface_version": "1",
+              "framework_compatible": ">=1.0.0,<2.0.0",
+              "domain": "firmware",
+              "documents": [
+                "USB_HUB_FW_CHECKLIST.md",
+                "USB_HUB_ARCHITECTURE.md"
+              ],
+              "ai_behavior_override": [
+                "AGENTS.md"
+              ],
+              "rule_roots": [
+                "rules"
+              ],
+              "validators": [
+                "validators/interrupt_safety_validator.py"
+              ]
+            }
+          },
+          "validator_preflight": {
+            "ok": true,
+            "count": 1,
+            "validators": [
+              {
+                "name": "interrupt_safety_validator",
+                "path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\validators\\interrupt_safety_validator.py",
+                "ok": true,
+                "rule_ids": [
+                  "hub-firmware",
+                  "HUB-004"
+                ],
+                "errors": []
+              }
+            ]
+          },
+          "state": {
+            "generated_at": "2026-03-15T12:11:58.822161+00:00",
+            "plan_path": "PLAN.md",
+            "project_root": "D:\\ai-governance-framework",
+            "project": {
+              "owner": "GavinWu",
+              "freshness_policy": "Sprint (7d)"
+            },
+            "current_phase": {
+              "id": null,
+              "name": null
+            },
+            "gate_status": {},
+            "active_sprint": [],
+            "backlog_counts": {
+              "P0": 0,
+              "P1": 0,
+              "P2": 0
+            },
+            "freshness": {
+              "status": "FRESH",
+              "last_updated": "2026-03-15",
+              "days_since_update": 0,
+              "threshold_days": 7
+            },
+            "runtime_contract": {
+              "task": "unspecified",
+              "rules": [
+                "common",
+                "hub-firmware"
+              ],
+              "risk": "medium",
+              "oversight": "review-required",
+              "memory_mode": "candidate"
+            },
+            "suggested_rules_preview": [
+              "common",
+              "csharp",
+              "swift",
+              "python",
+              "avalonia"
+            ],
+            "suggested_skills": [
+              "code-style",
+              "governance-runtime",
+              "python"
+            ],
+            "suggested_agent": "python-agent",
+            "rule_pack_suggestions": {
+              "project_root": "D:\\ai-governance-framework",
+              "language_packs": [
+                {
+                  "name": "csharp",
+                  "category": "language",
+                  "confidence": "high",
+                  "reasons": [
+                    "tests/_tmp_debug_public_api/after.cs",
+                    "tests/_tmp_debug_public_api/before.cs",
+                    "tests/_tmp_rule_pack_suggester/csharp_avalonia/App.sln",
+                    "tests/_tmp_rule_pack_suggester/csharp_avalonia/App/App.csproj",
+                    "tests/_tmp_rule_pack_suggester/csharp_avalonia/App/MainWindowViewModel.cs"
+                  ]
+                },
+                {
+                  "name": "swift",
+                  "category": "language",
+                  "confidence": "high",
+                  "reasons": [
+                    "tests/_tmp_rule_pack_suggester/swift/Package.swift",
+                    "tests/_tmp_rule_pack_suggester/swift/Sources/Feature.swift",
+                    "tests/_tmp_public_api_diff/added_signature/after.swift",
+                    "tests/_tmp_public_api_diff/added_signature/before.swift"
+                  ]
+                },
+                {
+                  "name": "python",
+                  "category": "language",
+                  "confidence": "high",
+                  "reasons": [
+                    "requirements.txt",
+                    "governance_tools/architecture_drift_checker.py",
+                    "governance_tools/architecture_impact_estimator.py",
+                    "governance_tools/change_control_index.py",
+                    "governance_tools/change_control_summary.py"
+                  ]
+                }
+              ],
+              "framework_packs": [
+                {
+                  "name": "avalonia",
+                  "category": "framework",
+                  "confidence": "medium",
+                  "reasons": [
+                    "Avalonia",
+                    "Dispatcher\\.UIThread"
+                  ]
+                }
+              ],
+              "scope_packs": [],
+              "suggested_skills": [
+                "code-style",
+                "governance-runtime",
+                "python"
+              ],
+              "suggested_agent": "python-agent",
+              "suggested_rules": [
+                "common",
+                "csharp",
+                "swift",
+                "python",
+                "avalonia"
+              ],
+              "suggested_rules_preview": [
+                "common",
+                "csharp",
+                "swift",
+                "python",
+                "avalonia"
+              ],
+              "notes": [
+                "language/framework packs are auto-suggested from repository signals",
+                "scope packs are advisory only and should be confirmed by the contract or human reviewer",
+                "suggested_rules_preview includes advisory scope packs for convenience, but does not mutate the contract",
+                "suggested_skills and suggested_agent are advisory only and do not auto-activate agent behavior"
+              ]
+            },
+            "architecture_impact_preview": null,
+            "proposal_guidance": null,
+            "rule_packs": {
+              "requested": [
+                "common",
+                "hub-firmware"
+              ],
+              "resolved": [
+                {
+                  "name": "common",
+                  "category": "scope",
+                  "files": [
+                    "governance\\rules\\common\\core.md"
+                  ]
+                }
+              ],
+              "missing": [
+                "hub-firmware"
+              ],
+              "valid": false
+            },
+            "active_rules": {
+              "requested": [
+                "common",
+                "hub-firmware"
+              ],
+              "active_rules": [
+                {
+                  "name": "common",
+                  "category": "scope",
+                  "files": [
+                    {
+                      "path": "governance\\rules\\common\\core.md",
+                      "title": "Common Rule Pack",
+                      "content": "# Common Rule Pack\n\n- Follow the active PLAN scope before implementation.\n- Escalate immediately when architecture or safety red lines are unclear.\n- Prefer the smallest reversible change that satisfies the task."
+                    }
+                  ]
+                }
+              ],
+              "missing": [
+                "hub-firmware"
+              ],
+              "valid": false
+            }
+          },
+          "pre_task_check": {
+            "ok": true,
+            "project_root": "D:\\ai-governance-framework",
+            "plan_path": "D:\\ai-governance-framework\\PLAN.md",
+            "freshness": {
+              "status": "FRESH",
+              "days_since_update": 0,
+              "threshold_days": 7
+            },
+            "runtime_contract": {
+              "rules": [
+                "common",
+                "hub-firmware"
+              ],
+              "risk": "medium",
+              "oversight": "review-required",
+              "memory_mode": "candidate"
+            },
+            "suggested_rules_preview": [
+              "common",
+              "csharp",
+              "swift",
+              "python",
+              "avalonia"
+            ],
+            "suggested_skills": [
+              "code-style",
+              "governance-runtime",
+              "python"
+            ],
+            "suggested_agent": "python-agent",
+            "rule_pack_suggestions": {
+              "project_root": "D:\\ai-governance-framework",
+              "language_packs": [
+                {
+                  "name": "csharp",
+                  "category": "language",
+                  "confidence": "high",
+                  "reasons": [
+                    "tests/_tmp_debug_public_api/after.cs",
+                    "tests/_tmp_debug_public_api/before.cs",
+                    "tests/_tmp_rule_pack_suggester/csharp_avalonia/App.sln",
+                    "tests/_tmp_rule_pack_suggester/csharp_avalonia/App/App.csproj",
+                    "tests/_tmp_rule_pack_suggester/csharp_avalonia/App/MainWindowViewModel.cs"
+                  ]
+                },
+                {
+                  "name": "swift",
+                  "category": "language",
+                  "confidence": "high",
+                  "reasons": [
+                    "tests/_tmp_rule_pack_suggester/swift/Package.swift",
+                    "tests/_tmp_rule_pack_suggester/swift/Sources/Feature.swift",
+                    "tests/_tmp_public_api_diff/added_signature/after.swift",
+                    "tests/_tmp_public_api_diff/added_signature/before.swift"
+                  ]
+                },
+                {
+                  "name": "python",
+                  "category": "language",
+                  "confidence": "high",
+                  "reasons": [
+                    "requirements.txt",
+                    "governance_tools/architecture_drift_checker.py",
+                    "governance_tools/architecture_impact_estimator.py",
+                    "governance_tools/change_control_index.py",
+                    "governance_tools/change_control_summary.py"
+                  ]
+                }
+              ],
+              "framework_packs": [
+                {
+                  "name": "avalonia",
+                  "category": "framework",
+                  "confidence": "medium",
+                  "reasons": [
+                    "Avalonia",
+                    "Dispatcher\\.UIThread"
+                  ]
+                }
+              ],
+              "scope_packs": [],
+              "suggested_skills": [
+                "code-style",
+                "governance-runtime",
+                "python"
+              ],
+              "suggested_agent": "python-agent",
+              "suggested_rules": [
+                "common",
+                "csharp",
+                "swift",
+                "python",
+                "avalonia"
+              ],
+              "suggested_rules_preview": [
+                "common",
+                "csharp",
+                "swift",
+                "python",
+                "avalonia"
+              ],
+              "notes": [
+                "language/framework packs are auto-suggested from repository signals",
+                "scope packs are advisory only and should be confirmed by the contract or human reviewer",
+                "suggested_rules_preview includes advisory scope packs for convenience, but does not mutate the contract",
+                "suggested_skills and suggested_agent are advisory only and do not auto-activate agent behavior"
+              ]
+            },
+            "architecture_impact_preview": null,
+            "rule_packs": {
+              "requested": [
+                "common",
+                "hub-firmware"
+              ],
+              "resolved": [
+                {
+                  "name": "common",
+                  "category": "scope",
+                  "files": [
+                    "governance\\rules\\common\\core.md"
+                  ]
+                },
+                {
+                  "name": "hub-firmware",
+                  "category": "custom",
+                  "files": [
+                    "examples\\usb-hub-contract\\rules\\hub-firmware\\safety.md"
+                  ]
+                }
+              ],
+              "missing": [],
+              "valid": true
+            },
+            "active_rules": {
+              "requested": [
+                "common",
+                "hub-firmware"
+              ],
+              "active_rules": [
+                {
+                  "name": "common",
+                  "category": "scope",
+                  "files": [
+                    {
+                      "path": "governance\\rules\\common\\core.md",
+                      "title": "Common Rule Pack",
+                      "content": "# Common Rule Pack\n\n- Follow the active PLAN scope before implementation.\n- Escalate immediately when architecture or safety red lines are unclear.\n- Prefer the smallest reversible change that satisfies the task."
+                    }
+                  ]
+                },
+                {
+                  "name": "hub-firmware",
+                  "category": "custom",
+                  "files": [
+                    {
+                      "path": "examples\\usb-hub-contract\\rules\\hub-firmware\\safety.md",
+                      "title": "Hub Firmware Safety",
+                      "content": "# Hub Firmware Safety\n\n## HUB-001 - cfu-response-must-follow-request\n\n- CFU response handling must preserve request ordering\n- Required evidence: `cfu_state_trace`\n\n## HUB-004 - dptr-guard\n\n- Pointer-sensitive buffer access must include interrupt safety review notes\n- Required evidence: `interrupt_safety_review`"
+                    }
+                  ]
+                }
+              ],
+              "missing": [],
+              "valid": true
+            },
+            "contract_resolution": {
+              "source": "explicit",
+              "path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\contract.yaml",
+              "warnings": [],
+              "error": null
+            },
+            "domain_contract": {
+              "name": "usb-hub-firmware-contract",
+              "contract_path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\contract.yaml",
+              "contract_root": "D:\\ai-governance-framework\\examples\\usb-hub-contract",
+              "documents": [
+                {
+                  "path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\USB_HUB_FW_CHECKLIST.md",
+                  "exists": true,
+                  "content": "# USB Hub Firmware Checklist\n\n- Board family: RTD-based USB hub controller\n- CFU requests must produce matching CFU responses in order\n- D+/D- routing must remain unchanged during firmware update handling\n- Any pointer arithmetic touching endpoint buffers requires an interrupt safety review"
+                },
+                {
+                  "path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\USB_HUB_ARCHITECTURE.md",
+                  "exists": true,
+                  "content": "# USB Hub Firmware Architecture\n\n- Update orchestration lives above transport-specific register writes\n- ISR and deferred work boundaries must stay explicit\n- Shared buffer ownership must be visible at module boundaries"
+                }
+              ],
+              "ai_behavior_override": [
+                {
+                  "path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\AGENTS.md",
+                  "exists": true,
+                  "content": "# USB-Hub Firmware Agent Rules\n\n- Treat interrupt safety and rollback symmetry as non-negotiable.\n- Do not change CFU response sequencing without explicit evidence.\n- Prefer narrow patches over controller-wide rewrites."
+                }
+              ],
+              "rule_roots": [
+                "D:\\ai-governance-framework\\examples\\usb-hub-contract\\rules"
+              ],
+              "validators": [
+                {
+                  "name": "interrupt_safety_validator",
+                  "path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\validators\\interrupt_safety_validator.py",
+                  "exists": true
+                }
+              ],
+              "raw": {
+                "name": "usb-hub-firmware-contract",
+                "plugin_version": "1.0.0",
+                "framework_interface_version": "1",
+                "framework_compatible": ">=1.0.0,<2.0.0",
+                "domain": "firmware",
+                "documents": [
+                  "USB_HUB_FW_CHECKLIST.md",
+                  "USB_HUB_ARCHITECTURE.md"
+                ],
+                "ai_behavior_override": [
+                  "AGENTS.md"
+                ],
+                "rule_roots": [
+                  "rules"
+                ],
+                "validators": [
+                  "validators/interrupt_safety_validator.py"
+                ]
+              }
+            },
+            "resolved_contract_file": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\contract.yaml",
+            "errors": [],
+            "warnings": [
+              "Suggested language pack 'csharp' is not active; repo signals: tests/_tmp_debug_public_api/after.cs, tests/_tmp_debug_public_api/before.cs",
+              "Suggested language pack 'swift' is not active; repo signals: tests/_tmp_rule_pack_suggester/swift/Package.swift, tests/_tmp_rule_pack_suggester/swift/Sources/Feature.swift",
+              "Suggested language pack 'python' is not active; repo signals: requirements.txt, governance_tools/architecture_drift_checker.py",
+              "Suggested framework pack 'avalonia' is not active; repo signals: Avalonia, Dispatcher\\.UIThread"
+            ]
+          }
+        }
+      },
+      "examples": {
+        "ok": true,
+        "project_root": "D:\\ai-governance-framework",
+        "strict_runtime": false,
+        "examples": [
+          {
+            "name": "todo-app-demo",
+            "kind": "runnable-demo",
+            "path": "D:\\ai-governance-framework\\examples\\todo-app-demo",
+            "ok": true,
+            "runtime_ready": false,
+            "required_paths": [
+              {
+                "path": "D:\\ai-governance-framework\\examples\\todo-app-demo\\README.md",
+                "exists": true
+              },
+              {
+                "path": "D:\\ai-governance-framework\\examples\\todo-app-demo\\PLAN.md",
+                "exists": true
+              },
+              {
+                "path": "D:\\ai-governance-framework\\examples\\todo-app-demo\\src\\main.py",
+                "exists": true
+              }
+            ],
+            "run_command": "python examples/todo-app-demo/src/main.py",
+            "warnings": [
+              "Missing runtime dependency modules: fastapi",
+              "Missing optional demo modules: uvicorn"
+            ],
+            "errors": [],
+            "runtime_details": {
+              "required_modules": [
+                "fastapi"
+              ],
+              "optional_modules": [
+                "uvicorn"
+              ],
+              "missing_required_modules": [
+                "fastapi"
+              ],
+              "missing_optional_modules": [
+                "uvicorn"
+              ]
+            }
+          },
+          {
+            "name": "chaos-demo",
+            "kind": "walkthrough",
+            "path": "D:\\ai-governance-framework\\examples\\chaos-demo",
+            "ok": true,
+            "runtime_ready": false,
+            "required_paths": [
+              {
+                "path": "D:\\ai-governance-framework\\examples\\chaos-demo\\README.md",
+                "exists": true
+              }
+            ],
+            "run_command": null,
+            "warnings": [],
+            "errors": [],
+            "runtime_details": {
+              "not_applicable": true
+            }
+          },
+          {
+            "name": "starter-pack",
+            "kind": "scaffold",
+            "path": "D:\\ai-governance-framework\\examples\\starter-pack",
+            "ok": true,
+            "runtime_ready": false,
+            "required_paths": [
+              {
+                "path": "D:\\ai-governance-framework\\examples\\starter-pack\\README.md",
+                "exists": true
+              },
+              {
+                "path": "D:\\ai-governance-framework\\examples\\starter-pack\\PLAN.md",
+                "exists": true
+              },
+              {
+                "path": "D:\\ai-governance-framework\\examples\\starter-pack\\SYSTEM_PROMPT.md",
+                "exists": true
+              },
+              {
+                "path": "D:\\ai-governance-framework\\examples\\starter-pack\\memory\\01_active_task.md",
+                "exists": true
+              }
+            ],
+            "run_command": null,
+            "warnings": [],
+            "errors": [],
+            "runtime_details": {
+              "not_applicable": true
+            }
+          },
+          {
+            "name": "usb-hub-contract",
+            "kind": "domain-contract",
+            "path": "D:\\ai-governance-framework\\examples\\usb-hub-contract",
+            "ok": true,
+            "runtime_ready": true,
+            "required_paths": [
+              {
+                "path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\README.md",
+                "exists": true
+              },
+              {
+                "path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\contract.yaml",
+                "exists": true
+              },
+              {
+                "path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\AGENTS.md",
+                "exists": true
+              },
+              {
+                "path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\USB_HUB_FW_CHECKLIST.md",
+                "exists": true
+              },
+              {
+                "path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\USB_HUB_ARCHITECTURE.md",
+                "exists": true
+              },
+              {
+                "path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\rules\\hub-firmware\\safety.md",
+                "exists": true
+              },
+              {
+                "path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\validators\\interrupt_safety_validator.py",
+                "exists": true
+              }
+            ],
+            "run_command": "python governance_tools/domain_contract_loader.py --contract examples/usb-hub-contract/contract.yaml --format human",
+            "warnings": [],
+            "errors": [],
+            "runtime_details": {
+              "contract_loaded": true,
+              "validator_preflight": {
+                "ok": true,
+                "count": 1,
+                "validators": [
+                  {
+                    "name": "interrupt_safety_validator",
+                    "path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\validators\\interrupt_safety_validator.py",
+                    "ok": true,
+                    "rule_ids": [
+                      "hub-firmware",
+                      "HUB-004"
+                    ],
+                    "errors": []
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "release": {
+        "ok": true,
+        "project_root": "D:\\ai-governance-framework",
+        "version": "v1.0.0-alpha",
+        "checks": [
+          {
+            "name": "release_note",
+            "ok": true,
+            "detail": "missing docs/releases release note"
+          },
+          {
+            "name": "release_index",
+            "ok": true,
+            "detail": "missing docs/releases/README.md"
+          },
+          {
+            "name": "github_release_draft",
+            "ok": true,
+            "detail": "missing docs/releases github release draft"
+          },
+          {
+            "name": "publish_checklist",
+            "ok": true,
+            "detail": "missing docs/releases publish checklist"
+          },
+          {
+            "name": "alpha_checklist",
+            "ok": true,
+            "detail": "missing docs/releases/alpha-checklist.md"
+          },
+          {
+            "name": "generated_release_root",
+            "ok": true,
+            "detail": "missing docs/releases/generated/README.md"
+          },
+          {
+            "name": "changelog",
+            "ok": true,
+            "detail": "missing CHANGELOG.md"
+          },
+          {
+            "name": "limitations",
+            "ok": true,
+            "detail": "missing docs/LIMITATIONS.md"
+          },
+          {
+            "name": "status_doc",
+            "ok": true,
+            "detail": "missing runtime-governance status doc"
+          },
+          {
+            "name": "status_index",
+            "ok": true,
+            "detail": "missing docs/status/README.md"
+          },
+          {
+            "name": "reviewer_handoff_doc",
+            "ok": true,
+            "detail": "missing docs/status/reviewer-handoff.md"
+          },
+          {
+            "name": "trust_signal_dashboard",
+            "ok": true,
+            "detail": "missing docs/status/trust-signal-dashboard.md"
+          },
+          {
+            "name": "domain_enforcement_matrix",
+            "ok": true,
+            "detail": "missing docs/status/domain-enforcement-matrix.md"
+          },
+          {
+            "name": "readme_exists",
+            "ok": true,
+            "detail": "missing README.md"
+          },
+          {
+            "name": "readme_version_badge",
+            "ok": true,
+            "detail": "README.md does not mention the current release version"
+          },
+          {
+            "name": "readme_release_link",
+            "ok": true,
+            "detail": "README.md does not link to the current release note"
+          },
+          {
+            "name": "changelog_version_entry",
+            "ok": true,
+            "detail": "CHANGELOG.md does not contain a heading for the requested version"
+          },
+          {
+            "name": "changelog_release_link",
+            "ok": true,
+            "detail": "CHANGELOG.md does not link to the release note"
+          },
+          {
+            "name": "release_index_version_link",
+            "ok": true,
+            "detail": "release index does not link to the current release note"
+          },
+          {
+            "name": "release_index_generated_root_link",
+            "ok": true,
+            "detail": "release index does not link to the generated release root"
+          },
+          {
+            "name": "release_note_version_heading",
+            "ok": true,
+            "detail": "release note heading does not match the requested version"
+          },
+          {
+            "name": "release_note_generated_status_path",
+            "ok": true,
+            "detail": "release note does not mention the generated status path"
+          },
+          {
+            "name": "release_note_generated_release_path",
+            "ok": true,
+            "detail": "release note does not mention the generated release path"
+          },
+          {
+            "name": "github_release_draft_version_heading",
+            "ok": true,
+            "detail": "GitHub release draft heading does not match the requested version"
+          },
+          {
+            "name": "github_release_draft_generated_status_path",
+            "ok": true,
+            "detail": "GitHub release draft does not mention the generated status path"
+          },
+          {
+            "name": "github_release_draft_status_links",
+            "ok": true,
+            "detail": "GitHub release draft does not link to the status index"
+          },
+          {
+            "name": "github_release_draft_generated_release_path",
+            "ok": true,
+            "detail": "GitHub release draft does not mention the generated release path"
+          },
+          {
+            "name": "publish_checklist_release_version",
+            "ok": true,
+            "detail": "publish checklist does not mention the requested version"
+          },
+          {
+            "name": "publish_checklist_snapshot_publish",
+            "ok": true,
+            "detail": "publish checklist does not mention docs-status snapshot publishing"
+          },
+          {
+            "name": "publish_checklist_docs_reader",
+            "ok": true,
+            "detail": "publish checklist does not mention the docs-status reader path"
+          },
+          {
+            "name": "publish_checklist_release_package_snapshot",
+            "ok": true,
+            "detail": "publish checklist does not mention release package snapshot publishing"
+          },
+          {
+            "name": "publish_checklist_release_package_reader",
+            "ok": true,
+            "detail": "publish checklist does not mention the release package reader"
+          },
+          {
+            "name": "publish_checklist_release_surface_overview",
+            "ok": true,
+            "detail": "publish checklist does not mention the release surface overview"
+          },
+          {
+            "name": "publish_checklist_phase_gates",
+            "ok": true,
+            "detail": "publish checklist does not mention phase gates verification"
+          },
+          {
+            "name": "alpha_checklist_version",
+            "ok": true,
+            "detail": "alpha checklist does not mention the requested version"
+          },
+          {
+            "name": "alpha_checklist_quickstart",
+            "ok": true,
+            "detail": "alpha checklist does not mention quickstart verification"
+          },
+          {
+            "name": "alpha_checklist_auditor",
+            "ok": true,
+            "detail": "alpha checklist does not mention governance self-audit"
+          },
+          {
+            "name": "alpha_checklist_snapshot_publish",
+            "ok": true,
+            "detail": "alpha checklist does not mention docs-status snapshot publishing"
+          },
+          {
+            "name": "alpha_checklist_docs_reader",
+            "ok": true,
+            "detail": "alpha checklist does not mention the docs-status reader path"
+          },
+          {
+            "name": "alpha_checklist_release_package_snapshot",
+            "ok": true,
+            "detail": "alpha checklist does not mention release package snapshot publishing"
+          },
+          {
+            "name": "alpha_checklist_release_package_reader",
+            "ok": true,
+            "detail": "alpha checklist does not mention the release package reader path"
+          },
+          {
+            "name": "alpha_checklist_release_surface_overview",
+            "ok": true,
+            "detail": "alpha checklist does not mention the release surface overview"
+          },
+          {
+            "name": "alpha_checklist_github_release_draft",
+            "ok": true,
+            "detail": "alpha checklist does not mention the GitHub release draft"
+          },
+          {
+            "name": "alpha_checklist_publish_checklist",
+            "ok": true,
+            "detail": "alpha checklist does not mention the publish checklist"
+          },
+          {
+            "name": "trust_dashboard_release_version",
+            "ok": true,
+            "detail": "trust-signal dashboard does not mention the requested version"
+          },
+          {
+            "name": "trust_dashboard_overview_command",
+            "ok": true,
+            "detail": "trust-signal dashboard does not mention the overview command"
+          },
+          {
+            "name": "trust_dashboard_domain_matrix_link",
+            "ok": true,
+            "detail": "trust-signal dashboard does not link to the domain enforcement matrix"
+          },
+          {
+            "name": "status_index_reviewer_handoff_link",
+            "ok": true,
+            "detail": "status index does not link to the reviewer handoff page"
+          },
+          {
+            "name": "status_index_dashboard_link",
+            "ok": true,
+            "detail": "status index does not link to the trust-signal dashboard"
+          },
+          {
+            "name": "status_index_domain_matrix_link",
+            "ok": true,
+            "detail": "status index does not link to the domain enforcement matrix"
+          },
+          {
+            "name": "status_index_generated_readme_link",
+            "ok": true,
+            "detail": "status index does not mention the generated status landing page"
+          },
+          {
+            "name": "status_index_generated_site_link",
+            "ok": true,
+            "detail": "status index does not mention the generated site readme"
+          },
+          {
+            "name": "reviewer_handoff_command",
+            "ok": true,
+            "detail": "reviewer handoff page does not mention the reviewer handoff tool"
+          },
+          {
+            "name": "reviewer_handoff_snapshot_command",
+            "ok": true,
+            "detail": "reviewer handoff page does not mention the snapshot tool"
+          },
+          {
+            "name": "reviewer_handoff_reader_command",
+            "ok": true,
+            "detail": "reviewer handoff page does not mention the reviewer-handoff reader"
+          },
+          {
+            "name": "reviewer_handoff_publication_reader_command",
+            "ok": true,
+            "detail": "reviewer handoff page does not mention the publication reader"
+          },
+          {
+            "name": "reviewer_handoff_docs_status_publish",
+            "ok": true,
+            "detail": "reviewer handoff page does not mention docs-status publication"
+          },
+          {
+            "name": "reviewer_handoff_docs_status_reader",
+            "ok": true,
+            "detail": "reviewer handoff page does not mention the docs-status reader path"
+          },
+          {
+            "name": "reviewer_handoff_generated_path",
+            "ok": true,
+            "detail": "reviewer handoff page does not mention the generated reviewer-handoff path"
+          },
+          {
+            "name": "reviewer_handoff_artifact_path",
+            "ok": true,
+            "detail": "reviewer handoff page does not mention the reviewer-handoff artifact path"
+          },
+          {
+            "name": "reviewer_handoff_publication_manifest_path",
+            "ok": true,
+            "detail": "reviewer handoff page does not mention the publication manifest path"
+          },
+          {
+            "name": "generated_release_root_latest_link",
+            "ok": true,
+            "detail": "generated release root does not mention the latest release package entry"
+          },
+          {
+            "name": "domain_matrix_mentions_external_policy_tool",
+            "ok": true,
+            "detail": "domain enforcement matrix does not mention the policy index tool"
+          }
+        ],
+        "warnings": [],
+        "errors": [],
+        "paths": {
+          "readme": "D:\\ai-governance-framework\\README.md",
+          "changelog": "D:\\ai-governance-framework\\CHANGELOG.md",
+          "release_index": "D:\\ai-governance-framework\\docs\\releases\\README.md",
+          "release_note": "D:\\ai-governance-framework\\docs\\releases\\v1.0.0-alpha.md",
+          "github_release_draft": "D:\\ai-governance-framework\\docs\\releases\\v1.0.0-alpha-github-release.md",
+          "publish_checklist": "D:\\ai-governance-framework\\docs\\releases\\v1.0.0-alpha-publish-checklist.md",
+          "alpha_checklist": "D:\\ai-governance-framework\\docs\\releases\\alpha-checklist.md",
+          "generated_release_root": "D:\\ai-governance-framework\\docs\\releases\\generated\\README.md",
+          "limitations": "D:\\ai-governance-framework\\docs\\LIMITATIONS.md",
+          "status_doc": "D:\\ai-governance-framework\\docs\\status\\runtime-governance-status.md",
+          "status_index": "D:\\ai-governance-framework\\docs\\status\\README.md",
+          "reviewer_handoff_doc": "D:\\ai-governance-framework\\docs\\status\\reviewer-handoff.md",
+          "trust_signal_dashboard": "D:\\ai-governance-framework\\docs\\status\\trust-signal-dashboard.md",
+          "domain_enforcement_matrix": "D:\\ai-governance-framework\\docs\\status\\domain-enforcement-matrix.md"
+        }
+      },
+      "auditor": {
+        "ok": true,
+        "project_root": "D:\\ai-governance-framework",
+        "checks": [
+          {
+            "name": "doc:governance/SYSTEM_PROMPT.md",
+            "ok": true,
+            "detail": "required governance doc is missing"
+          },
+          {
+            "name": "doc:governance/HUMAN-OVERSIGHT.md",
+            "ok": true,
+            "detail": "required governance doc is missing"
+          },
+          {
+            "name": "doc:governance/AGENT.md",
+            "ok": true,
+            "detail": "required governance doc is missing"
+          },
+          {
+            "name": "doc:governance/ARCHITECTURE.md",
+            "ok": true,
+            "detail": "required governance doc is missing"
+          },
+          {
+            "name": "doc:governance/REVIEW_CRITERIA.md",
+            "ok": true,
+            "detail": "required governance doc is missing"
+          },
+          {
+            "name": "doc:governance/TESTING.md",
+            "ok": true,
+            "detail": "required governance doc is missing"
+          },
+          {
+            "name": "doc:README.md",
+            "ok": true,
+            "detail": "required governance doc is missing"
+          },
+          {
+            "name": "runtime:runtime_hooks/core/pre_task_check.py",
+            "ok": true,
+            "detail": "required runtime enforcement file is missing"
+          },
+          {
+            "name": "runtime:runtime_hooks/core/post_task_check.py",
+            "ok": true,
+            "detail": "required runtime enforcement file is missing"
+          },
+          {
+            "name": "runtime:runtime_hooks/core/session_end.py",
+            "ok": true,
+            "detail": "required runtime enforcement file is missing"
+          },
+          {
+            "name": "runtime:runtime_hooks/dispatcher.py",
+            "ok": true,
+            "detail": "required runtime enforcement file is missing"
+          },
+          {
+            "name": "runtime:scripts/run-runtime-governance.sh",
+            "ok": true,
+            "detail": "required runtime enforcement file is missing"
+          },
+          {
+            "name": "rule-pack:common",
+            "ok": true,
+            "detail": "rule pack directory or markdown content is missing"
+          },
+          {
+            "name": "rule-pack:python",
+            "ok": true,
+            "detail": "rule pack directory or markdown content is missing"
+          },
+          {
+            "name": "rule-pack:cpp",
+            "ok": true,
+            "detail": "rule pack directory or markdown content is missing"
+          },
+          {
+            "name": "rule-pack:refactor",
+            "ok": true,
+            "detail": "rule pack directory or markdown content is missing"
+          },
+          {
+            "name": "workflow:runtime-enforcement",
+            "ok": true,
+            "detail": "workflow does not invoke shared runtime enforcement script"
+          },
+          {
+            "name": "docs:runtime-readme-enforcement",
+            "ok": true,
+            "detail": "runtime_hooks/README.md does not document the shared enforcement entrypoint"
+          },
+          {
+            "name": "docs:readme-enforcement",
+            "ok": true,
+            "detail": "README.md does not mention the shared runtime enforcement path"
+          },
+          {
+            "name": "alignment:build-boundary",
+            "ok": true,
+            "detail": "build-boundary rule is not aligned across constitution, review, and runtime pack"
+          },
+          {
+            "name": "alignment:refactor-pack",
+            "ok": true,
+            "detail": "refactor rule pack is incomplete"
+          },
+          {
+            "name": "release:readiness",
+            "ok": true,
+            "detail": "release-facing docs are not aligned for the requested version"
+          }
+        ],
+        "errors": [],
+        "warnings": [],
+        "release_readiness": {
+          "ok": true,
+          "project_root": "D:\\ai-governance-framework",
+          "version": "v1.0.0-alpha",
+          "checks": [
+            {
+              "name": "release_note",
+              "ok": true,
+              "detail": "missing docs/releases release note"
+            },
+            {
+              "name": "release_index",
+              "ok": true,
+              "detail": "missing docs/releases/README.md"
+            },
+            {
+              "name": "github_release_draft",
+              "ok": true,
+              "detail": "missing docs/releases github release draft"
+            },
+            {
+              "name": "publish_checklist",
+              "ok": true,
+              "detail": "missing docs/releases publish checklist"
+            },
+            {
+              "name": "alpha_checklist",
+              "ok": true,
+              "detail": "missing docs/releases/alpha-checklist.md"
+            },
+            {
+              "name": "generated_release_root",
+              "ok": true,
+              "detail": "missing docs/releases/generated/README.md"
+            },
+            {
+              "name": "changelog",
+              "ok": true,
+              "detail": "missing CHANGELOG.md"
+            },
+            {
+              "name": "limitations",
+              "ok": true,
+              "detail": "missing docs/LIMITATIONS.md"
+            },
+            {
+              "name": "status_doc",
+              "ok": true,
+              "detail": "missing runtime-governance status doc"
+            },
+            {
+              "name": "status_index",
+              "ok": true,
+              "detail": "missing docs/status/README.md"
+            },
+            {
+              "name": "reviewer_handoff_doc",
+              "ok": true,
+              "detail": "missing docs/status/reviewer-handoff.md"
+            },
+            {
+              "name": "trust_signal_dashboard",
+              "ok": true,
+              "detail": "missing docs/status/trust-signal-dashboard.md"
+            },
+            {
+              "name": "domain_enforcement_matrix",
+              "ok": true,
+              "detail": "missing docs/status/domain-enforcement-matrix.md"
+            },
+            {
+              "name": "readme_exists",
+              "ok": true,
+              "detail": "missing README.md"
+            },
+            {
+              "name": "readme_version_badge",
+              "ok": true,
+              "detail": "README.md does not mention the current release version"
+            },
+            {
+              "name": "readme_release_link",
+              "ok": true,
+              "detail": "README.md does not link to the current release note"
+            },
+            {
+              "name": "changelog_version_entry",
+              "ok": true,
+              "detail": "CHANGELOG.md does not contain a heading for the requested version"
+            },
+            {
+              "name": "changelog_release_link",
+              "ok": true,
+              "detail": "CHANGELOG.md does not link to the release note"
+            },
+            {
+              "name": "release_index_version_link",
+              "ok": true,
+              "detail": "release index does not link to the current release note"
+            },
+            {
+              "name": "release_index_generated_root_link",
+              "ok": true,
+              "detail": "release index does not link to the generated release root"
+            },
+            {
+              "name": "release_note_version_heading",
+              "ok": true,
+              "detail": "release note heading does not match the requested version"
+            },
+            {
+              "name": "release_note_generated_status_path",
+              "ok": true,
+              "detail": "release note does not mention the generated status path"
+            },
+            {
+              "name": "release_note_generated_release_path",
+              "ok": true,
+              "detail": "release note does not mention the generated release path"
+            },
+            {
+              "name": "github_release_draft_version_heading",
+              "ok": true,
+              "detail": "GitHub release draft heading does not match the requested version"
+            },
+            {
+              "name": "github_release_draft_generated_status_path",
+              "ok": true,
+              "detail": "GitHub release draft does not mention the generated status path"
+            },
+            {
+              "name": "github_release_draft_status_links",
+              "ok": true,
+              "detail": "GitHub release draft does not link to the status index"
+            },
+            {
+              "name": "github_release_draft_generated_release_path",
+              "ok": true,
+              "detail": "GitHub release draft does not mention the generated release path"
+            },
+            {
+              "name": "publish_checklist_release_version",
+              "ok": true,
+              "detail": "publish checklist does not mention the requested version"
+            },
+            {
+              "name": "publish_checklist_snapshot_publish",
+              "ok": true,
+              "detail": "publish checklist does not mention docs-status snapshot publishing"
+            },
+            {
+              "name": "publish_checklist_docs_reader",
+              "ok": true,
+              "detail": "publish checklist does not mention the docs-status reader path"
+            },
+            {
+              "name": "publish_checklist_release_package_snapshot",
+              "ok": true,
+              "detail": "publish checklist does not mention release package snapshot publishing"
+            },
+            {
+              "name": "publish_checklist_release_package_reader",
+              "ok": true,
+              "detail": "publish checklist does not mention the release package reader"
+            },
+            {
+              "name": "publish_checklist_release_surface_overview",
+              "ok": true,
+              "detail": "publish checklist does not mention the release surface overview"
+            },
+            {
+              "name": "publish_checklist_phase_gates",
+              "ok": true,
+              "detail": "publish checklist does not mention phase gates verification"
+            },
+            {
+              "name": "alpha_checklist_version",
+              "ok": true,
+              "detail": "alpha checklist does not mention the requested version"
+            },
+            {
+              "name": "alpha_checklist_quickstart",
+              "ok": true,
+              "detail": "alpha checklist does not mention quickstart verification"
+            },
+            {
+              "name": "alpha_checklist_auditor",
+              "ok": true,
+              "detail": "alpha checklist does not mention governance self-audit"
+            },
+            {
+              "name": "alpha_checklist_snapshot_publish",
+              "ok": true,
+              "detail": "alpha checklist does not mention docs-status snapshot publishing"
+            },
+            {
+              "name": "alpha_checklist_docs_reader",
+              "ok": true,
+              "detail": "alpha checklist does not mention the docs-status reader path"
+            },
+            {
+              "name": "alpha_checklist_release_package_snapshot",
+              "ok": true,
+              "detail": "alpha checklist does not mention release package snapshot publishing"
+            },
+            {
+              "name": "alpha_checklist_release_package_reader",
+              "ok": true,
+              "detail": "alpha checklist does not mention the release package reader path"
+            },
+            {
+              "name": "alpha_checklist_release_surface_overview",
+              "ok": true,
+              "detail": "alpha checklist does not mention the release surface overview"
+            },
+            {
+              "name": "alpha_checklist_github_release_draft",
+              "ok": true,
+              "detail": "alpha checklist does not mention the GitHub release draft"
+            },
+            {
+              "name": "alpha_checklist_publish_checklist",
+              "ok": true,
+              "detail": "alpha checklist does not mention the publish checklist"
+            },
+            {
+              "name": "trust_dashboard_release_version",
+              "ok": true,
+              "detail": "trust-signal dashboard does not mention the requested version"
+            },
+            {
+              "name": "trust_dashboard_overview_command",
+              "ok": true,
+              "detail": "trust-signal dashboard does not mention the overview command"
+            },
+            {
+              "name": "trust_dashboard_domain_matrix_link",
+              "ok": true,
+              "detail": "trust-signal dashboard does not link to the domain enforcement matrix"
+            },
+            {
+              "name": "status_index_reviewer_handoff_link",
+              "ok": true,
+              "detail": "status index does not link to the reviewer handoff page"
+            },
+            {
+              "name": "status_index_dashboard_link",
+              "ok": true,
+              "detail": "status index does not link to the trust-signal dashboard"
+            },
+            {
+              "name": "status_index_domain_matrix_link",
+              "ok": true,
+              "detail": "status index does not link to the domain enforcement matrix"
+            },
+            {
+              "name": "status_index_generated_readme_link",
+              "ok": true,
+              "detail": "status index does not mention the generated status landing page"
+            },
+            {
+              "name": "status_index_generated_site_link",
+              "ok": true,
+              "detail": "status index does not mention the generated site readme"
+            },
+            {
+              "name": "reviewer_handoff_command",
+              "ok": true,
+              "detail": "reviewer handoff page does not mention the reviewer handoff tool"
+            },
+            {
+              "name": "reviewer_handoff_snapshot_command",
+              "ok": true,
+              "detail": "reviewer handoff page does not mention the snapshot tool"
+            },
+            {
+              "name": "reviewer_handoff_reader_command",
+              "ok": true,
+              "detail": "reviewer handoff page does not mention the reviewer-handoff reader"
+            },
+            {
+              "name": "reviewer_handoff_publication_reader_command",
+              "ok": true,
+              "detail": "reviewer handoff page does not mention the publication reader"
+            },
+            {
+              "name": "reviewer_handoff_docs_status_publish",
+              "ok": true,
+              "detail": "reviewer handoff page does not mention docs-status publication"
+            },
+            {
+              "name": "reviewer_handoff_docs_status_reader",
+              "ok": true,
+              "detail": "reviewer handoff page does not mention the docs-status reader path"
+            },
+            {
+              "name": "reviewer_handoff_generated_path",
+              "ok": true,
+              "detail": "reviewer handoff page does not mention the generated reviewer-handoff path"
+            },
+            {
+              "name": "reviewer_handoff_artifact_path",
+              "ok": true,
+              "detail": "reviewer handoff page does not mention the reviewer-handoff artifact path"
+            },
+            {
+              "name": "reviewer_handoff_publication_manifest_path",
+              "ok": true,
+              "detail": "reviewer handoff page does not mention the publication manifest path"
+            },
+            {
+              "name": "generated_release_root_latest_link",
+              "ok": true,
+              "detail": "generated release root does not mention the latest release package entry"
+            },
+            {
+              "name": "domain_matrix_mentions_external_policy_tool",
+              "ok": true,
+              "detail": "domain enforcement matrix does not mention the policy index tool"
+            }
+          ],
+          "warnings": [],
+          "errors": [],
+          "paths": {
+            "readme": "D:\\ai-governance-framework\\README.md",
+            "changelog": "D:\\ai-governance-framework\\CHANGELOG.md",
+            "release_index": "D:\\ai-governance-framework\\docs\\releases\\README.md",
+            "release_note": "D:\\ai-governance-framework\\docs\\releases\\v1.0.0-alpha.md",
+            "github_release_draft": "D:\\ai-governance-framework\\docs\\releases\\v1.0.0-alpha-github-release.md",
+            "publish_checklist": "D:\\ai-governance-framework\\docs\\releases\\v1.0.0-alpha-publish-checklist.md",
+            "alpha_checklist": "D:\\ai-governance-framework\\docs\\releases\\alpha-checklist.md",
+            "generated_release_root": "D:\\ai-governance-framework\\docs\\releases\\generated\\README.md",
+            "limitations": "D:\\ai-governance-framework\\docs\\LIMITATIONS.md",
+            "status_doc": "D:\\ai-governance-framework\\docs\\status\\runtime-governance-status.md",
+            "status_index": "D:\\ai-governance-framework\\docs\\status\\README.md",
+            "reviewer_handoff_doc": "D:\\ai-governance-framework\\docs\\status\\reviewer-handoff.md",
+            "trust_signal_dashboard": "D:\\ai-governance-framework\\docs\\status\\trust-signal-dashboard.md",
+            "domain_enforcement_matrix": "D:\\ai-governance-framework\\docs\\status\\domain-enforcement-matrix.md"
+          }
+        },
+        "external_onboarding": null
+      },
+      "external_contract_policy": null
+    },
+    "release_surface": {
+      "ok": true,
+      "project_root": "D:\\ai-governance-framework",
+      "version": "v1.0.0-alpha",
+      "readiness": {
+        "ok": true,
+        "project_root": "D:\\ai-governance-framework",
+        "version": "v1.0.0-alpha",
+        "checks": [
+          {
+            "name": "release_note",
+            "ok": true,
+            "detail": "missing docs/releases release note"
+          },
+          {
+            "name": "release_index",
+            "ok": true,
+            "detail": "missing docs/releases/README.md"
+          },
+          {
+            "name": "github_release_draft",
+            "ok": true,
+            "detail": "missing docs/releases github release draft"
+          },
+          {
+            "name": "publish_checklist",
+            "ok": true,
+            "detail": "missing docs/releases publish checklist"
+          },
+          {
+            "name": "alpha_checklist",
+            "ok": true,
+            "detail": "missing docs/releases/alpha-checklist.md"
+          },
+          {
+            "name": "generated_release_root",
+            "ok": true,
+            "detail": "missing docs/releases/generated/README.md"
+          },
+          {
+            "name": "changelog",
+            "ok": true,
+            "detail": "missing CHANGELOG.md"
+          },
+          {
+            "name": "limitations",
+            "ok": true,
+            "detail": "missing docs/LIMITATIONS.md"
+          },
+          {
+            "name": "status_doc",
+            "ok": true,
+            "detail": "missing runtime-governance status doc"
+          },
+          {
+            "name": "status_index",
+            "ok": true,
+            "detail": "missing docs/status/README.md"
+          },
+          {
+            "name": "reviewer_handoff_doc",
+            "ok": true,
+            "detail": "missing docs/status/reviewer-handoff.md"
+          },
+          {
+            "name": "trust_signal_dashboard",
+            "ok": true,
+            "detail": "missing docs/status/trust-signal-dashboard.md"
+          },
+          {
+            "name": "domain_enforcement_matrix",
+            "ok": true,
+            "detail": "missing docs/status/domain-enforcement-matrix.md"
+          },
+          {
+            "name": "readme_exists",
+            "ok": true,
+            "detail": "missing README.md"
+          },
+          {
+            "name": "readme_version_badge",
+            "ok": true,
+            "detail": "README.md does not mention the current release version"
+          },
+          {
+            "name": "readme_release_link",
+            "ok": true,
+            "detail": "README.md does not link to the current release note"
+          },
+          {
+            "name": "changelog_version_entry",
+            "ok": true,
+            "detail": "CHANGELOG.md does not contain a heading for the requested version"
+          },
+          {
+            "name": "changelog_release_link",
+            "ok": true,
+            "detail": "CHANGELOG.md does not link to the release note"
+          },
+          {
+            "name": "release_index_version_link",
+            "ok": true,
+            "detail": "release index does not link to the current release note"
+          },
+          {
+            "name": "release_index_generated_root_link",
+            "ok": true,
+            "detail": "release index does not link to the generated release root"
+          },
+          {
+            "name": "release_note_version_heading",
+            "ok": true,
+            "detail": "release note heading does not match the requested version"
+          },
+          {
+            "name": "release_note_generated_status_path",
+            "ok": true,
+            "detail": "release note does not mention the generated status path"
+          },
+          {
+            "name": "release_note_generated_release_path",
+            "ok": true,
+            "detail": "release note does not mention the generated release path"
+          },
+          {
+            "name": "github_release_draft_version_heading",
+            "ok": true,
+            "detail": "GitHub release draft heading does not match the requested version"
+          },
+          {
+            "name": "github_release_draft_generated_status_path",
+            "ok": true,
+            "detail": "GitHub release draft does not mention the generated status path"
+          },
+          {
+            "name": "github_release_draft_status_links",
+            "ok": true,
+            "detail": "GitHub release draft does not link to the status index"
+          },
+          {
+            "name": "github_release_draft_generated_release_path",
+            "ok": true,
+            "detail": "GitHub release draft does not mention the generated release path"
+          },
+          {
+            "name": "publish_checklist_release_version",
+            "ok": true,
+            "detail": "publish checklist does not mention the requested version"
+          },
+          {
+            "name": "publish_checklist_snapshot_publish",
+            "ok": true,
+            "detail": "publish checklist does not mention docs-status snapshot publishing"
+          },
+          {
+            "name": "publish_checklist_docs_reader",
+            "ok": true,
+            "detail": "publish checklist does not mention the docs-status reader path"
+          },
+          {
+            "name": "publish_checklist_release_package_snapshot",
+            "ok": true,
+            "detail": "publish checklist does not mention release package snapshot publishing"
+          },
+          {
+            "name": "publish_checklist_release_package_reader",
+            "ok": true,
+            "detail": "publish checklist does not mention the release package reader"
+          },
+          {
+            "name": "publish_checklist_release_surface_overview",
+            "ok": true,
+            "detail": "publish checklist does not mention the release surface overview"
+          },
+          {
+            "name": "publish_checklist_phase_gates",
+            "ok": true,
+            "detail": "publish checklist does not mention phase gates verification"
+          },
+          {
+            "name": "alpha_checklist_version",
+            "ok": true,
+            "detail": "alpha checklist does not mention the requested version"
+          },
+          {
+            "name": "alpha_checklist_quickstart",
+            "ok": true,
+            "detail": "alpha checklist does not mention quickstart verification"
+          },
+          {
+            "name": "alpha_checklist_auditor",
+            "ok": true,
+            "detail": "alpha checklist does not mention governance self-audit"
+          },
+          {
+            "name": "alpha_checklist_snapshot_publish",
+            "ok": true,
+            "detail": "alpha checklist does not mention docs-status snapshot publishing"
+          },
+          {
+            "name": "alpha_checklist_docs_reader",
+            "ok": true,
+            "detail": "alpha checklist does not mention the docs-status reader path"
+          },
+          {
+            "name": "alpha_checklist_release_package_snapshot",
+            "ok": true,
+            "detail": "alpha checklist does not mention release package snapshot publishing"
+          },
+          {
+            "name": "alpha_checklist_release_package_reader",
+            "ok": true,
+            "detail": "alpha checklist does not mention the release package reader path"
+          },
+          {
+            "name": "alpha_checklist_release_surface_overview",
+            "ok": true,
+            "detail": "alpha checklist does not mention the release surface overview"
+          },
+          {
+            "name": "alpha_checklist_github_release_draft",
+            "ok": true,
+            "detail": "alpha checklist does not mention the GitHub release draft"
+          },
+          {
+            "name": "alpha_checklist_publish_checklist",
+            "ok": true,
+            "detail": "alpha checklist does not mention the publish checklist"
+          },
+          {
+            "name": "trust_dashboard_release_version",
+            "ok": true,
+            "detail": "trust-signal dashboard does not mention the requested version"
+          },
+          {
+            "name": "trust_dashboard_overview_command",
+            "ok": true,
+            "detail": "trust-signal dashboard does not mention the overview command"
+          },
+          {
+            "name": "trust_dashboard_domain_matrix_link",
+            "ok": true,
+            "detail": "trust-signal dashboard does not link to the domain enforcement matrix"
+          },
+          {
+            "name": "status_index_reviewer_handoff_link",
+            "ok": true,
+            "detail": "status index does not link to the reviewer handoff page"
+          },
+          {
+            "name": "status_index_dashboard_link",
+            "ok": true,
+            "detail": "status index does not link to the trust-signal dashboard"
+          },
+          {
+            "name": "status_index_domain_matrix_link",
+            "ok": true,
+            "detail": "status index does not link to the domain enforcement matrix"
+          },
+          {
+            "name": "status_index_generated_readme_link",
+            "ok": true,
+            "detail": "status index does not mention the generated status landing page"
+          },
+          {
+            "name": "status_index_generated_site_link",
+            "ok": true,
+            "detail": "status index does not mention the generated site readme"
+          },
+          {
+            "name": "reviewer_handoff_command",
+            "ok": true,
+            "detail": "reviewer handoff page does not mention the reviewer handoff tool"
+          },
+          {
+            "name": "reviewer_handoff_snapshot_command",
+            "ok": true,
+            "detail": "reviewer handoff page does not mention the snapshot tool"
+          },
+          {
+            "name": "reviewer_handoff_reader_command",
+            "ok": true,
+            "detail": "reviewer handoff page does not mention the reviewer-handoff reader"
+          },
+          {
+            "name": "reviewer_handoff_publication_reader_command",
+            "ok": true,
+            "detail": "reviewer handoff page does not mention the publication reader"
+          },
+          {
+            "name": "reviewer_handoff_docs_status_publish",
+            "ok": true,
+            "detail": "reviewer handoff page does not mention docs-status publication"
+          },
+          {
+            "name": "reviewer_handoff_docs_status_reader",
+            "ok": true,
+            "detail": "reviewer handoff page does not mention the docs-status reader path"
+          },
+          {
+            "name": "reviewer_handoff_generated_path",
+            "ok": true,
+            "detail": "reviewer handoff page does not mention the generated reviewer-handoff path"
+          },
+          {
+            "name": "reviewer_handoff_artifact_path",
+            "ok": true,
+            "detail": "reviewer handoff page does not mention the reviewer-handoff artifact path"
+          },
+          {
+            "name": "reviewer_handoff_publication_manifest_path",
+            "ok": true,
+            "detail": "reviewer handoff page does not mention the publication manifest path"
+          },
+          {
+            "name": "generated_release_root_latest_link",
+            "ok": true,
+            "detail": "generated release root does not mention the latest release package entry"
+          },
+          {
+            "name": "domain_matrix_mentions_external_policy_tool",
+            "ok": true,
+            "detail": "domain enforcement matrix does not mention the policy index tool"
+          }
+        ],
+        "warnings": [],
+        "errors": [],
+        "paths": {
+          "readme": "D:\\ai-governance-framework\\README.md",
+          "changelog": "D:\\ai-governance-framework\\CHANGELOG.md",
+          "release_index": "D:\\ai-governance-framework\\docs\\releases\\README.md",
+          "release_note": "D:\\ai-governance-framework\\docs\\releases\\v1.0.0-alpha.md",
+          "github_release_draft": "D:\\ai-governance-framework\\docs\\releases\\v1.0.0-alpha-github-release.md",
+          "publish_checklist": "D:\\ai-governance-framework\\docs\\releases\\v1.0.0-alpha-publish-checklist.md",
+          "alpha_checklist": "D:\\ai-governance-framework\\docs\\releases\\alpha-checklist.md",
+          "generated_release_root": "D:\\ai-governance-framework\\docs\\releases\\generated\\README.md",
+          "limitations": "D:\\ai-governance-framework\\docs\\LIMITATIONS.md",
+          "status_doc": "D:\\ai-governance-framework\\docs\\status\\runtime-governance-status.md",
+          "status_index": "D:\\ai-governance-framework\\docs\\status\\README.md",
+          "reviewer_handoff_doc": "D:\\ai-governance-framework\\docs\\status\\reviewer-handoff.md",
+          "trust_signal_dashboard": "D:\\ai-governance-framework\\docs\\status\\trust-signal-dashboard.md",
+          "domain_enforcement_matrix": "D:\\ai-governance-framework\\docs\\status\\domain-enforcement-matrix.md"
+        }
+      },
+      "package": {
+        "ok": true,
+        "project_root": "D:\\ai-governance-framework",
+        "version": "v1.0.0-alpha",
+        "readiness": {
+          "ok": true,
+          "project_root": "D:\\ai-governance-framework",
+          "version": "v1.0.0-alpha",
+          "checks": [
+            {
+              "name": "release_note",
+              "ok": true,
+              "detail": "missing docs/releases release note"
+            },
+            {
+              "name": "release_index",
+              "ok": true,
+              "detail": "missing docs/releases/README.md"
+            },
+            {
+              "name": "github_release_draft",
+              "ok": true,
+              "detail": "missing docs/releases github release draft"
+            },
+            {
+              "name": "publish_checklist",
+              "ok": true,
+              "detail": "missing docs/releases publish checklist"
+            },
+            {
+              "name": "alpha_checklist",
+              "ok": true,
+              "detail": "missing docs/releases/alpha-checklist.md"
+            },
+            {
+              "name": "generated_release_root",
+              "ok": true,
+              "detail": "missing docs/releases/generated/README.md"
+            },
+            {
+              "name": "changelog",
+              "ok": true,
+              "detail": "missing CHANGELOG.md"
+            },
+            {
+              "name": "limitations",
+              "ok": true,
+              "detail": "missing docs/LIMITATIONS.md"
+            },
+            {
+              "name": "status_doc",
+              "ok": true,
+              "detail": "missing runtime-governance status doc"
+            },
+            {
+              "name": "status_index",
+              "ok": true,
+              "detail": "missing docs/status/README.md"
+            },
+            {
+              "name": "reviewer_handoff_doc",
+              "ok": true,
+              "detail": "missing docs/status/reviewer-handoff.md"
+            },
+            {
+              "name": "trust_signal_dashboard",
+              "ok": true,
+              "detail": "missing docs/status/trust-signal-dashboard.md"
+            },
+            {
+              "name": "domain_enforcement_matrix",
+              "ok": true,
+              "detail": "missing docs/status/domain-enforcement-matrix.md"
+            },
+            {
+              "name": "readme_exists",
+              "ok": true,
+              "detail": "missing README.md"
+            },
+            {
+              "name": "readme_version_badge",
+              "ok": true,
+              "detail": "README.md does not mention the current release version"
+            },
+            {
+              "name": "readme_release_link",
+              "ok": true,
+              "detail": "README.md does not link to the current release note"
+            },
+            {
+              "name": "changelog_version_entry",
+              "ok": true,
+              "detail": "CHANGELOG.md does not contain a heading for the requested version"
+            },
+            {
+              "name": "changelog_release_link",
+              "ok": true,
+              "detail": "CHANGELOG.md does not link to the release note"
+            },
+            {
+              "name": "release_index_version_link",
+              "ok": true,
+              "detail": "release index does not link to the current release note"
+            },
+            {
+              "name": "release_index_generated_root_link",
+              "ok": true,
+              "detail": "release index does not link to the generated release root"
+            },
+            {
+              "name": "release_note_version_heading",
+              "ok": true,
+              "detail": "release note heading does not match the requested version"
+            },
+            {
+              "name": "release_note_generated_status_path",
+              "ok": true,
+              "detail": "release note does not mention the generated status path"
+            },
+            {
+              "name": "release_note_generated_release_path",
+              "ok": true,
+              "detail": "release note does not mention the generated release path"
+            },
+            {
+              "name": "github_release_draft_version_heading",
+              "ok": true,
+              "detail": "GitHub release draft heading does not match the requested version"
+            },
+            {
+              "name": "github_release_draft_generated_status_path",
+              "ok": true,
+              "detail": "GitHub release draft does not mention the generated status path"
+            },
+            {
+              "name": "github_release_draft_status_links",
+              "ok": true,
+              "detail": "GitHub release draft does not link to the status index"
+            },
+            {
+              "name": "github_release_draft_generated_release_path",
+              "ok": true,
+              "detail": "GitHub release draft does not mention the generated release path"
+            },
+            {
+              "name": "publish_checklist_release_version",
+              "ok": true,
+              "detail": "publish checklist does not mention the requested version"
+            },
+            {
+              "name": "publish_checklist_snapshot_publish",
+              "ok": true,
+              "detail": "publish checklist does not mention docs-status snapshot publishing"
+            },
+            {
+              "name": "publish_checklist_docs_reader",
+              "ok": true,
+              "detail": "publish checklist does not mention the docs-status reader path"
+            },
+            {
+              "name": "publish_checklist_release_package_snapshot",
+              "ok": true,
+              "detail": "publish checklist does not mention release package snapshot publishing"
+            },
+            {
+              "name": "publish_checklist_release_package_reader",
+              "ok": true,
+              "detail": "publish checklist does not mention the release package reader"
+            },
+            {
+              "name": "publish_checklist_release_surface_overview",
+              "ok": true,
+              "detail": "publish checklist does not mention the release surface overview"
+            },
+            {
+              "name": "publish_checklist_phase_gates",
+              "ok": true,
+              "detail": "publish checklist does not mention phase gates verification"
+            },
+            {
+              "name": "alpha_checklist_version",
+              "ok": true,
+              "detail": "alpha checklist does not mention the requested version"
+            },
+            {
+              "name": "alpha_checklist_quickstart",
+              "ok": true,
+              "detail": "alpha checklist does not mention quickstart verification"
+            },
+            {
+              "name": "alpha_checklist_auditor",
+              "ok": true,
+              "detail": "alpha checklist does not mention governance self-audit"
+            },
+            {
+              "name": "alpha_checklist_snapshot_publish",
+              "ok": true,
+              "detail": "alpha checklist does not mention docs-status snapshot publishing"
+            },
+            {
+              "name": "alpha_checklist_docs_reader",
+              "ok": true,
+              "detail": "alpha checklist does not mention the docs-status reader path"
+            },
+            {
+              "name": "alpha_checklist_release_package_snapshot",
+              "ok": true,
+              "detail": "alpha checklist does not mention release package snapshot publishing"
+            },
+            {
+              "name": "alpha_checklist_release_package_reader",
+              "ok": true,
+              "detail": "alpha checklist does not mention the release package reader path"
+            },
+            {
+              "name": "alpha_checklist_release_surface_overview",
+              "ok": true,
+              "detail": "alpha checklist does not mention the release surface overview"
+            },
+            {
+              "name": "alpha_checklist_github_release_draft",
+              "ok": true,
+              "detail": "alpha checklist does not mention the GitHub release draft"
+            },
+            {
+              "name": "alpha_checklist_publish_checklist",
+              "ok": true,
+              "detail": "alpha checklist does not mention the publish checklist"
+            },
+            {
+              "name": "trust_dashboard_release_version",
+              "ok": true,
+              "detail": "trust-signal dashboard does not mention the requested version"
+            },
+            {
+              "name": "trust_dashboard_overview_command",
+              "ok": true,
+              "detail": "trust-signal dashboard does not mention the overview command"
+            },
+            {
+              "name": "trust_dashboard_domain_matrix_link",
+              "ok": true,
+              "detail": "trust-signal dashboard does not link to the domain enforcement matrix"
+            },
+            {
+              "name": "status_index_reviewer_handoff_link",
+              "ok": true,
+              "detail": "status index does not link to the reviewer handoff page"
+            },
+            {
+              "name": "status_index_dashboard_link",
+              "ok": true,
+              "detail": "status index does not link to the trust-signal dashboard"
+            },
+            {
+              "name": "status_index_domain_matrix_link",
+              "ok": true,
+              "detail": "status index does not link to the domain enforcement matrix"
+            },
+            {
+              "name": "status_index_generated_readme_link",
+              "ok": true,
+              "detail": "status index does not mention the generated status landing page"
+            },
+            {
+              "name": "status_index_generated_site_link",
+              "ok": true,
+              "detail": "status index does not mention the generated site readme"
+            },
+            {
+              "name": "reviewer_handoff_command",
+              "ok": true,
+              "detail": "reviewer handoff page does not mention the reviewer handoff tool"
+            },
+            {
+              "name": "reviewer_handoff_snapshot_command",
+              "ok": true,
+              "detail": "reviewer handoff page does not mention the snapshot tool"
+            },
+            {
+              "name": "reviewer_handoff_reader_command",
+              "ok": true,
+              "detail": "reviewer handoff page does not mention the reviewer-handoff reader"
+            },
+            {
+              "name": "reviewer_handoff_publication_reader_command",
+              "ok": true,
+              "detail": "reviewer handoff page does not mention the publication reader"
+            },
+            {
+              "name": "reviewer_handoff_docs_status_publish",
+              "ok": true,
+              "detail": "reviewer handoff page does not mention docs-status publication"
+            },
+            {
+              "name": "reviewer_handoff_docs_status_reader",
+              "ok": true,
+              "detail": "reviewer handoff page does not mention the docs-status reader path"
+            },
+            {
+              "name": "reviewer_handoff_generated_path",
+              "ok": true,
+              "detail": "reviewer handoff page does not mention the generated reviewer-handoff path"
+            },
+            {
+              "name": "reviewer_handoff_artifact_path",
+              "ok": true,
+              "detail": "reviewer handoff page does not mention the reviewer-handoff artifact path"
+            },
+            {
+              "name": "reviewer_handoff_publication_manifest_path",
+              "ok": true,
+              "detail": "reviewer handoff page does not mention the publication manifest path"
+            },
+            {
+              "name": "generated_release_root_latest_link",
+              "ok": true,
+              "detail": "generated release root does not mention the latest release package entry"
+            },
+            {
+              "name": "domain_matrix_mentions_external_policy_tool",
+              "ok": true,
+              "detail": "domain enforcement matrix does not mention the policy index tool"
+            }
+          ],
+          "warnings": [],
+          "errors": [],
+          "paths": {
+            "readme": "D:\\ai-governance-framework\\README.md",
+            "changelog": "D:\\ai-governance-framework\\CHANGELOG.md",
+            "release_index": "D:\\ai-governance-framework\\docs\\releases\\README.md",
+            "release_note": "D:\\ai-governance-framework\\docs\\releases\\v1.0.0-alpha.md",
+            "github_release_draft": "D:\\ai-governance-framework\\docs\\releases\\v1.0.0-alpha-github-release.md",
+            "publish_checklist": "D:\\ai-governance-framework\\docs\\releases\\v1.0.0-alpha-publish-checklist.md",
+            "alpha_checklist": "D:\\ai-governance-framework\\docs\\releases\\alpha-checklist.md",
+            "generated_release_root": "D:\\ai-governance-framework\\docs\\releases\\generated\\README.md",
+            "limitations": "D:\\ai-governance-framework\\docs\\LIMITATIONS.md",
+            "status_doc": "D:\\ai-governance-framework\\docs\\status\\runtime-governance-status.md",
+            "status_index": "D:\\ai-governance-framework\\docs\\status\\README.md",
+            "reviewer_handoff_doc": "D:\\ai-governance-framework\\docs\\status\\reviewer-handoff.md",
+            "trust_signal_dashboard": "D:\\ai-governance-framework\\docs\\status\\trust-signal-dashboard.md",
+            "domain_enforcement_matrix": "D:\\ai-governance-framework\\docs\\status\\domain-enforcement-matrix.md"
+          }
+        },
+        "release_docs": [
+          {
+            "name": "release_note",
+            "path": "D:\\ai-governance-framework\\docs\\releases\\v1.0.0-alpha.md",
+            "exists": true,
+            "required": true
+          },
+          {
+            "name": "github_release_draft",
+            "path": "D:\\ai-governance-framework\\docs\\releases\\v1.0.0-alpha-github-release.md",
+            "exists": true,
+            "required": true
+          },
+          {
+            "name": "publish_checklist",
+            "path": "D:\\ai-governance-framework\\docs\\releases\\v1.0.0-alpha-publish-checklist.md",
+            "exists": true,
+            "required": true
+          },
+          {
+            "name": "alpha_checklist",
+            "path": "D:\\ai-governance-framework\\docs\\releases\\alpha-checklist.md",
+            "exists": true,
+            "required": true
+          },
+          {
+            "name": "changelog",
+            "path": "D:\\ai-governance-framework\\CHANGELOG.md",
+            "exists": true,
+            "required": true
+          }
+        ],
+        "status_docs": [
+          {
+            "name": "status_index",
+            "path": "D:\\ai-governance-framework\\docs\\status\\README.md",
+            "exists": true,
+            "required": true
+          },
+          {
+            "name": "trust_signal_dashboard",
+            "path": "D:\\ai-governance-framework\\docs\\status\\trust-signal-dashboard.md",
+            "exists": true,
+            "required": true
+          },
+          {
+            "name": "runtime_status",
+            "path": "D:\\ai-governance-framework\\docs\\status\\runtime-governance-status.md",
+            "exists": true,
+            "required": true
+          },
+          {
+            "name": "domain_enforcement_matrix",
+            "path": "D:\\ai-governance-framework\\docs\\status\\domain-enforcement-matrix.md",
+            "exists": true,
+            "required": true
+          },
+          {
+            "name": "generated_status_root",
+            "path": "D:\\ai-governance-framework\\docs\\status\\generated\\README.md",
+            "exists": false,
+            "required": false
+          }
+        ],
+        "commands": [
+          {
+            "name": "release_readiness",
+            "command": "python governance_tools/release_readiness.py --version v1.0.0-alpha --format human"
+          },
+          {
+            "name": "release_surface_overview",
+            "command": "python governance_tools/release_surface_overview.py --version v1.0.0-alpha --format human"
+          },
+          {
+            "name": "trust_signal_overview",
+            "command": "python governance_tools/trust_signal_overview.py --project-root . --plan PLAN.md --release-version v1.0.0-alpha --contract examples/usb-hub-contract/contract.yaml --format human"
+          },
+          {
+            "name": "trust_signal_snapshot_docs_status",
+            "command": "python governance_tools/trust_signal_snapshot.py --project-root . --plan PLAN.md --release-version v1.0.0-alpha --contract examples/usb-hub-contract/contract.yaml --publish-docs-status --format human"
+          },
+          {
+            "name": "trust_signal_publication_reader_docs_status",
+            "command": "python governance_tools/trust_signal_publication_reader.py --project-root . --docs-status --format human"
+          },
+          {
+            "name": "phase_gates",
+            "command": "bash scripts/verify_phase_gates.sh"
+          }
+        ],
+        "release_doc_count": 5,
+        "status_doc_count": 5,
+        "existing_release_docs": 5,
+        "existing_status_docs": 4
+      },
+      "bundle_manifest": {
+        "ok": true,
+        "exists": true,
+        "manifest_file": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke\\MANIFEST.json",
+        "generated_at": "2026-03-15T12:11:55.944101+00:00",
+        "project_root": "D:\\ai-governance-framework",
+        "version": "v1.0.0-alpha",
+        "release_doc_count": 5,
+        "status_doc_count": 5,
+        "existing_release_docs": 5,
+        "existing_status_docs": 4,
+        "latest_json": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke\\latest.json",
+        "latest_txt": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke\\latest.txt",
+        "latest_md": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke\\latest.md",
+        "history_json": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke\\history\\20260315_121155.json",
+        "history_txt": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke\\history\\20260315_121155.txt",
+        "history_md": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke\\history\\20260315_121155.md",
+        "index_md": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke\\INDEX.md",
+        "readme_md": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke\\README.md",
+        "available": true,
+        "source": "explicit"
+      },
+      "publication_manifest": {
+        "ok": true,
+        "exists": true,
+        "manifest_file": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke\\PUBLICATION_MANIFEST.json",
+        "generated_at": "2026-03-15T12:11:55.944101+00:00",
+        "project_root": "D:\\ai-governance-framework",
+        "publication_root": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke",
+        "publication_scope": "bundle",
+        "version": "v1.0.0-alpha",
+        "release_doc_count": 5,
+        "status_doc_count": 5,
+        "existing_release_docs": 5,
+        "existing_status_docs": 4,
+        "latest_json": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke\\latest.json",
+        "latest_txt": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke\\latest.txt",
+        "latest_md": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke\\latest.md",
+        "history_json": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke\\history\\20260315_121155.json",
+        "history_txt": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke\\history\\20260315_121155.txt",
+        "history_md": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke\\history\\20260315_121155.md",
+        "index_md": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke\\INDEX.md",
+        "manifest_json": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke\\MANIFEST.json",
+        "readme_md": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke\\README.md",
+        "version_manifest_json": null,
+        "version_readme_md": null,
+        "version_latest_md": null,
+        "available": true,
+        "source": "explicit"
+      },
+      "commands": [
+        {
+          "name": "release_readiness",
+          "command": "python governance_tools/release_readiness.py --version v1.0.0-alpha --format human"
+        },
+        {
+          "name": "release_package_summary",
+          "command": "python governance_tools/release_package_summary.py --version v1.0.0-alpha --format human"
+        },
+        {
+          "name": "release_package_snapshot_docs",
+          "command": "python governance_tools/release_package_snapshot.py --version v1.0.0-alpha --publish-docs-release --format human"
+        },
+        {
+          "name": "release_package_reader_docs",
+          "command": "python governance_tools/release_package_reader.py --version v1.0.0-alpha --project-root . --docs-release --format human"
+        },
+        {
+          "name": "release_package_publication_reader_docs",
+          "command": "python governance_tools/release_package_publication_reader.py --project-root . --docs-release-root --format human"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "name": "trust_signal_overview",
+        "command": "python governance_tools/trust_signal_overview.py --project-root . --plan PLAN.md --release-version v1.0.0-alpha --contract D:\\ai-governance-framework\\examples\\usb-hub-contract\\contract.yaml --format human"
+      },
+      {
+        "name": "release_surface_overview",
+        "command": "python governance_tools/release_surface_overview.py --version v1.0.0-alpha --format human"
+      },
+      {
+        "name": "phase_gates",
+        "command": "bash scripts/verify_phase_gates.sh"
+      }
+    ]
+  }
+}

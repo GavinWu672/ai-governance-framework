@@ -1,0 +1,66 @@
+# Published Trust Signal Index
+
+- History dir: `D:\ai-governance-framework\artifacts\trust-signals\phase-gate-smoke\published\history`
+- Reports: `59`
+
+| Snapshot | OK | Release | Contract | Generated |
+| --- | --- | --- | --- | --- |
+| `20260315_154919.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T15:49:19.675846+00:00` |
+| `20260315_154544.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T15:45:44.660160+00:00` |
+| `20260315_153531.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T15:35:31.495536+00:00` |
+| `20260315_152231.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T15:22:31.744431+00:00` |
+| `20260315_151834.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T15:18:34.273145+00:00` |
+| `20260315_151412.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T15:14:12.901134+00:00` |
+| `20260315_151203.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T15:12:03.435773+00:00` |
+| `20260315_150747.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T15:07:47.588652+00:00` |
+| `20260315_143351.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T14:33:51.948389+00:00` |
+| `20260315_140807.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T14:08:07.308829+00:00` |
+| `20260315_134551.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T13:45:51.573733+00:00` |
+| `20260315_133023.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T13:30:23.328595+00:00` |
+| `20260315_132229.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T13:22:29.114075+00:00` |
+| `20260315_131504.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T13:15:04.558307+00:00` |
+| `20260315_122020.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T12:20:20.685744+00:00` |
+| `20260315_121751.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T12:17:51.123918+00:00` |
+| `20260315_121202.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T12:12:02.597251+00:00` |
+| `20260315_120712.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T12:07:12.973237+00:00` |
+| `20260315_120417.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T12:04:17.817698+00:00` |
+| `20260315_120025.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T12:00:25.057985+00:00` |
+| `20260315_115851.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T11:58:51.615192+00:00` |
+| `20260315_115238.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T11:52:38.752148+00:00` |
+| `20260315_113152.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T11:31:52.461029+00:00` |
+| `20260315_112100.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T11:21:00.835338+00:00` |
+| `20260315_111520.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T11:15:20.025273+00:00` |
+| `20260315_110622.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T11:06:22.333326+00:00` |
+| `20260315_103832.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T10:38:32.459834+00:00` |
+| `20260315_103047.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T10:30:47.393066+00:00` |
+| `20260315_101623.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T10:16:23.372916+00:00` |
+| `20260315_095639.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T09:56:39.408143+00:00` |
+| `20260315_092055.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T09:20:55.679680+00:00` |
+| `20260315_091821.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T09:18:21.456857+00:00` |
+| `20260315_091610.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T09:16:10.385630+00:00` |
+| `20260315_091510.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T09:15:10.810770+00:00` |
+| `20260315_091107.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T09:11:07.313928+00:00` |
+| `20260315_090618.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T09:06:18.028814+00:00` |
+| `20260315_090316.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T09:03:16.959605+00:00` |
+| `20260315_085913.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T08:59:13.949138+00:00` |
+| `20260315_085342.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T08:53:42.833616+00:00` |
+| `20260315_085040.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T08:50:40.904140+00:00` |
+| `20260315_084721.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T08:47:21.358590+00:00` |
+| `20260315_084445.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T08:44:45.056583+00:00` |
+| `20260315_084230.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T08:42:30.728127+00:00` |
+| `20260315_083844.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T08:38:44.383220+00:00` |
+| `20260315_083443.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T08:34:43.697370+00:00` |
+| `20260315_083029.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T08:30:29.377047+00:00` |
+| `20260315_082940.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T08:29:40.978174+00:00` |
+| `20260315_082438.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T08:24:38.324500+00:00` |
+| `20260315_081854.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T08:18:54.140313+00:00` |
+| `20260315_075908.json` | `False` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T07:59:08.495057+00:00` |
+| `20260315_075700.json` | `False` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T07:57:00.871171+00:00` |
+| `20260315_074831.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T07:48:31.268955+00:00` |
+| `20260315_074052.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T07:40:52.534186+00:00` |
+| `20260315_071331.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T07:13:31.114583+00:00` |
+| `20260315_070552.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T07:05:52.100453+00:00` |
+| `20260315_064154.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T06:41:54.603596+00:00` |
+| `20260315_062538.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T06:25:38.848677+00:00` |
+| `20260315_054153.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T05:41:53.968125+00:00` |
+| `20260315_053826.json` | `True` | `v1.0.0-alpha` | `D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml` | `2026-03-15T05:38:26.931703+00:00` |

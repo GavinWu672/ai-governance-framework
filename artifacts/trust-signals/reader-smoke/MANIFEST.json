@@ -1,0 +1,17 @@
+{
+  "generated_at": "2026-03-15T06:23:33.827454+00:00",
+  "release_version": "v1.0.0-alpha",
+  "contract_path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\contract.yaml",
+  "strict_runtime": false,
+  "latest": {
+    "json": "artifacts\\trust-signals\\reader-smoke\\latest.json",
+    "text": "artifacts\\trust-signals\\reader-smoke\\latest.txt",
+    "markdown": "artifacts\\trust-signals\\reader-smoke\\latest.md"
+  },
+  "history": {
+    "json": "artifacts\\trust-signals\\reader-smoke\\history\\20260315_062333.json",
+    "text": "artifacts\\trust-signals\\reader-smoke\\history\\20260315_062333.txt",
+    "markdown": "artifacts\\trust-signals\\reader-smoke\\history\\20260315_062333.md"
+  },
+  "index": "artifacts\\trust-signals\\reader-smoke\\INDEX.md"
+}

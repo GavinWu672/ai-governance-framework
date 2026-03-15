@@ -1,0 +1,42 @@
+{
+  "ok": true,
+  "generated_at": "2026-03-15T15:49:19.675846+00:00",
+  "project_root": "D:\\ai-governance-framework",
+  "publication_root": "D:\\ai-governance-framework\\artifacts\\trust-signals\\phase-gate-smoke",
+  "release_version": "v1.0.0-alpha",
+  "contract_path": "D:\\ai-governance-framework\\examples\\usb-hub-contract\\contract.yaml",
+  "external_contract_repos": [],
+  "external_contract_policy_ok": null,
+  "external_contract_repo_count": 0,
+  "external_contract_profile_counts": {},
+  "external_contract_policies": [],
+  "strict_runtime": false,
+  "bundle_published": true,
+  "status_pages_published": true,
+  "bundle": {
+    "latest_json": "D:\\ai-governance-framework\\artifacts\\trust-signals\\phase-gate-smoke\\latest.json",
+    "latest_txt": "D:\\ai-governance-framework\\artifacts\\trust-signals\\phase-gate-smoke\\latest.txt",
+    "latest_md": "D:\\ai-governance-framework\\artifacts\\trust-signals\\phase-gate-smoke\\latest.md",
+    "history_json": "D:\\ai-governance-framework\\artifacts\\trust-signals\\phase-gate-smoke\\history\\20260315_154919.json",
+    "history_txt": "D:\\ai-governance-framework\\artifacts\\trust-signals\\phase-gate-smoke\\history\\20260315_154919.txt",
+    "history_md": "D:\\ai-governance-framework\\artifacts\\trust-signals\\phase-gate-smoke\\history\\20260315_154919.md",
+    "index_md": "D:\\ai-governance-framework\\artifacts\\trust-signals\\phase-gate-smoke\\INDEX.md",
+    "manifest_json": "D:\\ai-governance-framework\\artifacts\\trust-signals\\phase-gate-smoke\\MANIFEST.json",
+    "external_policy_latest_json": "",
+    "external_policy_latest_md": "",
+    "external_policy_history_json": "",
+    "external_policy_history_md": ""
+  },
+  "published": {
+    "latest_md": "D:\\ai-governance-framework\\artifacts\\trust-signals\\phase-gate-smoke\\published\\trust-signal-latest.md",
+    "latest_json": "D:\\ai-governance-framework\\artifacts\\trust-signals\\phase-gate-smoke\\published\\trust-signal-latest.json",
+    "readme_md": "D:\\ai-governance-framework\\artifacts\\trust-signals\\phase-gate-smoke\\published\\README.md",
+    "history_md": "D:\\ai-governance-framework\\artifacts\\trust-signals\\phase-gate-smoke\\published\\history\\20260315_154919.md",
+    "history_json": "D:\\ai-governance-framework\\artifacts\\trust-signals\\phase-gate-smoke\\published\\history\\20260315_154919.json",
+    "index_md": "D:\\ai-governance-framework\\artifacts\\trust-signals\\phase-gate-smoke\\published\\INDEX.md",
+    "manifest_json": "D:\\ai-governance-framework\\artifacts\\trust-signals\\phase-gate-smoke\\published\\manifest.json",
+    "external_policy_md": "",
+    "external_policy_json": ""
+  },
+  "readme_md": "D:\\ai-governance-framework\\artifacts\\trust-signals\\phase-gate-smoke\\README.md"
+}

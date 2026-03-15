@@ -1,0 +1,21 @@
+{
+  "ok": true,
+  "generated_at": "2026-03-15T15:49:11.496213+00:00",
+  "project_root": "D:\\ai-governance-framework",
+  "publication_root": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke",
+  "publication_scope": "bundle",
+  "version": "v1.0.0-alpha",
+  "release_doc_count": 5,
+  "status_doc_count": 5,
+  "existing_release_docs": 5,
+  "existing_status_docs": 4,
+  "latest_json": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke\\latest.json",
+  "latest_txt": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke\\latest.txt",
+  "latest_md": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke\\latest.md",
+  "history_json": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke\\history\\20260315_154911.json",
+  "history_txt": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke\\history\\20260315_154911.txt",
+  "history_md": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke\\history\\20260315_154911.md",
+  "index_md": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke\\INDEX.md",
+  "manifest_json": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke\\MANIFEST.json",
+  "readme_md": "D:\\ai-governance-framework\\artifacts\\release-package\\phase-gate-smoke\\README.md"
+}

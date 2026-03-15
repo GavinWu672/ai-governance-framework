@@ -1,0 +1,17 @@
+[trust_signal_overview]
+summary=ok=True | quickstart=True | examples=True | release=True | auditor=True | contract=firmware/medium
+project_root=D:\ai-governance-framework
+plan_path=PLAN.md
+release_version=v1.0.0-alpha
+contract_path=D:\ai-governance-framework\examples\usb-hub-contract\contract.yaml
+strict_runtime=False
+quickstart_ok=True
+examples_ok=True
+release_ok=True
+auditor_ok=True
+example_count=4
+runnable_examples=2
+release_checks=23
+auditor_checks=22
+contract=firmware
+contract_risk_tier=medium
