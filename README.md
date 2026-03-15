@@ -450,6 +450,8 @@ If you are publishing to the repo-local docs path, you can read that stable loca
 python governance_tools/trust_signal_publication_reader.py --project-root . --docs-status --format human
 ```
 
+That same docs-status path also emits `docs/status/generated/README.md`, so the generated root has a stable landing page instead of only raw manifests.
+
 CI now also generates trust-signal snapshot bundles, so this high-level view is not limited to local terminal output.
 Each bundle now also includes manifest metadata, published history/index pages, and a publication-level manifest/index, so tools or readers can tell which snapshot is current without inferring from filenames alone. When external contract repos are provided, those manifests also carry a compact cross-domain enforcement summary instead of only a yes/no policy flag.
 The published status surface now also emits a dedicated domain-enforcement matrix page, so cross-domain hard-stop posture can be shared without opening the full trust-signal dashboard.

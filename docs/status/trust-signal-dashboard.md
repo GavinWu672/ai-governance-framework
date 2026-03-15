@@ -86,6 +86,8 @@ python governance_tools/trust_signal_publication_reader.py \
   --format human
 ```
 
+That generated root now also writes its own `generated/README.md`, so the repo-local path has a human-readable landing page even before you open the manifest directly.
+
 ## CI Artifacts
 
 CI now emits trust-signal snapshot artifacts under:

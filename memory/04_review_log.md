@@ -634,6 +634,7 @@
 - Updated README / status docs / governance-tools docs to show both:
   - the ad-hoc artifact path
   - the stable repo-local docs-status path
+- The generated-root README is now also summary-first, not just a link list, so it can act as a direct landing page for reviewers.
 
 ## 2026-03-14 - IC / SoC Governance Direction Recorded
 

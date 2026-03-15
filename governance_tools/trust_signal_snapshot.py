@@ -21,6 +21,7 @@ from governance_tools.trust_signal_overview import (
     format_markdown_result,
 )
 from governance_tools.external_contract_policy_index import format_markdown as format_external_contract_markdown
+from governance_tools.human_summary import build_summary_line
 
 
 def _external_contract_policy_ok(snapshot: dict[str, Any]) -> bool | None:
@@ -144,6 +145,29 @@ def _display_path(root_dir: Path, raw_path: str | None) -> str | None:
         return str(path.resolve().relative_to(root_dir.resolve())).replace("\\", "/")
     except ValueError:
         return str(path)
+
+
+def _publication_summary_line(
+    snapshot: dict[str, Any],
+    *,
+    bundle_paths: dict[str, str] | None = None,
+    published_paths: dict[str, str] | None = None,
+) -> str:
+    contract_path = snapshot.get("contract_path")
+    contract_part = f"contract={Path(contract_path).name}" if contract_path else None
+    external_contracts_part = (
+        f"external_contracts={_external_contract_policy_ok(snapshot)}"
+        if snapshot.get("external_contract_repos")
+        else None
+    )
+    return build_summary_line(
+        f"ok={snapshot['ok']}",
+        f"release={snapshot['release_version']}",
+        f"bundle={bundle_paths is not None}",
+        f"published={published_paths is not None}",
+        external_contracts_part,
+        contract_part,
+    )
 
 
 def format_index(history_dir: Path) -> str:
@@ -517,13 +541,21 @@ def write_publication_manifest(
         format_publication_index(snapshot, bundle_paths=bundle_paths, published_paths=published_paths) + "\n",
         encoding="utf-8",
     )
+    summary_line = _publication_summary_line(snapshot, bundle_paths=bundle_paths, published_paths=published_paths)
     lines = [
         "# Generated Trust Signal Status",
         "",
+        f"- Summary: `{summary_line}`",
+        f"- Generated at: `{snapshot['generated_at']}`",
+        f"- Release version: `{snapshot['release_version']}`",
+        f"- External contract profiles: `{_external_contract_profile_summary(snapshot)}`",
+        "",
         "This directory is the stable root for generated trust-signal publication outputs.",
         "",
+        "## Entry Points",
+        "",
         "- [Publication Index](PUBLICATION_INDEX.md)",
-        "- `PUBLICATION_MANIFEST.json`",
+        "- [Publication Manifest](PUBLICATION_MANIFEST.json)",
     ]
     if bundle_paths:
         lines.extend(
@@ -531,6 +563,7 @@ def write_publication_manifest(
                 "",
                 "## Bundle",
                 "",
+                f"- Bundle manifest: `{_display_path(root_dir, bundle_paths.get('manifest_json'))}`",
                 f"- Latest text: `{_display_path(root_dir, bundle_paths.get('latest_txt'))}`",
                 f"- Latest markdown: `{_display_path(root_dir, bundle_paths.get('latest_md'))}`",
                 f"- Bundle index: `{_display_path(root_dir, bundle_paths.get('index_md'))}`",
@@ -546,6 +579,7 @@ def write_publication_manifest(
                 "",
                 "## Published Site",
                 "",
+                f"- Site manifest: `{_display_path(root_dir, published_paths.get('manifest_json'))}`",
                 f"- Site readme: `{_display_path(root_dir, published_paths.get('readme_md'))}`",
                 f"- Site latest markdown: `{_display_path(root_dir, published_paths.get('latest_md'))}`",
                 f"- Site index: `{_display_path(root_dir, published_paths.get('index_md'))}`",

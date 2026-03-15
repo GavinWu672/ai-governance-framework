@@ -76,6 +76,7 @@
 - Trust-signal snapshot publishing now also emits dedicated external policy pages (`external-contract-policy-latest.*`, `published/domain-enforcement-matrix.*`) when external contract repos are provided, moving cross-domain enforcement posture from manifest-only metadata into first-class status pages.
 - Trust-signal snapshot publishing now also supports a standard `docs/status/generated/` publication mode via `--publish-docs-status`, reducing friction when a stable repo-local consumption path is preferred over ad-hoc output directories.
 - The publication reader can now also consume that stable docs-status path directly via `--docs-status`, so generated repo-local status no longer requires manually resolving `PUBLICATION_MANIFEST.json`.
+- The docs-status publication root now also emits its own `README.md` landing page, so the generated status path is readable even before using the reader against the manifest.
 
 ## Next Steps
 

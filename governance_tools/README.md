@@ -361,6 +361,8 @@ python governance_tools/trust_signal_publication_reader.py \
   --format human
 ```
 
+搭配 `--publish-docs-status` 時，publisher 也會在 `docs/status/generated/README.md` 寫一份 landing page，讓 generated root 本身可直接閱讀。
+
 這個工具適合用在：
 
 - 想快速知道目前 trust-signal publication 是否健康
