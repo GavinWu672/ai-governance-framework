@@ -565,6 +565,17 @@
   - missing clock/reset fixture still returns `ok=True` with warnings
   - clean fixture remains green
 
+## 2026-03-15 - USB Hub Mixed Enforcement Slice
+
+- Promoted `USB-Hub-Firmware-Architecture-Contract` from advisory-only post-task validation into a mixed enforcement slice.
+- `HUB-004` is now listed under `hard_stop_rules`, so ISR-side forbidden calls become blocking errors instead of reviewer-only warnings.
+- Added a compliant ISR fixture so the repo now has both:
+  - a blocking interrupt-regression baseline
+  - a clean interrupt-safe baseline
+- Verified from the framework side:
+  - `interrupt_regression.checks.json` now returns `ok=False`
+  - `interrupt_compliant.checks.json` returns `ok=True`
+
 ## 2026-03-14 - IC / SoC Governance Direction Recorded
 
 - Recorded a refined future-domain view for IC-related governance.

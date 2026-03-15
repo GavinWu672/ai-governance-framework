@@ -237,6 +237,7 @@ This seam has already been validated with three external contract repos:
 - `USB-Hub-Firmware-Architecture-Contract`
   - the first real firmware vertical slice
   - already running through `session_start`, `pre_task_check`, and `post_task_check`
+  - now also demonstrates contract-driven hard-stop enforcement for `HUB-004` interrupt-safety violations
 - `Kernel-Driver-Contract`
   - the second low-level domain slice
   - already running through contract loading, validator preflight, external rule activation, and a multi-validator post-task loop with contract-driven hard-stop escalation
