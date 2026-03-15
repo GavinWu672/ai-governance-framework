@@ -707,6 +707,17 @@
   - versioned subdirectories such as `v1.0.0-alpha/`
 - Extended `release_readiness.py` so alpha release docs now explicitly reference this generated release path, not only the generated status path.
 
+## 2026-03-15 - Release Package Publication Reader
+
+- Added `governance_tools/release_package_publication_reader.py` as the stable reader over release-package `PUBLICATION_MANIFEST.json`.
+- `release_package_snapshot.py` now emits publication manifests/indexes for both:
+  - artifact bundle scope
+  - repo-local generated release root
+- Updated release docs and generated-release docs so the release-package publish/read flow now includes:
+  - snapshot
+  - version reader
+  - generated-root publication reader
+
 ## 2026-03-14 - IC / SoC Governance Direction Recorded
 
 - Recorded a refined future-domain view for IC-related governance.

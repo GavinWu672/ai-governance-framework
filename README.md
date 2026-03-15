@@ -468,6 +468,12 @@ If you want a stable reader over that release-package bundle:
 python governance_tools/release_package_reader.py --version v1.0.0-alpha --file artifacts/release-package/v1.0.0-alpha/MANIFEST.json --format human
 ```
 
+If you want a stable reader over the generated release root itself:
+
+```bash
+python governance_tools/release_package_publication_reader.py --project-root . --docs-release-root --format human
+```
+
 If you publish repo-local generated release packages, the stable landing path becomes:
 
 - `docs/releases/generated/README.md`

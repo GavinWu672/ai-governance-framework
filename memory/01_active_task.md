@@ -85,6 +85,7 @@
 - The release surface now also includes `governance_tools/release_package_snapshot.py`, so that same package can now be preserved as a latest/history/index bundle instead of only a one-time CLI summary.
 - The release surface now also includes `governance_tools/release_package_reader.py`, so generated release-package bundles can now be consumed through a stable reader flow instead of opening `MANIFEST.json` by hand.
 - Repo-local release-package publishing now also maintains a stable generated root under `docs/releases/generated/`, reducing the need to know the exact version subdirectory before consuming the latest package.
+- The generated release root now also has a dedicated publication reader, making the latest release-package state consumable without opening raw metadata files.
 
 ## Next Steps
 

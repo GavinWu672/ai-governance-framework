@@ -93,6 +93,8 @@ def write_snapshot_bundle(snapshot: dict[str, Any], bundle_dir: Path) -> dict[st
     history_md = history_dir / f"{stem}.md"
     index_md = bundle_dir / "INDEX.md"
     manifest_json = bundle_dir / "MANIFEST.json"
+    publication_manifest_json = bundle_dir / "PUBLICATION_MANIFEST.json"
+    publication_index_md = bundle_dir / "PUBLICATION_INDEX.md"
     readme_md = bundle_dir / "README.md"
 
     package = snapshot["package"]
@@ -137,6 +139,57 @@ def write_snapshot_bundle(snapshot: dict[str, Any], bundle_dir: Path) -> dict[st
         + "\n",
         encoding="utf-8",
     )
+    publication_payload = {
+        "ok": snapshot["ok"],
+        "generated_at": snapshot["generated_at"],
+        "project_root": snapshot["project_root"],
+        "publication_root": str(bundle_dir),
+        "publication_scope": "bundle",
+        "version": snapshot["version"],
+        "release_doc_count": package["release_doc_count"],
+        "status_doc_count": package["status_doc_count"],
+        "existing_release_docs": package["existing_release_docs"],
+        "existing_status_docs": package["existing_status_docs"],
+        "latest_json": str(latest_json),
+        "latest_txt": str(latest_txt),
+        "latest_md": str(latest_md),
+        "history_json": str(history_json),
+        "history_txt": str(history_txt),
+        "history_md": str(history_md),
+        "index_md": str(index_md),
+        "manifest_json": str(manifest_json),
+        "readme_md": str(readme_md),
+    }
+    publication_manifest_json.write_text(
+        json.dumps(publication_payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    publication_index_md.write_text(
+        "\n".join(
+            [
+                "# Release Package Publication Index",
+                "",
+                f"- Publication scope: `bundle`",
+                f"- Version: `{snapshot['version']}`",
+                f"- Generated at: `{snapshot['generated_at']}`",
+                f"- OK: `{snapshot['ok']}`",
+                "",
+                "## Paths",
+                "",
+                f"- Latest JSON: `{latest_json}`",
+                f"- Latest Text: `{latest_txt}`",
+                f"- Latest Markdown: `{latest_md}`",
+                f"- History JSON: `{history_json}`",
+                f"- History Text: `{history_txt}`",
+                f"- History Markdown: `{history_md}`",
+                f"- Bundle Index: `{index_md}`",
+                f"- Bundle Manifest: `{manifest_json}`",
+                f"- Bundle README: `{readme_md}`",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
     readme_md.write_text(
         "\n".join(
             [
@@ -170,6 +223,8 @@ def write_snapshot_bundle(snapshot: dict[str, Any], bundle_dir: Path) -> dict[st
         "history_md": str(history_md),
         "index_md": str(index_md),
         "manifest_json": str(manifest_json),
+        "publication_manifest_json": str(publication_manifest_json),
+        "publication_index_md": str(publication_index_md),
         "readme_md": str(readme_md),
     }
 
@@ -179,6 +234,8 @@ def write_release_root_index(root_dir: Path, *, version: str, bundle_paths: dict
     readme_md = root_dir / "README.md"
     latest_json = root_dir / "latest.json"
     latest_md = root_dir / "latest.md"
+    publication_manifest_json = root_dir / "PUBLICATION_MANIFEST.json"
+    publication_index_md = root_dir / "PUBLICATION_INDEX.md"
 
     manifest_path = Path(bundle_paths["manifest_json"])
     manifest_payload = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -235,11 +292,57 @@ def write_release_root_index(root_dir: Path, *, version: str, bundle_paths: dict
         + "\n",
         encoding="utf-8",
     )
+    publication_payload = {
+        "ok": manifest_payload.get("ok"),
+        "generated_at": manifest_payload.get("generated_at"),
+        "project_root": manifest_payload.get("project_root"),
+        "publication_root": str(root_dir),
+        "publication_scope": "docs-release-root",
+        "version": version,
+        "release_doc_count": manifest_payload.get("release_doc_count"),
+        "status_doc_count": manifest_payload.get("status_doc_count"),
+        "existing_release_docs": manifest_payload.get("existing_release_docs"),
+        "existing_status_docs": manifest_payload.get("existing_status_docs"),
+        "latest_json": str(latest_json),
+        "latest_md": str(latest_md),
+        "readme_md": str(readme_md),
+        "version_manifest_json": f"{relative_version_dir}/MANIFEST.json",
+        "version_readme_md": f"{relative_version_dir}/README.md",
+        "version_latest_md": f"{relative_version_dir}/latest.md",
+    }
+    publication_manifest_json.write_text(
+        json.dumps(publication_payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    publication_index_md.write_text(
+        "\n".join(
+            [
+                "# Generated Release Publication Index",
+                "",
+                f"- Publication scope: `docs-release-root`",
+                f"- Latest version: `{version}`",
+                f"- Generated at: `{manifest_payload.get('generated_at')}`",
+                f"- OK: `{manifest_payload.get('ok')}`",
+                "",
+                "## Paths",
+                "",
+                f"- Root README: `{readme_md.name}`",
+                f"- Latest JSON Pointer: `{latest_json.name}`",
+                f"- Latest Markdown Pointer: `{latest_md.name}`",
+                f"- Version README: `{relative_version_dir}/README.md`",
+                f"- Version Manifest: `{relative_version_dir}/MANIFEST.json`",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
 
     return {
         "generated_root_readme_md": str(readme_md),
         "generated_root_latest_json": str(latest_json),
         "generated_root_latest_md": str(latest_md),
+        "generated_root_publication_manifest_json": str(publication_manifest_json),
+        "generated_root_publication_index_md": str(publication_index_md),
     }
 
 

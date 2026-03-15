@@ -37,6 +37,7 @@ $env:AI_GOVERNANCE_PYTHON='C:\Path\To\python.exe'
 | [contract_validator.py](#contract_validatorpy) | AI 初始化合規驗證 | CI gate |
 | [quickstart_smoke.py](#quickstart_smokepy) | 最小上手流程驗證 | onboarding / quickstart |
 | [example_readiness.py](#example_readinesspy) | 範例集健康度檢查 | onboarding / examples |
+| [release_package_publication_reader.py](#release_package_publication_readerpy) | release package publication reader | release prep / stable generated root |
 | [release_package_reader.py](#release_package_readerpy) | release package manifest reader | release prep / artifact consumption |
 | [release_package_summary.py](#release_package_summarypy) | release package 聚合摘要 | release prep / reviewer handoff |
 | [release_package_snapshot.py](#release_package_snapshotpy) | release package snapshot bundle | release prep / artifact publishing |
@@ -259,6 +260,35 @@ python governance_tools/release_package_reader.py \
 
 ---
 
+## release_package_publication_reader.py
+
+讀取 release-package 的 `PUBLICATION_MANIFEST.json`，把 generated release root 或 bundle publication surface 轉成穩定的 reviewer-first summary。
+
+若要讀 repo-local generated release root：
+
+```bash
+python governance_tools/release_package_publication_reader.py \
+  --project-root . \
+  --docs-release-root \
+  --format human
+```
+
+若要讀某次 artifact bundle 的 publication manifest：
+
+```bash
+python governance_tools/release_package_publication_reader.py \
+  --file artifacts/release-package/v1.0.0-alpha/PUBLICATION_MANIFEST.json \
+  --format human
+```
+
+這個工具特別適合用在：
+
+- 想從 generated release root 直接讀最新 package 狀態
+- 想看 publication scope 是 bundle 還是 docs-release-root
+- 不想先打開 `latest.json` 或 `README.md` 再人工追路徑
+
+---
+
 ## release_package_snapshot.py
 
 把 `release_package_summary.py` 再提升成 latest/history/index/manifest 的 artifact bundle。
@@ -297,6 +327,8 @@ python governance_tools/release_package_snapshot.py \
 - `history/*`
 - `INDEX.md`
 - `MANIFEST.json`
+- `PUBLICATION_MANIFEST.json`
+- `PUBLICATION_INDEX.md`
 - `README.md`
 
 這個工具特別適合用在：
