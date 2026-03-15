@@ -423,7 +423,7 @@ python governance_tools/trust_signal_overview.py --project-root . --plan PLAN.md
 If you want the same view persisted as a latest/history/index bundle:
 
 ```bash
-python governance_tools/trust_signal_snapshot.py --project-root . --plan PLAN.md --release-version v1.0.0-alpha --contract examples/usb-hub-contract/contract.yaml --write-bundle artifacts/trust-signals --format human
+python governance_tools/trust_signal_snapshot.py --project-root . --plan PLAN.md --release-version v1.0.0-alpha --contract examples/usb-hub-contract/contract.yaml --write-bundle artifacts/trust-signals --publish-status-dir artifacts/trust-signals/published --format human
 ```
 
 CI now also generates trust-signal snapshot bundles, so this high-level view is not limited to local terminal output.

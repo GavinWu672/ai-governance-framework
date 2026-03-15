@@ -66,7 +66,7 @@ jobs:
 
       - name: Build trust signal overview artifacts
         run: |
-          python governance_tools/trust_signal_snapshot.py --project-root . --plan PLAN.md --release-version v1.0.0-alpha --contract examples/usb-hub-contract/contract.yaml --strict-runtime --write-bundle artifacts/trust-signals --format human
+          python governance_tools/trust_signal_snapshot.py --project-root . --plan PLAN.md --release-version v1.0.0-alpha --contract examples/usb-hub-contract/contract.yaml --strict-runtime --write-bundle artifacts/trust-signals --publish-status-dir artifacts/trust-signals/published --format human
 
       - name: Upload trust signal overview artifacts
         if: always()

@@ -482,6 +482,14 @@
 - Verification:
   - `scripts/verify_phase_gates.sh` -> `345 passed`, `4/4 Gates`
 
+## 2026-03-15 - Published Status Pages From Snapshot Publisher
+
+- Extended `governance_tools/trust_signal_snapshot.py` with `--publish-status-dir`.
+- The same command can now emit:
+  - bundle artifacts (`latest/history/index`)
+  - publish-style status pages (`trust-signal-latest.md`, `trust-signal-latest.json`, `README.md`)
+- CI now uses this same path, so the publishing format is exercised in both local phase gates and remote pipelines.
+
 ## 2026-03-14 - IC / SoC Governance Direction Recorded
 
 - Recorded a refined future-domain view for IC-related governance.

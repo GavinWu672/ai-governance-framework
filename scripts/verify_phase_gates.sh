@@ -121,7 +121,7 @@ else
     fail "trust_signal_overview.py release-facing overview 失敗"
     ALL_OK=0
 fi
-if "${PYTHON_CMD[@]}" governance_tools/trust_signal_snapshot.py --project-root . --plan PLAN.md --release-version "$RELEASE_VERSION" --contract examples/usb-hub-contract/contract.yaml --write-bundle artifacts/trust-signals/phase-gate-smoke --format human > /dev/null 2>&1; then
+if "${PYTHON_CMD[@]}" governance_tools/trust_signal_snapshot.py --project-root . --plan PLAN.md --release-version "$RELEASE_VERSION" --contract examples/usb-hub-contract/contract.yaml --write-bundle artifacts/trust-signals/phase-gate-smoke --publish-status-dir artifacts/trust-signals/phase-gate-smoke/published --format human > /dev/null 2>&1; then
     ok "trust_signal_snapshot.py bundle publishing"
 else
     fail "trust_signal_snapshot.py bundle publishing 失敗"

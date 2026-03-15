@@ -117,6 +117,56 @@ def write_snapshot_bundle(snapshot: dict[str, Any], bundle_dir: Path) -> dict[st
     }
 
 
+def format_published_status_page(snapshot: dict[str, Any]) -> str:
+    lines = [
+        "# Published Trust Signal Snapshot",
+        "",
+        "> This page is generated. Rebuild it with `governance_tools/trust_signal_snapshot.py`.",
+        "",
+        f"- Generated at: `{snapshot['generated_at']}`",
+        f"- Release version: `{snapshot['release_version']}`",
+        f"- Project root: `{snapshot['project_root']}`",
+        f"- Contract path: `{snapshot.get('contract_path')}`",
+        f"- Strict runtime: `{snapshot['strict_runtime']}`",
+        "",
+        format_markdown_result(snapshot["overview"]),
+    ]
+    return "\n".join(lines)
+
+
+def write_published_status(snapshot: dict[str, Any], publish_dir: Path) -> dict[str, str]:
+    publish_dir.mkdir(parents=True, exist_ok=True)
+    latest_md = publish_dir / "trust-signal-latest.md"
+    latest_json = publish_dir / "trust-signal-latest.json"
+    readme_md = publish_dir / "README.md"
+
+    latest_md.write_text(format_published_status_page(snapshot) + "\n", encoding="utf-8")
+    latest_json.write_text(json.dumps(snapshot, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    readme_md.write_text(
+        "\n".join(
+            [
+                "# Published Status Index",
+                "",
+                "This directory contains generated trust-signal status pages.",
+                "",
+                "- [Latest Markdown Snapshot](trust-signal-latest.md)",
+                "- [Latest JSON Snapshot](trust-signal-latest.json)",
+                "",
+                f"Latest generated_at: `{snapshot['generated_at']}`",
+                f"Release version: `{snapshot['release_version']}`",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    return {
+        "latest_md": str(latest_md),
+        "latest_json": str(latest_json),
+        "readme_md": str(readme_md),
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Generate a trust-signal snapshot bundle.")
     parser.add_argument("--project-root", default=".")
@@ -127,6 +177,7 @@ def main() -> int:
     parser.add_argument("--format", choices=("human", "json", "markdown"), default="human")
     parser.add_argument("--output")
     parser.add_argument("--write-bundle")
+    parser.add_argument("--publish-status-dir")
     args = parser.parse_args()
 
     snapshot = build_trust_signal_snapshot(
@@ -156,6 +207,13 @@ def main() -> int:
             print("")
             print("[snapshot_bundle]")
             for key, value in paths.items():
+                print(f"{key}={value}")
+    if args.publish_status_dir:
+        published = write_published_status(snapshot, Path(args.publish_status_dir))
+        if args.format == "human":
+            print("")
+            print("[published_status]")
+            for key, value in published.items():
                 print(f"{key}={value}")
 
     print(rendered)

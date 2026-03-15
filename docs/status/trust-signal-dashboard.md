@@ -34,6 +34,19 @@ python governance_tools/trust_signal_overview.py \
   --format markdown
 ```
 
+If you want to publish a stable generated snapshot page:
+
+```bash
+python governance_tools/trust_signal_snapshot.py \
+  --project-root . \
+  --plan PLAN.md \
+  --release-version v1.0.0-alpha \
+  --contract examples/usb-hub-contract/contract.yaml \
+  --write-bundle artifacts/trust-signals \
+  --publish-status-dir artifacts/trust-signals/published \
+  --format human
+```
+
 ## CI Artifacts
 
 CI now emits trust-signal snapshot artifacts under:
@@ -43,6 +56,7 @@ CI now emits trust-signal snapshot artifacts under:
 - `artifacts/trust-signals/latest.md`
 - `artifacts/trust-signals/history/*`
 - `artifacts/trust-signals/INDEX.md`
+- `artifacts/trust-signals/published/*`
 
 These artifacts are the generated status snapshot bundle.
 

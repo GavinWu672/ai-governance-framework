@@ -232,6 +232,7 @@ python governance_tools/trust_signal_snapshot.py \
   --release-version v1.0.0-alpha \
   --contract examples/usb-hub-contract/contract.yaml \
   --write-bundle artifacts/trust-signals \
+  --publish-status-dir artifacts/trust-signals/published \
   --format human
 ```
 
@@ -244,6 +245,10 @@ python governance_tools/trust_signal_snapshot.py \
 - `history/*.txt`
 - `history/*.md`
 - `INDEX.md`
+- published status pages such as:
+  - `published/trust-signal-latest.md`
+  - `published/trust-signal-latest.json`
+  - `published/README.md`
 
 這個工具適合用在：
 
