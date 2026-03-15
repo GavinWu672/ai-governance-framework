@@ -313,6 +313,20 @@
 - Rewrote the comparison table around visible emphasis and center of gravity instead of implying another project definitively lacks cross-repo or contract-based patterns.
 - Narrowed the interception borrowing note to `git hook + CI gate` ideas from `agentic-engineering-framework`, which keeps the positioning aligned with the framework boundary against code-generation-time interception.
 
+## 2026-03-15 - Additional Competitive References Added
+
+- Extended `docs/competitive-landscape.md` with additional comparison candidates:
+  - `microsoft/agent-governance-toolkit`
+  - `SAFi`
+  - `GitHub Spec Kit`
+  - `Sovereign-OS`
+  - `GitHub Agent HQ / Agentic Workflows`
+  - `Agent Behavioral Contracts (ABC)` / `POLARIS`
+- Recorded the most important new layer distinction:
+  - action-level governance around agent/tool execution
+  - versus task/session-boundary architecture governance in this repository
+- Updated README wording so the project now explicitly states that it governs primarily at the task/session boundary rather than every agent action or generation token.
+
 ## 2026-03-15 - Onboarding Report Artifact
 
 - Added `governance_tools/external_repo_onboarding_report.py` to combine readiness and governance-smoke results into a single report.

@@ -36,6 +36,7 @@ The most precise current positioning is:
 | `AI-Governor-Framework` | repo rules, architecture respect, guided behavior | repo-embedded governance rules | useful for rule UX and in-repo constraints |
 | `GAAI-framework` | governed workflow and delivery structure | governed delivery workflow | useful for process and backlog discipline |
 | `agentic-engineering-framework` | mechanical repo enforcement and task gating | mechanical runtime/repo enforcement | useful for practical interception ideas |
+| `agent-governance-toolkit` | agent action policy enforcement and sandboxing | action-level agent governance | useful for layer comparison against runtime architecture governance |
 | `TinySDLC` | role handoffs and SDLC choreography | multi-role SDLC orchestration | useful for handoff and role separation ideas |
 
 This table is intentionally directional and should be read as a comparison of visible emphasis, not an exhaustive feature audit.
@@ -143,6 +144,30 @@ What this repository currently emphasizes instead:
 - contract-aware post-task runtime enforcement
 - reviewer/audit publication surfaces over role choreography
 
+### 5. agent-governance-toolkit
+
+Reference:
+
+- <https://github.com/microsoft/agent-governance-toolkit>
+
+Why it is close enough to matter:
+
+- it treats governance as an execution-time concern rather than only prompt guidance
+- it emphasizes policy enforcement around agent actions and tool use
+- it is a strong reference point for action-level interception thinking
+
+Where it differs in layer:
+
+- this repository focuses on task/session-boundary governance for coding work
+- it appears focused on agent-action governance, identity, and execution policy around the agent runtime itself
+
+Why that distinction matters:
+
+- their core question is closer to "is this agent action allowed or safe?"
+- this repository's core question is closer to "does this code/task output respect architecture, domain, and review boundaries?"
+
+This makes it an important benchmark, but not a one-to-one peer.
+
 ## Adjacent, But Not Direct Peers
 
 ### VerifyWise
@@ -193,6 +218,94 @@ Not a direct peer because:
 
 - it is primarily an AI-assisted review product, not an external-contract runtime governance framework
 
+### SAFi
+
+Reference:
+
+- <https://github.com/jnamaya/SAFi>
+
+Use it as a benchmark for:
+
+- runtime output governance
+- value/constitution framing
+- post-generation audit patterns
+
+Not a direct peer because:
+
+- it is better understood as output/runtime governance for AI behavior rather than repo-native coding architecture governance
+
+### GitHub Spec Kit
+
+Reference:
+
+- public GitHub Spec Kit materials / repos
+
+Use it as a benchmark for:
+
+- spec-driven development
+- executable specification workflows
+- reducing "prompt-and-pray" through explicit planning artifacts
+
+Not a direct peer because:
+
+- it is more naturally read as specification-driven implementation guidance than as mixed-enforcement runtime governance
+
+It is complementary:
+
+- spec-driven generation and contract-driven post-task governance can coexist
+
+### Sovereign-OS
+
+Reference:
+
+- public Sovereign-OS materials / repos
+
+Use it as a benchmark for:
+
+- append-only governance trails
+- mission/budget/rule declaration
+- governance over agent resource usage
+
+Not a direct peer because:
+
+- it is closer to budget/token/mission governance than software architecture boundary governance
+
+### GitHub Agent HQ / Agentic Workflows
+
+Reference:
+
+- public GitHub platform materials and reporting
+
+Use it as a benchmark for:
+
+- platform-level agent governance
+- central mission control and auditability
+- enterprise-facing agent operations
+
+Not a direct peer because:
+
+- it is platform governance for agent operations
+- this repository is domain-knowledge governance for architecture-sensitive coding workflows
+
+This distinction is important when explaining why a repo-level governance framework still has value alongside platform-native agent governance.
+
+### Agent Behavioral Contracts (ABC) / POLARIS
+
+References:
+
+- public academic literature and workshop papers
+
+Use them as benchmarks for:
+
+- formal contract thinking
+- drift bounds
+- validator-gated orchestration
+- stronger theoretical framing around runtime governance
+
+Not direct peers because:
+
+- they are better treated as theory and research direction, not drop-in repo-native coding governance systems
+
 ## What Currently Feels Distinctive Here
 
 The clearest current differentiators of `ai-governance-framework` are:
@@ -227,9 +340,11 @@ The most useful thing is not to copy any one project wholesale.
 Instead:
 
 - borrow git-hook / CI-gate interception ideas from `agentic-engineering-framework`
+- study action-level governance boundaries from `agent-governance-toolkit` without drifting into generation-time interception goals
 - borrow repo-embedded rule UX from `AI-Governor-Framework` and `GAAI-framework`
 - borrow reviewer-surface clarity from products like `CodeRabbit`
 - borrow auditability and visibility ideas from `VerifyWise`
+- treat `GitHub Spec Kit`, `ABC`, and `POLARIS` as useful framing for specification/contract rigor rather than direct implementation targets
 
 This keeps the repository grounded in the parts of those projects that match its actual scope,
 instead of drifting toward feature imitation for its own sake.

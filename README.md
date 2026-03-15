@@ -61,6 +61,8 @@ The simplest way to describe the difference is:
   - external domain contracts
   - mixed enforcement
   - reviewer / trust / release publication surfaces
+- and it operates primarily at the **task/session boundary**
+  - rather than trying to govern every agent action or every generation token inside the model runtime
 
 See [docs/competitive-landscape.md](docs/competitive-landscape.md) for the fuller comparison memo and the scope note on how those comparisons should be read.
 
