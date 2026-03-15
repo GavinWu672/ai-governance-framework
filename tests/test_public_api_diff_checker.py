@@ -46,6 +46,55 @@ public class Service
     assert any("public class Service" in item for item in signatures)
 
 
+def test_extract_public_api_manifest_uses_namespace_qualified_csharp_identities():
+    root = _reset_fixture("csharp_namespace_identities")
+    file_path = root / "Service.cs"
+    _write(
+        file_path,
+        """
+namespace Acme.Runtime;
+
+public class Service
+{
+    public int Run(int value) => value;
+}
+""".strip(),
+    )
+
+    manifest = extract_public_api_manifest([file_path])
+
+    semantic_entries = manifest["entries"][0]["semantic_entries"]
+    identities = {item["identity"] for item in semantic_entries}
+    assert "type:Acme.Runtime.Service" in identities
+    assert "method:Acme.Runtime.Service.Run" in identities
+
+
+def test_extract_public_api_manifest_normalizes_generic_csharp_signatures():
+    root = _reset_fixture("csharp_generic_signatures")
+    file_path = root / "Repository.cs"
+    _write(
+        file_path,
+        """
+namespace Acme.Runtime;
+
+public class Repository<TItem>
+{
+    public TResult Map<TResult>(Func<TItem, TResult> selector) => selector(default!);
+}
+""".strip(),
+    )
+
+    manifest = extract_public_api_manifest([file_path])
+
+    semantic_entries = manifest["entries"][0]["semantic_entries"]
+    type_entry = next(item for item in semantic_entries if item["kind"] == "type")
+    method_entry = next(item for item in semantic_entries if item["kind"] == "method")
+    assert type_entry["identity"] == "type:Acme.Runtime.Repository<T0>"
+    assert type_entry["signature"] == "public class Repository<T0>"
+    assert method_entry["identity"] == "method:Acme.Runtime.Repository<T0>.Map"
+    assert method_entry["signature"] == "M0 Map<M0>(Func<T0,M0>)"
+
+
 def test_public_api_diff_checker_flags_removed_signature():
     root = _reset_fixture("removed_signature")
     before_file = root / "before.cs"
@@ -56,7 +105,7 @@ def test_public_api_diff_checker_flags_removed_signature():
     result = check_public_api_diff([before_file], [after_file])
 
     assert result["ok"] is False
-    assert any("Public API surface removed or changed." in error for error in result["errors"])
+    assert any("method:Service.Run" in error for error in result["errors"])
 
 
 def test_public_api_diff_checker_warns_on_added_signature():
@@ -166,6 +215,68 @@ public class Service
     assert any("property:Service.Status" in error for error in result["errors"])
 
 
+def test_extract_public_api_manifest_normalizes_multiline_csharp_property_signature():
+    root = _reset_fixture("multiline_property_manifest")
+    file_path = root / "Service.cs"
+    _write(
+        file_path,
+        """
+public class Service
+{
+    public IReadOnlyList < string? > Values
+    {
+        get;
+        init;
+    }
+}
+""".strip(),
+    )
+
+    manifest = extract_public_api_manifest([file_path])
+
+    semantic_entries = manifest["entries"][0]["semantic_entries"]
+    property_entry = next(item for item in semantic_entries if item["kind"] == "property")
+    assert property_entry["signature"] == "IReadOnlyList<string?> Values [get init]"
+
+
+def test_public_api_diff_checker_classifies_property_setter_addition_as_non_breaking():
+    root = _reset_fixture("property_setter_addition")
+    before_file = root / "before.cs"
+    after_file = root / "after.cs"
+    _write(
+        before_file,
+        """
+public class Service
+{
+    public int Status
+    {
+        get;
+    }
+}
+""".strip(),
+    )
+    _write(
+        after_file,
+        """
+public class Service
+{
+    public int Status
+    {
+        get;
+        set;
+    }
+}
+""".strip(),
+    )
+
+    result = check_public_api_diff([before_file], [after_file])
+
+    assert result["ok"] is True
+    assert result["compatibility_risk"] == "low"
+    assert any("property:Service.Status" in warning for warning in result["warnings"])
+    assert result["non_breaking_changes"]
+
+
 def test_public_api_diff_checker_classifies_constructor_overload_as_non_breaking():
     root = _reset_fixture("constructor_overload")
     before_file = root / "before.cs"
@@ -225,3 +336,91 @@ public class Service
     assert result["ok"] is False
     assert result["compatibility_risk"] == "high"
     assert any("method:Service.Run" in error for error in result["errors"])
+
+
+def test_public_api_diff_checker_distinguishes_same_type_name_across_namespaces():
+    root = _reset_fixture("namespace_collision")
+    before_file = root / "before.cs"
+    after_file = root / "after.cs"
+    _write(
+        before_file,
+        """
+namespace Alpha
+{
+    public class Service
+    {
+        public int Run(int value) => value;
+    }
+}
+
+namespace Beta
+{
+    public class Service
+    {
+        public int Run(int value) => value;
+    }
+}
+""".strip(),
+    )
+    _write(
+        after_file,
+        """
+namespace Alpha
+{
+    public class Service
+    {
+        public int Run(int value) => value;
+    }
+}
+
+namespace Beta
+{
+    public class Service
+    {
+        public string Run(int value) => value.ToString();
+    }
+}
+""".strip(),
+    )
+
+    result = check_public_api_diff([before_file], [after_file])
+
+    assert result["ok"] is False
+    assert result["compatibility_risk"] == "high"
+    assert any("method:Beta.Service.Run" in error for error in result["errors"])
+    assert not any("method:Alpha.Service.Run" in error for error in result["errors"])
+
+
+def test_public_api_diff_checker_treats_generic_parameter_rename_as_non_breaking():
+    root = _reset_fixture("generic_parameter_rename")
+    before_file = root / "before.cs"
+    after_file = root / "after.cs"
+    _write(
+        before_file,
+        """
+namespace Acme.Runtime;
+
+public class Repository<TItem>
+{
+    public TResult Map<TResult>(Func<TItem, TResult> selector) => selector(default!);
+}
+""".strip(),
+    )
+    _write(
+        after_file,
+        """
+namespace Acme.Runtime;
+
+public class Repository<TValue>
+{
+    public TOut Map<TOut>(Func<TValue, TOut> selector) => selector(default!);
+}
+""".strip(),
+    )
+
+    result = check_public_api_diff([before_file], [after_file])
+
+    assert result["ok"] is True
+    assert result["compatibility_risk"] == "low"
+    assert result["warnings"] == []
+    assert result["errors"] == []
