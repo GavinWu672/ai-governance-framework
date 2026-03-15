@@ -49,6 +49,7 @@ come from and how to regenerate them locally.
 
 ## Related Sources
 
+- [Status Index](README.md)
 - [Runtime Governance Status](runtime-governance-status.md)
 - [Next Steps](next-steps.md)
 - [Alpha Release Note](../releases/v1.0.0-alpha.md)

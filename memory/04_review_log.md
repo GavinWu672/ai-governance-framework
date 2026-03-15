@@ -463,6 +463,14 @@
   - links release note / checklist / limits / runtime status in one place
 - Extended `release_readiness.py` so this stable dashboard page is now part of the release-facing trust-signal surface.
 
+## 2026-03-15 - Status Page Index
+
+- Added `docs/status/README.md` as a stable index over:
+  - trust-signal dashboard
+  - runtime governance status
+  - next-steps
+- This gives external readers a clearer status-reading order instead of relying only on scattered README links.
+
 ## 2026-03-14 - IC / SoC Governance Direction Recorded
 
 - Recorded a refined future-domain view for IC-related governance.
