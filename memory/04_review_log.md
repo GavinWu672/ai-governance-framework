@@ -618,6 +618,15 @@
 - Extended `trust_signal_publication_reader.py` so those dedicated policy pages are discoverable from the same reviewer-facing summary.
 - Extended `release_readiness.py` so the static `docs/status/domain-enforcement-matrix.md` page is now part of release-facing readiness checks.
 
+## 2026-03-15 - Docs Status Publishing Mode
+
+- Extended `trust_signal_snapshot.py` with `--publish-docs-status`.
+- This mode now defaults snapshot outputs into a stable repo-local path:
+  - `docs/status/generated/bundle`
+  - `docs/status/generated/site`
+  - publication metadata rooted at `docs/status/generated`
+- Updated status/README docs so this path is now part of the recommended consumption story, not only an implicit convention.
+
 ## 2026-03-14 - IC / SoC Governance Direction Recorded
 
 - Recorded a refined future-domain view for IC-related governance.

@@ -282,6 +282,21 @@ python governance_tools/trust_signal_snapshot.py \
   --format human
 ```
 
+若想把同一批輸出落在穩定的 repo-local docs 路徑，可改用：
+
+```bash
+python governance_tools/trust_signal_snapshot.py \
+  --project-root . \
+  --plan PLAN.md \
+  --release-version v1.0.0-alpha \
+  --contract examples/usb-hub-contract/contract.yaml \
+  --external-contract-repo D:/USB-Hub-Firmware-Architecture-Contract \
+  --external-contract-repo D:/Kernel-Driver-Contract \
+  --external-contract-repo D:/IC-Verification-Contract \
+  --publish-docs-status \
+  --format human
+```
+
 會寫出：
 
 - `latest.json`
@@ -319,6 +334,7 @@ python governance_tools/trust_signal_snapshot.py \
 - CI / release pipeline 中保存高層狀態快照
 - 需要追蹤信號是否退化，而不是只看當次終端輸出
 - 把 trust signal 從「一次性命令」提升成「可追蹤 artifact」
+- 需要一個固定的 `docs/status/generated/` 消費路徑，而不是每次都自己決定輸出目錄
 
 ---
 

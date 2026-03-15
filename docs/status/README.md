@@ -19,6 +19,10 @@ This directory contains the repository's stable status-facing documents.
   - the clearest cross-domain view of `hard_stop_rules` vs advisory-only policy
   - use this when you want to compare enforcement posture across external contract repos
 
+- Generated Status Snapshot (`generated/`)
+  - optional local/published output from `trust_signal_snapshot.py --publish-docs-status`
+  - intended for a stable repo-local consumption path when you want latest/history/site outputs under one predictable directory
+
 - [Next Steps](next-steps.md)
   - forward-looking work recommendations
   - use this when you want direction, not only current-state reporting
@@ -28,4 +32,5 @@ This directory contains the repository's stable status-facing documents.
 1. Start with [Trust Signal Dashboard](trust-signal-dashboard.md)
 2. Then read [Runtime Governance Status](runtime-governance-status.md)
 3. Then read [Domain Enforcement Matrix](domain-enforcement-matrix.md)
-4. Use [Next Steps](next-steps.md) for future work planning
+4. If generated, review `generated/site/README.md` for the latest published snapshot
+5. Use [Next Steps](next-steps.md) for future work planning

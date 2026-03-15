@@ -432,6 +432,12 @@ If you want the same view persisted as a latest/history/index bundle:
 python governance_tools/trust_signal_snapshot.py --project-root . --plan PLAN.md --release-version v1.0.0-alpha --contract examples/usb-hub-contract/contract.yaml --external-contract-repo D:/USB-Hub-Firmware-Architecture-Contract --external-contract-repo D:/Kernel-Driver-Contract --external-contract-repo D:/IC-Verification-Contract --write-bundle artifacts/trust-signals --publish-status-dir artifacts/trust-signals/published --format human
 ```
 
+If you want the same publication written to a stable repo-local docs path:
+
+```bash
+python governance_tools/trust_signal_snapshot.py --project-root . --plan PLAN.md --release-version v1.0.0-alpha --contract examples/usb-hub-contract/contract.yaml --external-contract-repo D:/USB-Hub-Firmware-Architecture-Contract --external-contract-repo D:/Kernel-Driver-Contract --external-contract-repo D:/IC-Verification-Contract --publish-docs-status --format human
+```
+
 If you want a stable reader over the generated publication metadata:
 
 ```bash

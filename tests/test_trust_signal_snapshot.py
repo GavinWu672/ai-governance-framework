@@ -10,6 +10,7 @@ from governance_tools.trust_signal_snapshot import (
     format_published_index,
     format_publication_index,
     format_index,
+    resolve_publication_paths,
     write_publication_manifest,
     write_published_status,
     write_snapshot_bundle,
@@ -148,6 +149,40 @@ def test_format_index_handles_empty_history(tmp_path):
 
     assert "[trust_signal_snapshot_index]" in rendered
     assert "reports=0" in rendered
+
+
+def test_resolve_publication_paths_can_default_to_docs_status_generated(tmp_path):
+    project_root = tmp_path / "repo"
+    project_root.mkdir(parents=True, exist_ok=True)
+
+    bundle_path, published_path, publication_root = resolve_publication_paths(
+        project_root=project_root,
+        publish_docs_status=True,
+    )
+
+    assert bundle_path == project_root / "docs" / "status" / "generated" / "bundle"
+    assert published_path == project_root / "docs" / "status" / "generated" / "site"
+    assert publication_root == project_root / "docs" / "status" / "generated"
+
+
+def test_resolve_publication_paths_keeps_explicit_overrides(tmp_path):
+    project_root = tmp_path / "repo"
+    project_root.mkdir(parents=True, exist_ok=True)
+    explicit_bundle = tmp_path / "bundle-out"
+    explicit_published = tmp_path / "published-out"
+    explicit_root = tmp_path / "root-out"
+
+    bundle_path, published_path, publication_root = resolve_publication_paths(
+        project_root=project_root,
+        write_bundle=str(explicit_bundle),
+        publish_status_dir=str(explicit_published),
+        publication_root=str(explicit_root),
+        publish_docs_status=True,
+    )
+
+    assert bundle_path == explicit_bundle.resolve()
+    assert published_path == explicit_published.resolve()
+    assert publication_root == explicit_root.resolve()
 
 
 def test_write_published_status_creates_latest_pages(tmp_path):

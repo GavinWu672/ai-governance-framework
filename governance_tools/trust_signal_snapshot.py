@@ -115,6 +115,27 @@ def _history_stem(snapshot: dict[str, Any]) -> str:
     return dt.strftime("%Y%m%d_%H%M%S")
 
 
+def resolve_publication_paths(
+    *,
+    project_root: Path,
+    write_bundle: str | None = None,
+    publish_status_dir: str | None = None,
+    publication_root: str | None = None,
+    publish_docs_status: bool = False,
+) -> tuple[Path | None, Path | None, Path | None]:
+    bundle_path = Path(write_bundle).resolve() if write_bundle else None
+    published_path = Path(publish_status_dir).resolve() if publish_status_dir else None
+    publication_path = Path(publication_root).resolve() if publication_root else None
+
+    if publish_docs_status:
+        docs_root = (project_root / "docs" / "status" / "generated").resolve()
+        bundle_path = bundle_path or docs_root / "bundle"
+        published_path = published_path or docs_root / "site"
+        publication_path = publication_path or docs_root
+
+    return bundle_path, published_path, publication_path
+
+
 def format_index(history_dir: Path) -> str:
     json_files = sorted(history_dir.glob("*.json"))
     lines = ["[trust_signal_snapshot_index]", f"history_dir={history_dir}", f"reports={len(json_files)}"]
@@ -503,15 +524,25 @@ def main() -> int:
     parser.add_argument("--output")
     parser.add_argument("--write-bundle")
     parser.add_argument("--publish-status-dir")
+    parser.add_argument("--publication-root")
+    parser.add_argument("--publish-docs-status", action="store_true")
     args = parser.parse_args()
 
+    project_root = Path(args.project_root).resolve()
     snapshot = build_trust_signal_snapshot(
-        project_root=Path(args.project_root).resolve(),
+        project_root=project_root,
         plan_path=Path(args.plan),
         release_version=args.release_version,
         contract_file=Path(args.contract).resolve() if args.contract else None,
         external_contract_repos=[Path(item).resolve() for item in args.external_contract_repo],
         strict_runtime=args.strict_runtime,
+    )
+    bundle_path, published_path, publication_root = resolve_publication_paths(
+        project_root=project_root,
+        write_bundle=args.write_bundle,
+        publish_status_dir=args.publish_status_dir,
+        publication_root=args.publication_root,
+        publish_docs_status=args.publish_docs_status,
     )
 
     overview = snapshot["overview"]
@@ -527,8 +558,8 @@ def main() -> int:
         output_path.parent.mkdir(parents=True, exist_ok=True)
         output_path.write_text(rendered + "\n", encoding="utf-8")
 
-    if args.write_bundle:
-        paths = write_snapshot_bundle(snapshot, Path(args.write_bundle))
+    if bundle_path is not None:
+        paths = write_snapshot_bundle(snapshot, bundle_path)
         if args.format == "human":
             print("")
             print("[snapshot_bundle]")
@@ -536,8 +567,8 @@ def main() -> int:
                 print(f"{key}={value}")
     else:
         paths = None
-    if args.publish_status_dir:
-        published = write_published_status(snapshot, Path(args.publish_status_dir))
+    if published_path is not None:
+        published = write_published_status(snapshot, published_path)
         if args.format == "human":
             print("")
             print("[published_status]")
@@ -547,11 +578,6 @@ def main() -> int:
         published = None
 
     publication = None
-    publication_root = None
-    if args.write_bundle:
-        publication_root = Path(args.write_bundle)
-    elif args.publish_status_dir:
-        publication_root = Path(args.publish_status_dir)
     if publication_root is not None:
         publication = write_publication_manifest(
             snapshot,

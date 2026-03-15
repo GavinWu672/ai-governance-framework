@@ -54,6 +54,21 @@ python governance_tools/trust_signal_snapshot.py \
   --format human
 ```
 
+If you want the same publication to land under a stable repo-local docs path:
+
+```bash
+python governance_tools/trust_signal_snapshot.py \
+  --project-root . \
+  --plan PLAN.md \
+  --release-version v1.0.0-alpha \
+  --contract examples/usb-hub-contract/contract.yaml \
+  --external-contract-repo D:/USB-Hub-Firmware-Architecture-Contract \
+  --external-contract-repo D:/Kernel-Driver-Contract \
+  --external-contract-repo D:/IC-Verification-Contract \
+  --publish-docs-status \
+  --format human
+```
+
 If you want to read the latest publication metadata as a compact summary:
 
 ```bash
