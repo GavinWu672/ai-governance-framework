@@ -88,6 +88,7 @@
 - The generated release root now also has a dedicated publication reader, making the latest release-package state consumable without opening raw metadata files.
 - Release-facing docs now also have a stable index under `docs/releases/README.md`, reducing reliance on direct deep links to a single version file.
 - CI now also emits `artifacts/release-package/`, so release-package evidence is preserved even when generated docs paths are not used locally.
+- The release surface now also has a single reviewer-first aggregator via `governance_tools/release_surface_overview.py`, reducing the need to manually jump between release readiness, package summary, and publication readers during release prep.
 
 ## Next Steps
 

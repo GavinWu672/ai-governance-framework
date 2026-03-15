@@ -475,6 +475,12 @@ If you want a stable reader over the generated release root itself:
 python governance_tools/release_package_publication_reader.py --project-root . --docs-release-root --format human
 ```
 
+If you want one reviewer-first command that rolls release readiness, package docs, and any available generated release surfaces into a single overview:
+
+```bash
+python governance_tools/release_surface_overview.py --version v1.0.0-alpha --format human
+```
+
 If you publish repo-local generated release packages, the stable landing path becomes:
 
 - `docs/releases/generated/README.md`

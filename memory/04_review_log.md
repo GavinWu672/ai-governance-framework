@@ -118,6 +118,13 @@
   - session-end summary
   - curated runtime artifact
 - Verification:
+
+## 2026-03-15 - Release Surface Overview
+
+- Added `governance_tools/release_surface_overview.py` as a single reviewer-first entrypoint over release readiness, release package summary, and any available generated release manifests.
+- The new overview can consume explicit bundle/publication manifests when provided, but also remains useful when generated release-package surfaces have not yet been published.
+- `scripts/verify_phase_gates.sh` now exercises the new overview against the phase-gate release-package smoke bundle, so the higher-level release reviewer flow is part of the normal regression surface.
+- Release docs and tool docs were updated so alpha evaluation and publish checklists now include the new overview command.
   - `tests/test_change_control_summary.py tests/test_runtime_session_start.py tests/test_runtime_smoke_test.py` -> `16 passed`
   - `tests/test_runtime_session_end.py tests/test_memory_curator.py tests/test_change_control_summary.py tests/test_change_control_index.py` -> `19 passed`
 

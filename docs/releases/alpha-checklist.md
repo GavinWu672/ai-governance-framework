@@ -22,6 +22,7 @@ spread across CI, README notes, and ad-hoc terminal checks.
 - [x] `python governance_tools/release_package_snapshot.py --version v1.0.0-alpha --publish-docs-release --format human`
 - [x] `python governance_tools/release_package_reader.py --version v1.0.0-alpha --project-root . --docs-release --format human`
 - [x] `python governance_tools/release_package_publication_reader.py --project-root . --docs-release-root --format human`
+- [x] `python governance_tools/release_surface_overview.py --version v1.0.0-alpha --format human`
 - [x] `bash scripts/verify_phase_gates.sh`
 
 ## Release-Facing Artifacts

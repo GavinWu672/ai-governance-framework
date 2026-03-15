@@ -37,6 +37,7 @@ $env:AI_GOVERNANCE_PYTHON='C:\Path\To\python.exe'
 | [contract_validator.py](#contract_validatorpy) | AI 初始化合規驗證 | CI gate |
 | [quickstart_smoke.py](#quickstart_smokepy) | 最小上手流程驗證 | onboarding / quickstart |
 | [example_readiness.py](#example_readinesspy) | 範例集健康度檢查 | onboarding / examples |
+| [release_surface_overview.py](#release_surface_overviewpy) | release surfaces 高層總覽 | release prep / reviewer entrypoint |
 | [release_package_publication_reader.py](#release_package_publication_readerpy) | release package publication reader | release prep / stable generated root |
 | [release_package_reader.py](#release_package_readerpy) | release package manifest reader | release prep / artifact consumption |
 | [release_package_summary.py](#release_package_summarypy) | release package 聚合摘要 | release prep / reviewer handoff |
@@ -199,6 +200,41 @@ python governance_tools/example_readiness.py --strict-runtime --format human
 ```
 
 這個模式特別適合放在 CI，因為 CI 已經會先安裝 `requirements.txt`。
+
+---
+
+## release_surface_overview.py
+
+把 release-facing 的主要消費面收成單一 reviewer-first 入口。
+
+它會聚合：
+
+- `release_readiness.py`
+- `release_package_summary.py`
+- version-level bundle manifest
+- publication-level manifest
+
+若 repo-local generated release package 或 artifact bundle 還不存在，它會誠實回報 `bundle/publication missing`，而不是假裝已發布。
+
+```bash
+python governance_tools/release_surface_overview.py --version v1.0.0-alpha --format human
+```
+
+若你已經有某次 artifact bundle，想明確指定它：
+
+```bash
+python governance_tools/release_surface_overview.py \
+  --version v1.0.0-alpha \
+  --bundle-manifest artifacts/release-package/v1.0.0-alpha/MANIFEST.json \
+  --publication-manifest artifacts/release-package/v1.0.0-alpha/PUBLICATION_MANIFEST.json \
+  --format human
+```
+
+這個工具特別適合用在：
+
+- 想先看一條高層 summary，再決定要不要打開各個 release docs / manifests
+- reviewer 想知道 release docs、package、publication surface 是否同時就緒
+- release prep 想避免在 `summary / reader / publication reader` 之間手動跳來跳去
 
 ---
 

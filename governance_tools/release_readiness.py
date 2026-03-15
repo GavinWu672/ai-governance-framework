@@ -181,6 +181,11 @@ def assess_release_readiness(project_root: Path, *, version: str) -> dict:
             "publish checklist does not mention the release package reader",
         )
         add_check(
+            "publish_checklist_release_surface_overview",
+            "release_surface_overview.py" in publish_checklist_text,
+            "publish checklist does not mention the release surface overview",
+        )
+        add_check(
             "publish_checklist_phase_gates",
             "verify_phase_gates.sh" in publish_checklist_text,
             "publish checklist does not mention phase gates verification",
@@ -221,6 +226,11 @@ def assess_release_readiness(project_root: Path, *, version: str) -> dict:
             "alpha_checklist_release_package_reader",
             "release_package_reader.py" in alpha_checklist_text,
             "alpha checklist does not mention the release package reader path",
+        )
+        add_check(
+            "alpha_checklist_release_surface_overview",
+            "release_surface_overview.py" in alpha_checklist_text,
+            "alpha checklist does not mention the release surface overview",
         )
         add_check(
             "alpha_checklist_github_release_draft",

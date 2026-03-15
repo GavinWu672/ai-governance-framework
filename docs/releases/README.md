@@ -18,6 +18,7 @@ Use these commands when you want to regenerate and read the latest release packa
 ```bash
 python governance_tools/release_package_snapshot.py --version v1.0.0-alpha --publish-docs-release --format human
 python governance_tools/release_package_publication_reader.py --project-root . --docs-release-root --format human
+python governance_tools/release_surface_overview.py --version v1.0.0-alpha --format human
 ```
 
 ## Related Status Surfaces
