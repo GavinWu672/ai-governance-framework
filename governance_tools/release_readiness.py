@@ -26,6 +26,7 @@ def assess_release_readiness(project_root: Path, *, version: str) -> dict:
     status_path = project_root / "docs" / "status" / "runtime-governance-status.md"
     status_index_path = project_root / "docs" / "status" / "README.md"
     trust_dashboard_path = project_root / "docs" / "status" / "trust-signal-dashboard.md"
+    domain_matrix_path = project_root / "docs" / "status" / "domain-enforcement-matrix.md"
 
     errors: list[str] = []
     warnings: list[str] = []
@@ -43,6 +44,7 @@ def assess_release_readiness(project_root: Path, *, version: str) -> dict:
     add_check("status_doc", status_path.is_file(), "missing runtime-governance status doc")
     add_check("status_index", status_index_path.is_file(), "missing docs/status/README.md")
     add_check("trust_signal_dashboard", trust_dashboard_path.is_file(), "missing docs/status/trust-signal-dashboard.md")
+    add_check("domain_enforcement_matrix", domain_matrix_path.is_file(), "missing docs/status/domain-enforcement-matrix.md")
 
     readme_text = readme_path.read_text(encoding="utf-8") if readme_path.is_file() else ""
     changelog_text = changelog_path.read_text(encoding="utf-8") if changelog_path.is_file() else ""
@@ -50,6 +52,7 @@ def assess_release_readiness(project_root: Path, *, version: str) -> dict:
     alpha_checklist_text = alpha_checklist_path.read_text(encoding="utf-8") if alpha_checklist_path.is_file() else ""
     status_index_text = status_index_path.read_text(encoding="utf-8") if status_index_path.is_file() else ""
     trust_dashboard_text = trust_dashboard_path.read_text(encoding="utf-8") if trust_dashboard_path.is_file() else ""
+    domain_matrix_text = domain_matrix_path.read_text(encoding="utf-8") if domain_matrix_path.is_file() else ""
 
     add_check("readme_exists", readme_path.is_file(), "missing README.md")
     if readme_text:
@@ -117,12 +120,29 @@ def assess_release_readiness(project_root: Path, *, version: str) -> dict:
             "trust_signal_overview.py" in trust_dashboard_text,
             "trust-signal dashboard does not mention the overview command",
         )
+        add_check(
+            "trust_dashboard_domain_matrix_link",
+            "domain-enforcement-matrix.md" in trust_dashboard_text,
+            "trust-signal dashboard does not link to the domain enforcement matrix",
+        )
 
     if status_index_text:
         add_check(
             "status_index_dashboard_link",
             "trust-signal-dashboard.md" in status_index_text,
             "status index does not link to the trust-signal dashboard",
+        )
+        add_check(
+            "status_index_domain_matrix_link",
+            "domain-enforcement-matrix.md" in status_index_text,
+            "status index does not link to the domain enforcement matrix",
+        )
+
+    if domain_matrix_text:
+        add_check(
+            "domain_matrix_mentions_external_policy_tool",
+            "external_contract_policy_index.py" in domain_matrix_text,
+            "domain enforcement matrix does not mention the policy index tool",
         )
 
     return {
@@ -141,6 +161,7 @@ def assess_release_readiness(project_root: Path, *, version: str) -> dict:
             "status_doc": str(status_path),
             "status_index": str(status_index_path),
             "trust_signal_dashboard": str(trust_dashboard_path),
+            "domain_enforcement_matrix": str(domain_matrix_path),
         },
     }
 

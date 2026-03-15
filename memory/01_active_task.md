@@ -73,6 +73,7 @@
 - The framework repo now also has a dedicated cross-domain enforcement view, so `hard_stop_rules` vs advisory-only policy can be compared without manually opening each external contract repo.
 - Trust-signal overview and snapshot publishing can now optionally include that same cross-domain enforcement view when external contract repos are provided, so release/status surfaces no longer need to stop at repo-local signals only.
 - Trust-signal publication manifests and the publication reader now also preserve a compact cross-domain policy summary (`external_contract_profile_counts`, per-repo enforcement posture), so release-facing consumers no longer need the full markdown dashboard just to inspect mixed enforcement across external repos.
+- Trust-signal snapshot publishing now also emits dedicated external policy pages (`external-contract-policy-latest.*`, `published/domain-enforcement-matrix.*`) when external contract repos are provided, moving cross-domain enforcement posture from manifest-only metadata into first-class status pages.
 
 ## Next Steps
 

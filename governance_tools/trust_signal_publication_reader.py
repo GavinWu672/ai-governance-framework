@@ -89,7 +89,17 @@ def format_human_result(result: dict[str, Any]) -> str:
     bundle = result.get("bundle")
     if isinstance(bundle, dict):
         lines.append("[bundle]")
-        for key in ("latest_json", "latest_txt", "latest_md", "index_md", "manifest_json"):
+        for key in (
+            "latest_json",
+            "latest_txt",
+            "latest_md",
+            "index_md",
+            "manifest_json",
+            "external_policy_latest_md",
+            "external_policy_latest_json",
+            "external_policy_history_md",
+            "external_policy_history_json",
+        ):
             value = bundle.get(key)
             if value:
                 lines.append(f"{key}={value}")
@@ -97,7 +107,15 @@ def format_human_result(result: dict[str, Any]) -> str:
     published = result.get("published")
     if isinstance(published, dict):
         lines.append("[published]")
-        for key in ("latest_md", "latest_json", "readme_md", "index_md", "manifest_json"):
+        for key in (
+            "latest_md",
+            "latest_json",
+            "readme_md",
+            "index_md",
+            "manifest_json",
+            "external_policy_md",
+            "external_policy_json",
+        ):
             value = published.get(key)
             if value:
                 lines.append(f"{key}={value}")

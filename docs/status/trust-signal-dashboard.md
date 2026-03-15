@@ -81,6 +81,7 @@ CI now emits trust-signal snapshot artifacts under:
 
 The bundle and published directories now also include manifest JSON so downstream tools and the publication reader can identify the current snapshot directly.
 When external contract repos are provided, the publication metadata now also carries a compact cross-domain enforcement summary, including profile counts and per-repo hard-stop posture.
+The generated status surface now also includes a dedicated `domain-enforcement-matrix.md` page on the published side, so cross-domain enforcement posture is shareable as a first-class status page rather than only embedded inside manifests.
 
 These artifacts are the generated status snapshot bundle.
 

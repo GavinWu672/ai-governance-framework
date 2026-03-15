@@ -440,6 +440,7 @@ python governance_tools/trust_signal_publication_reader.py --file artifacts/trus
 
 CI now also generates trust-signal snapshot bundles, so this high-level view is not limited to local terminal output.
 Each bundle now also includes manifest metadata, published history/index pages, and a publication-level manifest/index, so tools or readers can tell which snapshot is current without inferring from filenames alone. When external contract repos are provided, those manifests also carry a compact cross-domain enforcement summary instead of only a yes/no policy flag.
+The published status surface now also emits a dedicated domain-enforcement matrix page, so cross-domain hard-stop posture can be shared without opening the full trust-signal dashboard.
 
 ### Minimum Viable Setup
 

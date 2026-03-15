@@ -88,6 +88,8 @@ def test_format_human_result_surfaces_summary_and_paths(tmp_path):
                     "latest_md": "latest.md",
                     "index_md": "INDEX.md",
                     "manifest_json": "MANIFEST.json",
+                    "external_policy_latest_md": "external-contract-policy-latest.md",
+                    "external_policy_latest_json": "external-contract-policy-latest.json",
                 },
                 "published": {
                     "latest_md": "published/trust-signal-latest.md",
@@ -95,6 +97,8 @@ def test_format_human_result_surfaces_summary_and_paths(tmp_path):
                     "readme_md": "published/README.md",
                     "index_md": "published/INDEX.md",
                     "manifest_json": "published/manifest.json",
+                    "external_policy_md": "published/domain-enforcement-matrix.md",
+                    "external_policy_json": "published/domain-enforcement-matrix.json",
                 },
             },
             ensure_ascii=False,
@@ -114,6 +118,8 @@ def test_format_human_result_surfaces_summary_and_paths(tmp_path):
     assert "[published]" in rendered
     assert "[external_contract_policies]" in rendered
     assert "hard_stop_rules=KD-002,KD-003" in rendered
+    assert "external_policy_latest_md=external-contract-policy-latest.md" in rendered
+    assert "external_policy_md=published/domain-enforcement-matrix.md" in rendered
 
 
 def test_default_manifest_path_points_to_artifacts_root():

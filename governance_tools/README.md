@@ -301,9 +301,14 @@ python governance_tools/trust_signal_snapshot.py \
 - `external_contract_policy_ok`
 - `external_contract_profile_counts`
 - `external_contract_policies`
+- generated external policy pages:
+  - `external-contract-policy-latest.md`
+  - `external-contract-policy-latest.json`
 - published status pages such as:
   - `published/trust-signal-latest.md`
   - `published/trust-signal-latest.json`
+  - `published/domain-enforcement-matrix.md`
+  - `published/domain-enforcement-matrix.json`
   - `published/README.md`
   - `published/history/*`
   - `published/INDEX.md`

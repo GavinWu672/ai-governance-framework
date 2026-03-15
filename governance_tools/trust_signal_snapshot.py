@@ -20,6 +20,7 @@ from governance_tools.trust_signal_overview import (
     format_human_result,
     format_markdown_result,
 )
+from governance_tools.external_contract_policy_index import format_markdown as format_external_contract_markdown
 
 
 def _external_contract_policy_ok(snapshot: dict[str, Any]) -> bool | None:
@@ -28,9 +29,16 @@ def _external_contract_policy_ok(snapshot: dict[str, Any]) -> bool | None:
     return policy.get("ok")
 
 
-def _external_contract_policy_entries(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
+def _external_contract_policy(snapshot: dict[str, Any]) -> dict[str, Any] | None:
     overview = snapshot.get("overview") or {}
-    policy = overview.get("external_contract_policy") or {}
+    policy = overview.get("external_contract_policy")
+    if isinstance(policy, dict):
+        return policy
+    return None
+
+
+def _external_contract_policy_entries(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
+    policy = _external_contract_policy(snapshot) or {}
     summarized: list[dict[str, Any]] = []
     for entry in policy.get("entries") or []:
         payload: dict[str, Any] = {
@@ -146,11 +154,16 @@ def write_snapshot_bundle(snapshot: dict[str, Any], bundle_dir: Path) -> dict[st
     history_md = history_dir / f"{stem}.md"
     index_md = bundle_dir / "INDEX.md"
     manifest_json = bundle_dir / "MANIFEST.json"
+    external_policy_latest_json = bundle_dir / "external-contract-policy-latest.json"
+    external_policy_latest_md = bundle_dir / "external-contract-policy-latest.md"
+    external_policy_history_json = history_dir / f"{stem}.external-contract-policy.json"
+    external_policy_history_md = history_dir / f"{stem}.external-contract-policy.md"
 
     overview = snapshot["overview"]
     json_text = json.dumps(snapshot, ensure_ascii=False, indent=2) + "\n"
     human_text = format_human_result(overview) + "\n"
     markdown_text = format_markdown_result(overview) + "\n"
+    external_contract_policy = _external_contract_policy(snapshot)
 
     latest_json.write_text(json_text, encoding="utf-8")
     latest_txt.write_text(human_text, encoding="utf-8")
@@ -159,6 +172,13 @@ def write_snapshot_bundle(snapshot: dict[str, Any], bundle_dir: Path) -> dict[st
     history_txt.write_text(human_text, encoding="utf-8")
     history_md.write_text(markdown_text, encoding="utf-8")
     index_md.write_text(format_index(history_dir) + "\n", encoding="utf-8")
+    if external_contract_policy:
+        external_policy_json = json.dumps(external_contract_policy, ensure_ascii=False, indent=2) + "\n"
+        external_policy_markdown = format_external_contract_markdown(external_contract_policy) + "\n"
+        external_policy_latest_json.write_text(external_policy_json, encoding="utf-8")
+        external_policy_latest_md.write_text(external_policy_markdown, encoding="utf-8")
+        external_policy_history_json.write_text(external_policy_json, encoding="utf-8")
+        external_policy_history_md.write_text(external_policy_markdown, encoding="utf-8")
     manifest_json.write_text(
         json.dumps(
             {
@@ -181,6 +201,16 @@ def write_snapshot_bundle(snapshot: dict[str, Any], bundle_dir: Path) -> dict[st
                     "text": str(history_txt),
                     "markdown": str(history_md),
                 },
+                "external_contract_policy_artifacts": (
+                    {
+                        "latest_json": str(external_policy_latest_json),
+                        "latest_markdown": str(external_policy_latest_md),
+                        "history_json": str(external_policy_history_json),
+                        "history_markdown": str(external_policy_history_md),
+                    }
+                    if external_contract_policy
+                    else None
+                ),
                 "index": str(index_md),
             },
             ensure_ascii=False,
@@ -199,6 +229,10 @@ def write_snapshot_bundle(snapshot: dict[str, Any], bundle_dir: Path) -> dict[st
         "history_md": str(history_md),
         "index_md": str(index_md),
         "manifest_json": str(manifest_json),
+        "external_policy_latest_json": str(external_policy_latest_json) if external_contract_policy else "",
+        "external_policy_latest_md": str(external_policy_latest_md) if external_contract_policy else "",
+        "external_policy_history_json": str(external_policy_history_json) if external_contract_policy else "",
+        "external_policy_history_md": str(external_policy_history_md) if external_contract_policy else "",
     }
 
 
@@ -258,15 +292,21 @@ def write_published_status(snapshot: dict[str, Any], publish_dir: Path) -> dict[
     history_json = history_dir / f"{stem}.json"
     index_md = publish_dir / "INDEX.md"
     manifest_json = publish_dir / "manifest.json"
+    policy_md = publish_dir / "domain-enforcement-matrix.md"
+    policy_json = publish_dir / "domain-enforcement-matrix.json"
 
     markdown_text = format_published_status_page(snapshot) + "\n"
     json_text = json.dumps(snapshot, ensure_ascii=False, indent=2) + "\n"
+    external_contract_policy = _external_contract_policy(snapshot)
 
     latest_md.write_text(markdown_text, encoding="utf-8")
     latest_json.write_text(json_text, encoding="utf-8")
     history_md.write_text(markdown_text, encoding="utf-8")
     history_json.write_text(json_text, encoding="utf-8")
     index_md.write_text(format_published_index(history_dir) + "\n", encoding="utf-8")
+    if external_contract_policy:
+        policy_md.write_text(format_external_contract_markdown(external_contract_policy) + "\n", encoding="utf-8")
+        policy_json.write_text(json.dumps(external_contract_policy, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     readme_md.write_text(
         "\n".join(
             [
@@ -277,6 +317,7 @@ def write_published_status(snapshot: dict[str, Any], publish_dir: Path) -> dict[
                 "- [Latest Markdown Snapshot](trust-signal-latest.md)",
                 "- [Latest JSON Snapshot](trust-signal-latest.json)",
                 "- [History Index](INDEX.md)",
+                "- [Domain Enforcement Matrix](domain-enforcement-matrix.md)" if external_contract_policy else "- Domain enforcement matrix unavailable",
                 "- `manifest.json`",
                 "",
                 f"Latest generated_at: `{snapshot['generated_at']}`",
@@ -303,6 +344,8 @@ def write_published_status(snapshot: dict[str, Any], publish_dir: Path) -> dict[
                     "json": str(latest_json),
                     "readme": str(readme_md),
                     "index": str(index_md),
+                    "external_contract_policy_markdown": str(policy_md) if external_contract_policy else None,
+                    "external_contract_policy_json": str(policy_json) if external_contract_policy else None,
                 },
                 "history": {
                     "markdown": str(history_md),
@@ -324,6 +367,8 @@ def write_published_status(snapshot: dict[str, Any], publish_dir: Path) -> dict[
         "history_json": str(history_json),
         "index_md": str(index_md),
         "manifest_json": str(manifest_json),
+        "external_policy_md": str(policy_md) if external_contract_policy else "",
+        "external_policy_json": str(policy_json) if external_contract_policy else "",
     }
 
 
@@ -366,6 +411,15 @@ def format_publication_index(
                 f"- Manifest: `{bundle_paths['manifest_json']}`",
             ]
         )
+        if bundle_paths.get("external_policy_latest_md"):
+            lines.extend(
+                [
+                    f"- External Policy Latest Markdown: `{bundle_paths['external_policy_latest_md']}`",
+                    f"- External Policy Latest JSON: `{bundle_paths['external_policy_latest_json']}`",
+                    f"- External Policy History Markdown: `{bundle_paths['external_policy_history_md']}`",
+                    f"- External Policy History JSON: `{bundle_paths['external_policy_history_json']}`",
+                ]
+            )
 
     if published_paths:
         lines.extend(
@@ -382,6 +436,13 @@ def format_publication_index(
                 f"- Manifest: `{published_paths['manifest_json']}`",
             ]
         )
+        if published_paths.get("external_policy_md"):
+            lines.extend(
+                [
+                    f"- External Policy Markdown: `{published_paths['external_policy_md']}`",
+                    f"- External Policy JSON: `{published_paths['external_policy_json']}`",
+                ]
+            )
 
     return "\n".join(lines)
 

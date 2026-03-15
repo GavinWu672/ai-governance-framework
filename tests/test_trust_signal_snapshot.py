@@ -104,6 +104,42 @@ def test_write_snapshot_bundle_creates_latest_history_and_index(tmp_path):
     assert "latest" in manifest_payload
 
 
+def test_write_snapshot_bundle_can_emit_external_policy_artifacts(tmp_path):
+    project_root = Path(".").resolve()
+    contract_file = project_root / "examples" / "usb-hub-contract" / "contract.yaml"
+    repo = tmp_path / "kernel-contract"
+    _write_contract(
+        repo,
+        "\n".join(
+            [
+                "name: kernel-driver-contract",
+                "domain: kernel-driver",
+                "validators:",
+                "  - validators/irql.py",
+                "hard_stop_rules:",
+                "  - KD-002",
+            ]
+        ),
+        validator_names=["irql.py"],
+    )
+
+    snapshot = build_trust_signal_snapshot(
+        project_root=project_root,
+        plan_path=project_root / "PLAN.md",
+        release_version="v1.0.0-alpha",
+        contract_file=contract_file,
+        external_contract_repos=[repo],
+    )
+
+    bundle = write_snapshot_bundle(snapshot, tmp_path / "status")
+
+    assert Path(bundle["external_policy_latest_md"]).is_file()
+    assert Path(bundle["external_policy_latest_json"]).is_file()
+    assert Path(bundle["external_policy_history_md"]).is_file()
+    assert Path(bundle["external_policy_history_json"]).is_file()
+    assert "# Domain Enforcement Matrix" in Path(bundle["external_policy_latest_md"]).read_text(encoding="utf-8")
+
+
 def test_format_index_handles_empty_history(tmp_path):
     history_dir = tmp_path / "history"
     history_dir.mkdir(parents=True, exist_ok=True)
@@ -139,6 +175,39 @@ def test_write_published_status_creates_latest_pages(tmp_path):
     manifest_payload = json.loads(Path(published["manifest_json"]).read_text(encoding="utf-8"))
     assert manifest_payload["release_version"] == "v1.0.0-alpha"
     assert "history" in manifest_payload
+
+
+def test_write_published_status_can_emit_domain_enforcement_matrix(tmp_path):
+    project_root = Path(".").resolve()
+    contract_file = project_root / "examples" / "usb-hub-contract" / "contract.yaml"
+    repo = tmp_path / "ic-contract"
+    _write_contract(
+        repo,
+        "\n".join(
+            [
+                "name: ic-verification-contract",
+                "domain: ic-verification",
+                "validators:",
+                "  - validators/signal_map.py",
+                "hard_stop_rules:",
+                "  - ICV-001",
+            ]
+        ),
+        validator_names=["signal_map.py"],
+    )
+    snapshot = build_trust_signal_snapshot(
+        project_root=project_root,
+        plan_path=project_root / "PLAN.md",
+        release_version="v1.0.0-alpha",
+        contract_file=contract_file,
+        external_contract_repos=[repo],
+    )
+
+    published = write_published_status(snapshot, tmp_path / "published")
+
+    assert Path(published["external_policy_md"]).is_file()
+    assert Path(published["external_policy_json"]).is_file()
+    assert "# Domain Enforcement Matrix" in Path(published["external_policy_md"]).read_text(encoding="utf-8")
 
 
 def test_format_published_status_page_wraps_markdown_overview():
@@ -223,7 +292,8 @@ def test_write_publication_manifest_tracks_external_contract_policy(tmp_path):
         external_contract_repos=[repo],
     )
 
-    publication = write_publication_manifest(snapshot, tmp_path / "status")
+    bundle = write_snapshot_bundle(snapshot, tmp_path / "status")
+    publication = write_publication_manifest(snapshot, tmp_path / "status", bundle_paths=bundle)
     manifest_payload = json.loads(Path(publication["manifest_json"]).read_text(encoding="utf-8"))
 
     assert manifest_payload["external_contract_repo_count"] == 1
@@ -231,6 +301,8 @@ def test_write_publication_manifest_tracks_external_contract_policy(tmp_path):
     assert manifest_payload["external_contract_profile_counts"] == {"mixed": 1}
     assert manifest_payload["external_contract_policies"][0]["domain"] == "kernel-driver"
     assert manifest_payload["external_contract_policies"][0]["hard_stop_rules"] == ["KD-002"]
+    assert manifest_payload["bundle"]["external_policy_latest_md"].endswith("external-contract-policy-latest.md")
+    assert manifest_payload["published"] is None
 
 
 def test_format_publication_index_is_summary_like():

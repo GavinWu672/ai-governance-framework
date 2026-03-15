@@ -606,6 +606,18 @@
 - Extended `trust_signal_publication_reader.py` with a dedicated `[external_contract_policies]` section so the publication surface is reviewer-friendly, not only machine-readable.
 - Updated README / status docs / governance-tools docs so the richer publication metadata is now described explicitly.
 
+## 2026-03-15 - Published Status Now Emits Dedicated Domain Enforcement Pages
+
+- Extended `trust_signal_snapshot.py` so bundle publishing now also writes:
+  - `external-contract-policy-latest.md`
+  - `external-contract-policy-latest.json`
+  - matching history copies
+- Extended the published status surface so it now also writes:
+  - `published/domain-enforcement-matrix.md`
+  - `published/domain-enforcement-matrix.json`
+- Extended `trust_signal_publication_reader.py` so those dedicated policy pages are discoverable from the same reviewer-facing summary.
+- Extended `release_readiness.py` so the static `docs/status/domain-enforcement-matrix.md` page is now part of release-facing readiness checks.
+
 ## 2026-03-14 - IC / SoC Governance Direction Recorded
 
 - Recorded a refined future-domain view for IC-related governance.
