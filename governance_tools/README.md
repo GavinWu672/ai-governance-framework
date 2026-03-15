@@ -337,6 +337,10 @@ python governance_tools/release_package_snapshot.py \
 - 想讓 alpha docs / status docs / verify commands 有固定 artifact
 - 想把 release checklist 從「一次性命令」提升成「可保存 bundle」
 
+GitHub Actions / GitLab CI 現在也會產出這個 release-package bundle，預設位置是：
+
+- `artifacts/release-package/`
+
 ---
 
 ## release_readiness.py

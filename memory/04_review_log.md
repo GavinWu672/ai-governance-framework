@@ -718,6 +718,13 @@
   - version reader
   - generated-root publication reader
 
+## 2026-03-15 - CI Release Package Artifacts
+
+- Extended GitHub Actions and GitLab CI so the phase-gates job now also generates:
+  - `artifacts/release-package/v1.0.0-alpha/`
+- CI now also runs `release_package_publication_reader.py` against the generated publication manifest, so the artifact is both produced and consumed in pipeline.
+- Updated release docs and README so the CI release-package artifact bundle is part of the visible alpha trust signal surface.
+
 ## 2026-03-14 - IC / SoC Governance Direction Recorded
 
 - Recorded a refined future-domain view for IC-related governance.

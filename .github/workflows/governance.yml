@@ -67,6 +67,8 @@ jobs:
       - name: Build trust signal overview artifacts
         run: |
           python governance_tools/trust_signal_snapshot.py --project-root . --plan PLAN.md --release-version v1.0.0-alpha --contract examples/usb-hub-contract/contract.yaml --strict-runtime --write-bundle artifacts/trust-signals --publish-status-dir artifacts/trust-signals/published --format human
+          python governance_tools/release_package_snapshot.py --version v1.0.0-alpha --write-bundle artifacts/release-package/v1.0.0-alpha --format human
+          python governance_tools/release_package_publication_reader.py --file artifacts/release-package/v1.0.0-alpha/PUBLICATION_MANIFEST.json --format human
 
       - name: Upload trust signal overview artifacts
         if: always()
@@ -74,6 +76,14 @@ jobs:
         with:
           name: trust-signal-overview
           path: artifacts/trust-signals/
+          if-no-files-found: warn
+
+      - name: Upload release package artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-package
+          path: artifacts/release-package/
           if-no-files-found: warn
 
   # ─────────────────────────────────────────────
