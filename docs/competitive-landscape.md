@@ -12,6 +12,27 @@ honest:
 - what is only adjacent
 - and what remains distinctive about this framework
 
+## Short Positioning Summary
+
+The most precise current positioning is:
+
+- a runtime-governance prototype for AI coding workflows
+- strongest on multi-repo external domain contracts
+- stronger on mixed enforcement and reviewer publication surfaces than most nearby open-source peers
+- intentionally not trying to become a full IDE-native interception layer or enterprise-wide AI compliance suite
+
+## Quick Comparison View
+
+| Project | Runtime enforcement | External domain contracts | Reviewer / trust publication | Primary center of gravity |
+|---------|---------------------|---------------------------|------------------------------|---------------------------|
+| `ai-governance-framework` | strong prototype | strong | strong | multi-repo runtime governance |
+| `AI-Governor-Framework` | lighter / guidance-first | limited | lighter | repo-embedded governance rules |
+| `GAAI-framework` | workflow-governed | limited | moderate | governed delivery workflow |
+| `agentic-engineering-framework` | strongest direct peer on interception | limited | moderate | mechanical repo enforcement |
+| `TinySDLC` | moderate | limited | moderate | multi-role SDLC orchestration |
+
+This table is intentionally directional, not a claim of exact feature parity.
+
 ## Closest Open-Source References
 
 ### 1. AI-Governor-Framework
@@ -38,6 +59,7 @@ Where this repository differs:
 - stronger runtime lifecycle framing
 - explicit external domain contract seam across multiple repos
 - richer reviewer/audit publication surfaces
+- more emphasis on validators that can affect post-task decisions, not only background rule guidance
 
 ### 2. GAAI-framework
 
@@ -62,6 +84,7 @@ Where this repository differs:
 - stronger runtime hook / validator path
 - more explicit mixed enforcement through `hard_stop_rules`
 - more emphasis on trust-signal, release, and reviewer-handoff artifacts
+- more emphasis on architecture/runtime evidence than on delivery-phase role choreography
 
 ### 3. agentic-engineering-framework
 
@@ -86,6 +109,7 @@ Where this repository differs:
 - broader reviewer/audit publication path
 - stronger external domain contract story
 - richer cross-repo policy comparison and onboarding surfaces
+- less focused on becoming a single-repo "mechanical door lock" and more focused on publishable, multi-domain governance posture
 
 This is currently the closest reference point for interception-coverage thinking.
 
@@ -110,6 +134,7 @@ Where it differs:
 
 - more orchestrator / multi-role workflow oriented
 - less centered on repo-native runtime governance and external contract seams
+- closer to SDLC role choreography than contract-aware post-task runtime enforcement
 
 ## Adjacent, But Not Direct Peers
 
@@ -174,6 +199,7 @@ The clearest current differentiators of `ai-governance-framework` are:
   - release surfaces
   - reviewer handoff bundles
 - memory artifacts that preserve domain contract metadata, not only generic session logs
+- domain-specific governance for high-context and safety-sensitive areas such as firmware, kernel-driver, and IC verification
 
 That means the repository is not only "AI rules in a repo."
 
@@ -197,6 +223,9 @@ Instead:
 - borrow repo-embedded rule UX from `AI-Governor-Framework` and `GAAI-framework`
 - borrow reviewer-surface clarity from products like `CodeRabbit`
 - borrow auditability and visibility ideas from `VerifyWise`
+
+This keeps the repository grounded in the parts of those projects that match its actual scope,
+instead of drifting toward feature imitation for its own sake.
 
 ## Boundary To Preserve
 

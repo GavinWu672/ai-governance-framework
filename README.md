@@ -46,6 +46,25 @@ Current release-facing status:
 This alpha is suitable for evaluation, internal adoption trials, and domain-contract experimentation.
 It should still be treated as a governance framework prototype rather than a fully closed enforcement platform.
 
+## Comparison & Differentiation
+
+The closest open-source comparison set currently includes:
+
+- `AI-Governor-Framework`
+- `GAAI-framework`
+- `agentic-engineering-framework`
+- `TinySDLC`
+
+The simplest way to describe the difference is:
+
+- many nearby projects are strongest at repo rules, workflow orchestration, or mechanical interception inside one repo
+- this repository is strongest when treated as a **multi-repo runtime-governance stack** with:
+  - external domain contracts
+  - mixed enforcement
+  - reviewer / trust / release publication surfaces
+
+See [docs/competitive-landscape.md](docs/competitive-landscape.md) for the fuller comparison memo.
+
 ## Cross-Domain Governance Map
 
 ```mermaid

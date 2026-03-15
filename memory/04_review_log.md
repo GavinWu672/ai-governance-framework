@@ -301,6 +301,12 @@
   - reviewer/audit publication surfaces
 - Added the new landscape doc to README further-reading links so future release/status messaging can reuse the same positioning source.
 
+## 2026-03-15 - README Comparison Entry Added
+
+- Promoted the competitive-landscape memo into a first-class README section under `Comparison & Differentiation`.
+- Added a short directional comparison table to the landscape doc so the positioning can be reused more easily in release notes, README updates, or external write-ups.
+- Linked the alpha GitHub release draft back to `docs/competitive-landscape.md`, so the release-facing story and the longer positioning memo now point at the same source of truth.
+
 ## 2026-03-15 - Onboarding Report Artifact
 
 - Added `governance_tools/external_repo_onboarding_report.py` to combine readiness and governance-smoke results into a single report.
