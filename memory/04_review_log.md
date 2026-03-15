@@ -448,9 +448,11 @@
 - Updated GitHub Actions and GitLab CI to generate:
   - `artifacts/trust-signals/trust_signal_overview.txt`
   - `artifacts/trust-signals/trust_signal_overview.json`
+- Extended the tool again so it can also render Markdown dashboard output, and CI now also emits:
+  - `artifacts/trust-signals/trust_signal_overview.md`
 - This makes the high-level adoption/release posture visible as a pipeline artifact instead of only a local command.
 - Verification:
-  - `scripts/verify_phase_gates.sh` -> `341 passed`, `4/4 Gates`
+  - `scripts/verify_phase_gates.sh` -> `342 passed`, `4/4 Gates`
 
 ## 2026-03-14 - IC / SoC Governance Direction Recorded
 

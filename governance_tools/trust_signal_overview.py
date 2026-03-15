@@ -124,6 +124,65 @@ def format_human_result(result: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def format_markdown_result(result: dict[str, Any]) -> str:
+    quickstart = result["quickstart"]
+    examples = result["examples"]
+    release = result["release"]
+    auditor = result["auditor"]
+
+    contract_context = quickstart.get("contract_context") or {}
+    label = contract_label(contract_context)
+    risk_tier = contract_context.get("risk_tier") or domain_risk_tier(contract_context.get("domain"))
+    contract_value = f"{label}/{risk_tier}" if label and risk_tier and risk_tier != "unknown" else (label or "none")
+    runnable_examples = sum(
+        1 for item in examples["examples"] if item["kind"] in {"runnable-demo", "domain-contract"}
+    )
+    summary_line = build_summary_line(
+        f"ok={result['ok']}",
+        f"quickstart={quickstart['ok']}",
+        f"examples={examples['ok']}",
+        f"release={release['ok']}",
+        f"auditor={auditor['ok']}",
+        f"contract={contract_value}" if contract_value != "none" else None,
+    )
+
+    lines = [
+        "# Trust Signal Overview",
+        "",
+        f"- Summary: `{summary_line}`",
+        f"- Project root: `{result['project_root']}`",
+        f"- Plan path: `{result['plan_path']}`",
+        f"- Release version: `{result['release_version']}`",
+        f"- Contract: `{contract_value}`",
+        f"- Strict runtime: `{result['strict_runtime']}`",
+        "",
+        "## Signal Status",
+        "",
+        "| Signal | OK | Detail |",
+        "| --- | --- | --- |",
+        f"| Quickstart | `{quickstart['ok']}` | contract=`{contract_value}` |",
+        f"| Examples | `{examples['ok']}` | total=`{len(examples['examples'])}` runnable=`{runnable_examples}` |",
+        f"| Release | `{release['ok']}` | checks=`{len(release['checks'])}` warnings=`{len(release['warnings'])}` |",
+        f"| Auditor | `{auditor['ok']}` | checks=`{len(auditor['checks'])}` warnings=`{len(auditor['warnings'])}` |",
+    ]
+
+    top_issues = (auditor.get("external_onboarding") or {}).get("top_issues") or []
+    if top_issues:
+        lines.extend(
+            [
+                "",
+                "## External Top Issues",
+                "",
+            ]
+        )
+        for item in top_issues:
+            lines.append(
+                f"- `{item['repo_root']}` reasons=`{','.join(item['reasons'])}` next=`{item.get('suggested_command')}`"
+            )
+
+    return "\n".join(lines)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Aggregate high-level onboarding and trust signals.")
     parser.add_argument("--project-root", default=".")
@@ -131,7 +190,7 @@ def main() -> int:
     parser.add_argument("--release-version", required=True)
     parser.add_argument("--contract")
     parser.add_argument("--strict-runtime", action="store_true")
-    parser.add_argument("--format", choices=("human", "json"), default="human")
+    parser.add_argument("--format", choices=("human", "json", "markdown"), default="human")
     parser.add_argument("--output")
     args = parser.parse_args()
 
@@ -144,6 +203,8 @@ def main() -> int:
     )
     if args.format == "json":
         rendered = json.dumps(result, ensure_ascii=False, indent=2)
+    elif args.format == "markdown":
+        rendered = format_markdown_result(result)
     else:
         rendered = format_human_result(result)
     if args.output:

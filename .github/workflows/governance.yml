@@ -68,6 +68,7 @@ jobs:
         run: |
           python governance_tools/trust_signal_overview.py --project-root . --plan PLAN.md --release-version v1.0.0-alpha --contract examples/usb-hub-contract/contract.yaml --strict-runtime --format human --output artifacts/trust-signals/trust_signal_overview.txt
           python governance_tools/trust_signal_overview.py --project-root . --plan PLAN.md --release-version v1.0.0-alpha --contract examples/usb-hub-contract/contract.yaml --strict-runtime --format json --output artifacts/trust-signals/trust_signal_overview.json
+          python governance_tools/trust_signal_overview.py --project-root . --plan PLAN.md --release-version v1.0.0-alpha --contract examples/usb-hub-contract/contract.yaml --strict-runtime --format markdown --output artifacts/trust-signals/trust_signal_overview.md
 
       - name: Upload trust signal overview artifacts
         if: always()
