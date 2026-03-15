@@ -57,13 +57,12 @@ The closest open-source comparison set currently includes:
 
 The simplest way to describe the difference is:
 
-- many nearby projects are strongest at repo rules, workflow orchestration, or mechanical interception inside one repo
-- this repository is strongest when treated as a **multi-repo runtime-governance stack** with:
+- this repository is designed around a **multi-repo runtime-governance stack** with:
   - external domain contracts
   - mixed enforcement
   - reviewer / trust / release publication surfaces
 
-See [docs/competitive-landscape.md](docs/competitive-landscape.md) for the fuller comparison memo.
+See [docs/competitive-landscape.md](docs/competitive-landscape.md) for the fuller comparison memo and the scope note on how those comparisons should be read.
 
 ## Cross-Domain Governance Map
 

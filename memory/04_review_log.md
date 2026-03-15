@@ -307,6 +307,12 @@
 - Added a short directional comparison table to the landscape doc so the positioning can be reused more easily in release notes, README updates, or external write-ups.
 - Linked the alpha GitHub release draft back to `docs/competitive-landscape.md`, so the release-facing story and the longer positioning memo now point at the same source of truth.
 
+## 2026-03-15 - Competitive Landscape Claims Softened
+
+- Tightened `docs/competitive-landscape.md` so competitor comparisons are explicitly directional rather than framed as exhaustive feature proof.
+- Rewrote the comparison table around visible emphasis and center of gravity instead of implying another project definitively lacks cross-repo or contract-based patterns.
+- Narrowed the interception borrowing note to `git hook + CI gate` ideas from `agentic-engineering-framework`, which keeps the positioning aligned with the framework boundary against code-generation-time interception.
+
 ## 2026-03-15 - Onboarding Report Artifact
 
 - Added `governance_tools/external_repo_onboarding_report.py` to combine readiness and governance-smoke results into a single report.
