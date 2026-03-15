@@ -760,6 +760,12 @@
 - Extended GitHub Actions and GitLab CI so the phase-gates flow now also emits `artifacts/reviewer-handoff/` in human / JSON / Markdown forms.
 - Updated README, release docs, publish checklist, and tool docs so this new reviewer packet is visible as part of the alpha consumption path.
 
+## 2026-03-15 - Reviewer Handoff Status Page
+
+- Added `docs/status/reviewer-handoff.md` as the stable in-repo landing page for the highest-level reviewer packet.
+- Updated `docs/status/README.md` so status reading order now starts with reviewer handoff before trust/release drill-down pages.
+- Extended `release_readiness.py` and `tests/test_release_readiness.py` so the reviewer-handoff page is now part of the machine-checked alpha status surface.
+
 ## 2026-03-14 - IC / SoC Governance Direction Recorded
 
 - Recorded a refined future-domain view for IC-related governance.

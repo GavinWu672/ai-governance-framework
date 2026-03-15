@@ -39,6 +39,10 @@ def test_release_readiness_passes_for_current_alpha():
     assert any(item["name"] == "release_note_generated_release_path" and item["ok"] for item in result["checks"])
     assert any(item["name"] == "github_release_draft_generated_release_path" and item["ok"] for item in result["checks"])
     assert any(item["name"] == "status_index" and item["ok"] for item in result["checks"])
+    assert any(item["name"] == "reviewer_handoff_doc" and item["ok"] for item in result["checks"])
+    assert any(item["name"] == "status_index_reviewer_handoff_link" and item["ok"] for item in result["checks"])
+    assert any(item["name"] == "reviewer_handoff_command" and item["ok"] for item in result["checks"])
+    assert any(item["name"] == "reviewer_handoff_artifact_path" and item["ok"] for item in result["checks"])
     assert any(item["name"] == "trust_signal_dashboard" and item["ok"] for item in result["checks"])
     assert any(item["name"] == "domain_enforcement_matrix" and item["ok"] for item in result["checks"])
     assert any(item["name"] == "status_index_generated_readme_link" and item["ok"] for item in result["checks"])
@@ -53,4 +57,5 @@ def test_release_readiness_human_output_is_scannable():
     assert "[release_readiness]" in output
     assert "summary=ok=True | version=v1.0.0-alpha" in output
     assert "version=v1.0.0-alpha" in output
+    assert "check[reviewer_handoff_doc]=True" in output
     assert "check[release_note]=True" in output

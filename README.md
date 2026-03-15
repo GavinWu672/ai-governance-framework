@@ -499,6 +499,7 @@ The published status surface now also emits a dedicated domain-enforcement matri
 CI now also generates release-package bundles under `artifacts/release-package/`, so alpha-facing docs, status surfaces, and verification commands can be reviewed as a preserved artifact instead of only local CLI output.
 CI now also emits a release-surface overview under `artifacts/release-surface/`, so reviewers can consume the current release readiness/package/publication posture without manually opening multiple manifests.
 CI now also emits a reviewer handoff bundle under `artifacts/reviewer-handoff/`, so the highest-level trust/release summary can be shared without asking reviewers to reconstruct it from multiple artifacts.
+The stable in-repo landing page for that highest-level packet is now `docs/status/reviewer-handoff.md`.
 
 ### Minimum Viable Setup
 

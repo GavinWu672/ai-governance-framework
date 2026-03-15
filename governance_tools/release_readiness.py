@@ -29,6 +29,7 @@ def assess_release_readiness(project_root: Path, *, version: str) -> dict:
     limitations_path = project_root / "docs" / "LIMITATIONS.md"
     status_path = project_root / "docs" / "status" / "runtime-governance-status.md"
     status_index_path = project_root / "docs" / "status" / "README.md"
+    reviewer_handoff_path = project_root / "docs" / "status" / "reviewer-handoff.md"
     trust_dashboard_path = project_root / "docs" / "status" / "trust-signal-dashboard.md"
     domain_matrix_path = project_root / "docs" / "status" / "domain-enforcement-matrix.md"
 
@@ -51,6 +52,7 @@ def assess_release_readiness(project_root: Path, *, version: str) -> dict:
     add_check("limitations", limitations_path.is_file(), "missing docs/LIMITATIONS.md")
     add_check("status_doc", status_path.is_file(), "missing runtime-governance status doc")
     add_check("status_index", status_index_path.is_file(), "missing docs/status/README.md")
+    add_check("reviewer_handoff_doc", reviewer_handoff_path.is_file(), "missing docs/status/reviewer-handoff.md")
     add_check("trust_signal_dashboard", trust_dashboard_path.is_file(), "missing docs/status/trust-signal-dashboard.md")
     add_check("domain_enforcement_matrix", domain_matrix_path.is_file(), "missing docs/status/domain-enforcement-matrix.md")
 
@@ -67,6 +69,7 @@ def assess_release_readiness(project_root: Path, *, version: str) -> dict:
         generated_release_root_path.read_text(encoding="utf-8") if generated_release_root_path.is_file() else ""
     )
     status_index_text = status_index_path.read_text(encoding="utf-8") if status_index_path.is_file() else ""
+    reviewer_handoff_text = reviewer_handoff_path.read_text(encoding="utf-8") if reviewer_handoff_path.is_file() else ""
     trust_dashboard_text = trust_dashboard_path.read_text(encoding="utf-8") if trust_dashboard_path.is_file() else ""
     domain_matrix_text = domain_matrix_path.read_text(encoding="utf-8") if domain_matrix_path.is_file() else ""
 
@@ -262,6 +265,11 @@ def assess_release_readiness(project_root: Path, *, version: str) -> dict:
 
     if status_index_text:
         add_check(
+            "status_index_reviewer_handoff_link",
+            "reviewer-handoff.md" in status_index_text,
+            "status index does not link to the reviewer handoff page",
+        )
+        add_check(
             "status_index_dashboard_link",
             "trust-signal-dashboard.md" in status_index_text,
             "status index does not link to the trust-signal dashboard",
@@ -280,6 +288,18 @@ def assess_release_readiness(project_root: Path, *, version: str) -> dict:
             "status_index_generated_site_link",
             "generated/site/README.md" in status_index_text,
             "status index does not mention the generated site readme",
+        )
+
+    if reviewer_handoff_text:
+        add_check(
+            "reviewer_handoff_command",
+            "reviewer_handoff_summary.py" in reviewer_handoff_text,
+            "reviewer handoff page does not mention the reviewer handoff tool",
+        )
+        add_check(
+            "reviewer_handoff_artifact_path",
+            "artifacts/reviewer-handoff/" in reviewer_handoff_text,
+            "reviewer handoff page does not mention the reviewer-handoff artifact path",
         )
 
     if generated_release_root_text:
@@ -315,6 +335,7 @@ def assess_release_readiness(project_root: Path, *, version: str) -> dict:
             "limitations": str(limitations_path),
             "status_doc": str(status_path),
             "status_index": str(status_index_path),
+            "reviewer_handoff_doc": str(reviewer_handoff_path),
             "trust_signal_dashboard": str(trust_dashboard_path),
             "domain_enforcement_matrix": str(domain_matrix_path),
         },

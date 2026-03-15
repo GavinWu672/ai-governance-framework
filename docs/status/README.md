@@ -6,6 +6,11 @@ This directory contains the repository's stable status-facing documents.
 
 ## Current Entry Points
 
+- [Reviewer Handoff](reviewer-handoff.md)
+  - the highest-level reviewer-facing summary across trust and release surfaces
+  - points to `reviewer_handoff_summary.py` and CI `artifacts/reviewer-handoff/`
+  - use this when you want one handoff packet before drilling into lower-level status pages
+
 - [Trust Signal Dashboard](trust-signal-dashboard.md)
   - the fastest stable landing page for adoption and release-facing trust signals
   - points to `trust_signal_overview.py`, `trust_signal_snapshot.py`, `trust_signal_publication_reader.py`, and CI-generated trust-signal artifacts
@@ -36,9 +41,10 @@ This directory contains the repository's stable status-facing documents.
 
 ## Recommended Reading Order
 
-1. Start with [Trust Signal Dashboard](trust-signal-dashboard.md)
-2. Then read [Runtime Governance Status](runtime-governance-status.md)
-3. Then read [Domain Enforcement Matrix](domain-enforcement-matrix.md)
-4. If generated, start with `generated/README.md`
-5. Then review `generated/site/README.md` for the latest published snapshot
-6. Use [Next Steps](next-steps.md) for future work planning
+1. Start with [Reviewer Handoff](reviewer-handoff.md)
+2. Then read [Trust Signal Dashboard](trust-signal-dashboard.md)
+3. Then read [Runtime Governance Status](runtime-governance-status.md)
+4. Then read [Domain Enforcement Matrix](domain-enforcement-matrix.md)
+5. If generated, start with `generated/README.md`
+6. Then review `generated/site/README.md` for the latest published snapshot
+7. Use [Next Steps](next-steps.md) for future work planning

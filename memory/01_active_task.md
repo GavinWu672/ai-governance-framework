@@ -92,6 +92,7 @@
 - Trust-signal artifact publication now also defaults its `publication_root` when bundle/published outputs are requested, closing a clean-workspace CI gap where `trust_signal_publication_reader.py` could fail despite local runs passing with stale manifests.
 - CI now also emits that same release-surface overview under `artifacts/release-surface/`, so the reviewer entrypoint is preserved after the run instead of only at local CLI time.
 - The repo now also has a single reviewer packet via `governance_tools/reviewer_handoff_summary.py`, and CI preserves it under `artifacts/reviewer-handoff/` so trust and release surfaces can be handed off together.
+- `docs/status/reviewer-handoff.md` now turns that reviewer packet into a first-class status page, and release readiness checks it as part of the visible alpha status surface.
 
 ## Next Steps
 
