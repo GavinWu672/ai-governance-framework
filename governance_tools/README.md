@@ -41,6 +41,7 @@ $env:AI_GOVERNANCE_PYTHON='C:\Path\To\python.exe'
 | [trust_signal_snapshot.py](#trust_signal_snapshotpy) | trust signal snapshot bundle 產生器 | release / status publishing |
 | [trust_signal_publication_reader.py](#trust_signal_publication_readerpy) | publication manifest reader | release / status consumption |
 | [trust_signal_overview.py](#trust_signal_overviewpy) | 高層 trust signal 總覽 | adoption / release / audit |
+| [external_contract_policy_index.py](#external_contract_policy_indexpy) | external domain enforcement matrix | multi-domain policy comparison |
 | [plan_freshness.py](#plan_freshnesspy) | PLAN.md 新鮮度檢查 | CI gate / Git hook |
 | [state_generator.py](#state_generatorpy) | .governance-state.yaml 生成 | 狀態快照 |
 | [linear_integrator.py](#linear_integratorpy) | PLAN.md → Linear 同步 | 任務追蹤 |
@@ -100,6 +101,43 @@ python governance_tools/contract_validator.py --format json
 **退出碼**:
 - `0` = 合規
 - `1` = 不合規（有缺失項）
+
+---
+
+## external_contract_policy_index.py
+
+彙整多個 external contract repo 的 enforcement policy，快速看出：
+
+- 哪些 domain 仍然是 `advisory-only`
+- 哪些 domain 已進入 `mixed` enforcement
+- 每個 repo 目前有哪些 `hard_stop_rules`
+- validator 是否都存在
+
+```bash
+python governance_tools/external_contract_policy_index.py \
+  --repo D:/USB-Hub-Firmware-Architecture-Contract \
+  --repo D:/Kernel-Driver-Contract \
+  --repo D:/IC-Verification-Contract \
+  --format human
+```
+
+Markdown 輸出：
+
+```bash
+python governance_tools/external_contract_policy_index.py \
+  --repo D:/USB-Hub-Firmware-Architecture-Contract \
+  --repo D:/Kernel-Driver-Contract \
+  --repo D:/IC-Verification-Contract \
+  --format markdown
+```
+
+目前的 profile 判斷：
+
+- `discovery-only`: contract 可載入，但沒有 validators
+- `advisory-only`: 有 validators，但沒有 `hard_stop_rules`
+- `mixed`: 有 validators，也有 `hard_stop_rules`
+
+這個工具特別適合拿來追蹤 multi-domain 生態現在的 enforcement 成熟度，而不必逐 repo 手動查 `contract.yaml`。
 
 ---
 

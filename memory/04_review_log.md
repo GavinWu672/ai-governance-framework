@@ -576,6 +576,18 @@
   - `interrupt_regression.checks.json` now returns `ok=False`
   - `interrupt_compliant.checks.json` returns `ok=True`
 
+## 2026-03-15 - External Contract Enforcement Matrix
+
+- Added `governance_tools/external_contract_policy_index.py` to compare external contract enforcement posture across repos.
+- The new tool summarizes:
+  - domain
+  - risk tier
+  - enforcement profile (`discovery-only`, `advisory-only`, `mixed`)
+  - validator readiness
+  - `hard_stop_rules`
+- Added `docs/status/domain-enforcement-matrix.md` as the stable in-repo landing page for this view.
+- This reduces multi-domain policy review from "open three repos and inspect `contract.yaml` by hand" to one framework-level command and one stable status page.
+
 ## 2026-03-14 - IC / SoC Governance Direction Recorded
 
 - Recorded a refined future-domain view for IC-related governance.

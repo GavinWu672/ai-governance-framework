@@ -40,6 +40,7 @@ Current release-facing status:
 - known limits: [docs/LIMITATIONS.md](docs/LIMITATIONS.md)
 - status index: [docs/status/README.md](docs/status/README.md)
 - trust signal dashboard: [docs/status/trust-signal-dashboard.md](docs/status/trust-signal-dashboard.md)
+- domain enforcement matrix: [docs/status/domain-enforcement-matrix.md](docs/status/domain-enforcement-matrix.md)
 
 This alpha is suitable for evaluation, internal adoption trials, and domain-contract experimentation.
 It should still be treated as a governance framework prototype rather than a fully closed enforcement platform.

@@ -70,6 +70,7 @@
 - Domain governance metadata now recognizes `ic-verification` as a first-class medium-risk domain instead of surfacing it as `unknown`.
 - `IC-Verification-Contract` now also exercises a mixed enforcement model: machine-readable unknown-signal mismatches can hard-stop through `ICV-001`, while clock/reset declaration gaps remain advisory.
 - `USB-Hub-Firmware-Architecture-Contract` now also exercises mixed enforcement: `HUB-004` interrupt-safety violations can hard-stop, while broader firmware review still remains advisory-first.
+- The framework repo now also has a dedicated cross-domain enforcement view, so `hard_stop_rules` vs advisory-only policy can be compared without manually opening each external contract repo.
 
 ## Next Steps
 

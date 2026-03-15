@@ -26,6 +26,7 @@ Practical status:
 
 - overall maturity: `v1.0.0-alpha`
 - current phase: `runtime spine complete, proposal-time guidance and evidence-aware enforcement active, adoption hardening in progress`
+- external domain posture: `three live mixed-enforcement slices (firmware, kernel-driver, ic-verification)`
 
 ## Completed
 
