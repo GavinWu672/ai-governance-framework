@@ -352,6 +352,15 @@ python governance_tools/trust_signal_publication_reader.py \
 
 - `artifacts/trust-signals/PUBLICATION_MANIFEST.json`
 
+若想改讀固定的 repo-local docs 路徑，可使用：
+
+```bash
+python governance_tools/trust_signal_publication_reader.py \
+  --project-root . \
+  --docs-status \
+  --format human
+```
+
 這個工具適合用在：
 
 - 想快速知道目前 trust-signal publication 是否健康

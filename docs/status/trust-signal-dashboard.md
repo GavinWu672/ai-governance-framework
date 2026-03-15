@@ -77,6 +77,15 @@ python governance_tools/trust_signal_publication_reader.py \
   --format human
 ```
 
+If you are using the stable repo-local generated path instead:
+
+```bash
+python governance_tools/trust_signal_publication_reader.py \
+  --project-root . \
+  --docs-status \
+  --format human
+```
+
 ## CI Artifacts
 
 CI now emits trust-signal snapshot artifacts under:

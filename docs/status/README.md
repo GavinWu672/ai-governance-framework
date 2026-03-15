@@ -22,6 +22,7 @@ This directory contains the repository's stable status-facing documents.
 - Generated Status Snapshot (`generated/`)
   - optional local/published output from `trust_signal_snapshot.py --publish-docs-status`
   - intended for a stable repo-local consumption path when you want latest/history/site outputs under one predictable directory
+  - read it through `governance_tools/trust_signal_publication_reader.py --docs-status` if you want the latest generated publication summary without resolving file paths manually
 
 - [Next Steps](next-steps.md)
   - forward-looking work recommendations

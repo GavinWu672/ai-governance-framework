@@ -17,10 +17,15 @@ if __package__ in (None, ""):
 from governance_tools.human_summary import build_summary_line
 
 DEFAULT_MANIFEST = Path("artifacts") / "trust-signals" / "PUBLICATION_MANIFEST.json"
+DEFAULT_DOCS_STATUS_MANIFEST = Path("docs") / "status" / "generated" / "PUBLICATION_MANIFEST.json"
 
 
 def default_manifest_path(project_root: Path) -> Path:
     return project_root / DEFAULT_MANIFEST
+
+
+def default_docs_status_manifest_path(project_root: Path) -> Path:
+    return project_root / DEFAULT_DOCS_STATUS_MANIFEST
 
 
 def assess_publication_manifest(manifest_path: Path) -> dict[str, Any]:
@@ -72,6 +77,7 @@ def format_human_result(result: dict[str, Any]) -> str:
         f"generated_at={result.get('generated_at')}",
         f"project_root={result.get('project_root')}",
         f"publication_root={result.get('publication_root')}",
+        f"publication_readme={result.get('readme_md')}",
         f"release_version={result.get('release_version')}",
         f"contract_path={result.get('contract_path')}",
         f"external_contract_repo_count={result.get('external_contract_repo_count')}",
@@ -148,11 +154,18 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Read a generated trust-signal publication manifest.")
     parser.add_argument("--project-root", default=".")
     parser.add_argument("--file")
+    parser.add_argument("--docs-status", action="store_true")
     parser.add_argument("--format", choices=("human", "json"), default="human")
     parser.add_argument("--output")
     args = parser.parse_args()
 
-    manifest_path = Path(args.file).resolve() if args.file else default_manifest_path(Path(args.project_root).resolve())
+    project_root = Path(args.project_root).resolve()
+    if args.file:
+        manifest_path = Path(args.file).resolve()
+    elif args.docs_status:
+        manifest_path = default_docs_status_manifest_path(project_root)
+    else:
+        manifest_path = default_manifest_path(project_root)
     result = assess_publication_manifest(manifest_path)
     if args.format == "json":
         rendered = json.dumps(result, ensure_ascii=False, indent=2)

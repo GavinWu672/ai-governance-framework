@@ -136,6 +136,16 @@ def resolve_publication_paths(
     return bundle_path, published_path, publication_path
 
 
+def _display_path(root_dir: Path, raw_path: str | None) -> str | None:
+    if not raw_path:
+        return None
+    path = Path(raw_path)
+    try:
+        return str(path.resolve().relative_to(root_dir.resolve())).replace("\\", "/")
+    except ValueError:
+        return str(path)
+
+
 def format_index(history_dir: Path) -> str:
     json_files = sorted(history_dir.glob("*.json"))
     lines = ["[trust_signal_snapshot_index]", f"history_dir={history_dir}", f"reports={len(json_files)}"]
@@ -478,6 +488,7 @@ def write_publication_manifest(
     root_dir.mkdir(parents=True, exist_ok=True)
     manifest_json = root_dir / "PUBLICATION_MANIFEST.json"
     index_md = root_dir / "PUBLICATION_INDEX.md"
+    readme_md = root_dir / "README.md"
     manifest_payload = {
         "ok": snapshot["ok"],
         "generated_at": snapshot["generated_at"],
@@ -495,6 +506,7 @@ def write_publication_manifest(
         "status_pages_published": published_paths is not None,
         "bundle": bundle_paths,
         "published": published_paths,
+        "readme_md": str(readme_md),
     }
 
     manifest_json.write_text(
@@ -505,10 +517,50 @@ def write_publication_manifest(
         format_publication_index(snapshot, bundle_paths=bundle_paths, published_paths=published_paths) + "\n",
         encoding="utf-8",
     )
+    lines = [
+        "# Generated Trust Signal Status",
+        "",
+        "This directory is the stable root for generated trust-signal publication outputs.",
+        "",
+        "- [Publication Index](PUBLICATION_INDEX.md)",
+        "- `PUBLICATION_MANIFEST.json`",
+    ]
+    if bundle_paths:
+        lines.extend(
+            [
+                "",
+                "## Bundle",
+                "",
+                f"- Latest text: `{_display_path(root_dir, bundle_paths.get('latest_txt'))}`",
+                f"- Latest markdown: `{_display_path(root_dir, bundle_paths.get('latest_md'))}`",
+                f"- Bundle index: `{_display_path(root_dir, bundle_paths.get('index_md'))}`",
+            ]
+        )
+        if bundle_paths.get("external_policy_latest_md"):
+            lines.append(
+                f"- External policy latest: `{_display_path(root_dir, bundle_paths.get('external_policy_latest_md'))}`"
+            )
+    if published_paths:
+        lines.extend(
+            [
+                "",
+                "## Published Site",
+                "",
+                f"- Site readme: `{_display_path(root_dir, published_paths.get('readme_md'))}`",
+                f"- Site latest markdown: `{_display_path(root_dir, published_paths.get('latest_md'))}`",
+                f"- Site index: `{_display_path(root_dir, published_paths.get('index_md'))}`",
+            ]
+        )
+        if published_paths.get("external_policy_md"):
+            lines.append(
+                f"- Domain enforcement matrix: `{_display_path(root_dir, published_paths.get('external_policy_md'))}`"
+            )
+    readme_md.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
     return {
         "manifest_json": str(manifest_json),
         "index_md": str(index_md),
+        "readme_md": str(readme_md),
     }
 
 

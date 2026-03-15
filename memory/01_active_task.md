@@ -75,6 +75,7 @@
 - Trust-signal publication manifests and the publication reader now also preserve a compact cross-domain policy summary (`external_contract_profile_counts`, per-repo enforcement posture), so release-facing consumers no longer need the full markdown dashboard just to inspect mixed enforcement across external repos.
 - Trust-signal snapshot publishing now also emits dedicated external policy pages (`external-contract-policy-latest.*`, `published/domain-enforcement-matrix.*`) when external contract repos are provided, moving cross-domain enforcement posture from manifest-only metadata into first-class status pages.
 - Trust-signal snapshot publishing now also supports a standard `docs/status/generated/` publication mode via `--publish-docs-status`, reducing friction when a stable repo-local consumption path is preferred over ad-hoc output directories.
+- The publication reader can now also consume that stable docs-status path directly via `--docs-status`, so generated repo-local status no longer requires manually resolving `PUBLICATION_MANIFEST.json`.
 
 ## Next Steps
 

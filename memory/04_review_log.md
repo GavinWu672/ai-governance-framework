@@ -627,6 +627,14 @@
   - publication metadata rooted at `docs/status/generated`
 - Updated status/README docs so this path is now part of the recommended consumption story, not only an implicit convention.
 
+## 2026-03-15 - Docs Status Reader And Publication Root README
+
+- Extended `trust_signal_publication_reader.py` with `--docs-status`, so the stable repo-local generated path can be consumed without manually passing a manifest file.
+- Extended `trust_signal_snapshot.py` publication-root generation so `docs/status/generated/README.md` is now emitted as an index/readme for the generated snapshot root.
+- Updated README / status docs / governance-tools docs to show both:
+  - the ad-hoc artifact path
+  - the stable repo-local docs-status path
+
 ## 2026-03-14 - IC / SoC Governance Direction Recorded
 
 - Recorded a refined future-domain view for IC-related governance.

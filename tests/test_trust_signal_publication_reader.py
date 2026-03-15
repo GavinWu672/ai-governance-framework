@@ -7,6 +7,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from governance_tools.trust_signal_publication_reader import (
     assess_publication_manifest,
+    default_docs_status_manifest_path,
     default_manifest_path,
     format_human_result,
 )
@@ -43,6 +44,7 @@ def test_assess_publication_manifest_reads_generated_bundle(tmp_path):
     assert result["bundle_published"] is True
     assert result["status_pages_published"] is True
     assert result["release_version"] == "v1.0.0-alpha"
+    assert result["readme_md"].endswith("README.md")
 
 
 def test_format_human_result_surfaces_summary_and_paths(tmp_path):
@@ -54,6 +56,7 @@ def test_format_human_result_surfaces_summary_and_paths(tmp_path):
                 "generated_at": "2026-03-15T00:00:00+00:00",
                 "project_root": "D:/ai-governance-framework",
                 "publication_root": str(tmp_path),
+                "readme_md": str(tmp_path / "README.md"),
                 "release_version": "v1.0.0-alpha",
                 "contract_path": "examples/usb-hub-contract/contract.yaml",
                 "external_contract_repo_count": 3,
@@ -120,6 +123,7 @@ def test_format_human_result_surfaces_summary_and_paths(tmp_path):
     assert "hard_stop_rules=KD-002,KD-003" in rendered
     assert "external_policy_latest_md=external-contract-policy-latest.md" in rendered
     assert "external_policy_md=published/domain-enforcement-matrix.md" in rendered
+    assert f"publication_readme={tmp_path / 'README.md'}" in rendered
 
 
 def test_default_manifest_path_points_to_artifacts_root():
@@ -128,6 +132,14 @@ def test_default_manifest_path_points_to_artifacts_root():
     resolved = default_manifest_path(project_root)
 
     assert resolved == project_root / "artifacts" / "trust-signals" / "PUBLICATION_MANIFEST.json"
+
+
+def test_default_docs_status_manifest_path_points_to_generated_status_root():
+    project_root = Path("D:/ai-governance-framework")
+
+    resolved = default_docs_status_manifest_path(project_root)
+
+    assert resolved == project_root / "docs" / "status" / "generated" / "PUBLICATION_MANIFEST.json"
 
 
 def test_publication_reader_cli_supports_direct_script_invocation(tmp_path):
@@ -139,6 +151,7 @@ def test_publication_reader_cli_supports_direct_script_invocation(tmp_path):
                 "generated_at": "2026-03-15T00:00:00+00:00",
                 "project_root": "D:/ai-governance-framework",
                 "publication_root": str(tmp_path),
+                "readme_md": str(tmp_path / "README.md"),
                 "release_version": "v1.0.0-alpha",
                 "contract_path": "examples/usb-hub-contract/contract.yaml",
                 "strict_runtime": False,
@@ -168,3 +181,47 @@ def test_publication_reader_cli_supports_direct_script_invocation(tmp_path):
 
     assert "summary=ok=True" in result.stdout
     assert "status_pages_published=False" in result.stdout
+
+
+def test_publication_reader_cli_can_use_docs_status_flag(tmp_path):
+    project_root = tmp_path / "repo"
+    manifest_path = project_root / "docs" / "status" / "generated" / "PUBLICATION_MANIFEST.json"
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "ok": True,
+                "generated_at": "2026-03-15T00:00:00+00:00",
+                "project_root": str(project_root),
+                "publication_root": str(manifest_path.parent),
+                "readme_md": str(manifest_path.parent / "README.md"),
+                "release_version": "v1.0.0-alpha",
+                "contract_path": "examples/usb-hub-contract/contract.yaml",
+                "strict_runtime": False,
+                "bundle_published": False,
+                "status_pages_published": False,
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "governance_tools/trust_signal_publication_reader.py",
+            "--project-root",
+            str(project_root),
+            "--docs-status",
+            "--format",
+            "human",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    assert "summary=ok=True" in result.stdout
+    assert f"manifest_file={manifest_path}" in result.stdout
