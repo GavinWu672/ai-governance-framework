@@ -555,6 +555,16 @@
   - hard-stop escalation behavior
 - This shifts the framework from "validators run but only warn" to "validators run, and selected rule IDs can now block post-task success without changing the discovery seam."
 
+## 2026-03-15 - IC Verification Mixed Enforcement Slice
+
+- Extended the third external contract repo, `IC-Verification-Contract`, to use the new enforcement seam in a narrow, machine-readable way.
+- `ICV-001` is now a hard-stop rule because DUT signal presence is backed by `facts/signal_map.json`.
+- Clock/reset declaration checks remain advisory, so the domain now demonstrates a mixed enforcement model instead of an all-advisory baseline.
+- Verified from the framework side:
+  - unknown signal fixture now returns `ok=False`
+  - missing clock/reset fixture still returns `ok=True` with warnings
+  - clean fixture remains green
+
 ## 2026-03-14 - IC / SoC Governance Direction Recorded
 
 - Recorded a refined future-domain view for IC-related governance.

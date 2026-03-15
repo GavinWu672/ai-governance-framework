@@ -232,7 +232,7 @@ The built-in example is `examples/usb-hub-contract/`, which can currently:
 - run `interrupt_safety_validator.py`
 - infer interrupt context from `diff_text`, unified diffs, changed source files, and file-based `checks-file` / `diff_file` evidence
 
-This seam has already been validated with two external contract repos:
+This seam has already been validated with three external contract repos:
 
 - `USB-Hub-Firmware-Architecture-Contract`
   - the first real firmware vertical slice
@@ -240,6 +240,9 @@ This seam has already been validated with two external contract repos:
 - `Kernel-Driver-Contract`
   - the second low-level domain slice
   - already running through contract loading, validator preflight, external rule activation, and a multi-validator post-task loop with contract-driven hard-stop escalation
+- `IC-Verification-Contract`
+  - the third domain slice, focused on Cocotb-style signal-map verification
+  - already running through contract loading, validator preflight, external rule activation, and a mixed hard-stop/advisory post-task loop driven by machine-readable DUT facts
 
 To reduce adoption friction, runtime hooks now support contract auto-discovery:
 

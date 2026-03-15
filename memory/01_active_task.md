@@ -68,6 +68,7 @@
 - A third external domain has now started as `IC-Verification-Contract`, using a narrow Cocotb-oriented signal-map slice instead of a broad IC platform abstraction.
 - Framework-side governance contracts now also accept `LANG = Python`, which removes an artificial blocker for Python-heavy domains such as Cocotb verification.
 - Domain governance metadata now recognizes `ic-verification` as a first-class medium-risk domain instead of surfacing it as `unknown`.
+- `IC-Verification-Contract` now also exercises a mixed enforcement model: machine-readable unknown-signal mismatches can hard-stop through `ICV-001`, while clock/reset declaration gaps remain advisory.
 
 ## Next Steps
 
