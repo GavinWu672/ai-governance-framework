@@ -635,6 +635,7 @@
   - the ad-hoc artifact path
   - the stable repo-local docs-status path
 - The generated-root README is now also summary-first, not just a link list, so it can act as a direct landing page for reviewers.
+- `release_readiness.py` now also checks that the top-level status index explicitly points to the generated landing page and generated site readme, tightening the docs-status consumption story.
 
 ## 2026-03-14 - IC / SoC Governance Direction Recorded
 

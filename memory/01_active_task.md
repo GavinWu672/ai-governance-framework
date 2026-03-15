@@ -77,6 +77,7 @@
 - Trust-signal snapshot publishing now also supports a standard `docs/status/generated/` publication mode via `--publish-docs-status`, reducing friction when a stable repo-local consumption path is preferred over ad-hoc output directories.
 - The publication reader can now also consume that stable docs-status path directly via `--docs-status`, so generated repo-local status no longer requires manually resolving `PUBLICATION_MANIFEST.json`.
 - The docs-status publication root now also emits its own `README.md` landing page, so the generated status path is readable even before using the reader against the manifest.
+- The higher-level `docs/status/README.md` now also treats that generated path as a first-class consumption surface instead of a footnote, and release readiness verifies those generated-entry references.
 
 ## Next Steps
 

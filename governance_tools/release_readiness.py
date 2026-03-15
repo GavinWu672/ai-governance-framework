@@ -137,6 +137,16 @@ def assess_release_readiness(project_root: Path, *, version: str) -> dict:
             "domain-enforcement-matrix.md" in status_index_text,
             "status index does not link to the domain enforcement matrix",
         )
+        add_check(
+            "status_index_generated_readme_link",
+            "generated/README.md" in status_index_text,
+            "status index does not mention the generated status landing page",
+        )
+        add_check(
+            "status_index_generated_site_link",
+            "generated/site/README.md" in status_index_text,
+            "status index does not mention the generated site readme",
+        )
 
     if domain_matrix_text:
         add_check(

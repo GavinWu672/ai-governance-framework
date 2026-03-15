@@ -15,6 +15,8 @@ def test_release_readiness_passes_for_current_alpha():
     assert any(item["name"] == "status_index" and item["ok"] for item in result["checks"])
     assert any(item["name"] == "trust_signal_dashboard" and item["ok"] for item in result["checks"])
     assert any(item["name"] == "domain_enforcement_matrix" and item["ok"] for item in result["checks"])
+    assert any(item["name"] == "status_index_generated_readme_link" and item["ok"] for item in result["checks"])
+    assert any(item["name"] == "status_index_generated_site_link" and item["ok"] for item in result["checks"])
     assert any(item["name"] == "readme_release_link" and item["ok"] for item in result["checks"])
 
 

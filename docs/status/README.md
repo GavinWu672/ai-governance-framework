@@ -24,6 +24,11 @@ This directory contains the repository's stable status-facing documents.
   - intended for a stable repo-local consumption path when you want latest/history/site outputs under one predictable directory
   - read it through `governance_tools/trust_signal_publication_reader.py --docs-status` if you want the latest generated publication summary without resolving file paths manually
   - `generated/README.md` is the landing page for that generated root
+  - core generated pages:
+    - `generated/README.md`
+    - `generated/PUBLICATION_INDEX.md`
+    - `generated/site/README.md`
+    - `generated/site/domain-enforcement-matrix.md`
 
 - [Next Steps](next-steps.md)
   - forward-looking work recommendations
@@ -34,5 +39,6 @@ This directory contains the repository's stable status-facing documents.
 1. Start with [Trust Signal Dashboard](trust-signal-dashboard.md)
 2. Then read [Runtime Governance Status](runtime-governance-status.md)
 3. Then read [Domain Enforcement Matrix](domain-enforcement-matrix.md)
-4. If generated, review `generated/site/README.md` for the latest published snapshot
-5. Use [Next Steps](next-steps.md) for future work planning
+4. If generated, start with `generated/README.md`
+5. Then review `generated/site/README.md` for the latest published snapshot
+6. Use [Next Steps](next-steps.md) for future work planning
