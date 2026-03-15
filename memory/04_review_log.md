@@ -275,6 +275,20 @@
 - Verification:
   - `tests/test_trust_signal_overview.py tests/test_trust_signal_snapshot.py tests/test_governance_auditor.py` -> `30 passed`
 
+## 2026-03-15 - Four-Repo Progress Memo And Gap Reframing
+
+- Added `docs/status/four-repo-integration-progress.md` as the formal progress memo for:
+  - `ai-governance-framework`
+  - `USB-Hub-Firmware-Architecture-Contract`
+  - `Kernel-Driver-Contract`
+  - `IC-Verification-Contract`
+- Recorded the key correction that `validator execution` is no longer the primary framework gap.
+- Reframed the most important remaining work as:
+  - real facts intake
+  - practical git-hook / CI-gate interception coverage
+  - deeper semantic verification beyond pattern-based checks
+- Tightened the repository boundary statement so future status docs do not imply token-by-token AI output interception as an in-scope goal.
+
 ## 2026-03-15 - Onboarding Report Artifact
 
 - Added `governance_tools/external_repo_onboarding_report.py` to combine readiness and governance-smoke results into a single report.

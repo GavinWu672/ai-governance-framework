@@ -120,7 +120,7 @@
 - Extend the manual USB-Hub startup workflow around the new `contract.yaml` seam and `start_session.md` document handoff.
 - Exercise the real USB-Hub advisory path against repo-native patch/evidence artifacts instead of example fixtures.
 - Deepen semantic verification, especially public API compatibility and architecture drift reasoning.
-- Strengthen workflow interception coverage without over-expanding the runtime into a policy engine, starting with more reliable external-repo hook installation and execution.
+- Strengthen workflow interception coverage without over-expanding the runtime into a policy engine, with git-hook / CI-gate hardening as the practical path and not IDE-native generation-time interception.
 - Improve change-control artifact consumption so reviewer-facing outputs are easier to use in day-to-day development.
 - Keep reducing adoption friction for first-time users by validating example runnable paths and keeping quickstart docs aligned with the actual local environment.
 - Consider whether `quickstart_smoke.py` should eventually join CI or docs validation as a dedicated adoption-path regression check.

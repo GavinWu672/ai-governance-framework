@@ -1,6 +1,6 @@
 # Next Steps
 
-Updated: 2026-03-13
+Updated: 2026-03-15
 
 ## Current Focus
 
@@ -8,14 +8,33 @@ The runtime spine is complete enough that the highest-value work is no longer "a
 
 The next phase is:
 
-- deepen semantic verification
-- reduce workflow friction
+- connect real project facts to the existing domain slices
+- deepen semantic verification from pattern-based checks toward stronger structure-aware analysis
+- reduce workflow friction and strengthen practical commit/merge-time governance
 - strengthen proposal-time guidance without turning the repo into a policy engine
 - tighten the review surface around startup and change-control artifacts
 
 ## Highest-Value Remaining Work
 
-### 1. Public API Diff Deepening
+### 1. Real Facts Intake
+
+Current status:
+
+- three external domain contracts now exist
+- mixed enforcement already runs across firmware, kernel-driver, and ic-verification slices
+- most current validation still depends on fixtures or sample facts, not production codebases
+
+Next step:
+
+- connect one real domain repo to the existing fact-intake flow
+- prioritize confirmed facts over broader new abstractions
+- run at least one true AI-session replay against real evidence, not only fixtures
+
+Why this matters:
+
+- the main gap is no longer runtime plumbing; it is grounding the existing system in real project truth
+
+### 2. Public API Diff Deepening
 
 Current status:
 
@@ -26,13 +45,13 @@ Next step:
 
 - improve signature normalization
 - better distinguish additive changes from compatibility risk
-- correlate public API changes with proposal guidance and refactor evidence
+- keep pushing the checker from pattern-based compatibility hints toward stronger structure-aware reasoning
 
 Why this matters:
 
-- interface stability is one of the weakest current proof chains
+- interface stability is still one of the weakest proof chains
 
-### 2. Architecture Drift Reasoning
+### 3. Architecture Drift Reasoning
 
 Current status:
 
@@ -49,7 +68,29 @@ Why this matters:
 
 - the framework can detect more drift than before, but not yet reason deeply about architecture semantics
 
-### 3. Failure Completeness Refinement
+### 4. Workflow Interception Coverage
+
+Current status:
+
+- `pre_task_check` and `post_task_check` human outputs are more usable
+- `suggested_rules_preview`, `suggested_skills`, `suggested_agent` exist
+- `session_start.py` and `change_proposal_builder.py` provide startup/proposal context
+- `change_control_summary.py` and `change_control_index.py` provide review-facing startup/change-control artifacts
+- contract-aware smoke/dispatcher paths now exist
+- external hook installation, onboarding, readiness, and smoke flows already exist
+
+Next step:
+
+- keep reducing friction in everyday usage
+- make git-hook and CI-gate paths harder to skip in normal commit/merge flows
+- keep improving external onboarding and contract-aware runtime entrypoints
+- avoid framing IDE-native or token-by-token code-generation interception as an in-scope goal
+
+Why this matters:
+
+- the main interception problem is now practical workflow coverage, not missing validator execution
+
+### 5. Failure Completeness Refinement
 
 Current status:
 
@@ -65,26 +106,6 @@ Next step:
 Why this matters:
 
 - current checks are useful but still partly heuristic
-
-### 4. Workflow Embedding
-
-Current status:
-
-- `pre_task_check` and `post_task_check` human outputs are more usable
-- `suggested_rules_preview`, `suggested_skills`, `suggested_agent` exist
-- `session_start.py` and `change_proposal_builder.py` provide startup/proposal context
-- `change_control_summary.py` and `change_control_index.py` provide review-facing startup/change-control artifacts
-
-Next step:
-
-- keep reducing friction in everyday usage
-- surface actionable next steps earlier in the flow
-- extend startup/proposal artifacts into more real-world developer entry points
-- keep CI artifact naming and summary consumption obvious for reviewers
-
-Why this matters:
-
-- adoption now depends more on usability than on adding another validator
 
 ## Current Completed Milestones
 
@@ -104,7 +125,7 @@ The following items are now in place on `main`:
 - `change_control_summary.py` and `change_control_index.py`
 - CI/runtime smoke startup artifacts: handoff notes, JSON envelopes, summaries, and index
 
-### 5. Kernel-Driver Pack Refinement
+### 6. Kernel-Driver Pack Refinement
 
 Current kernel-driver pack is a strong seed, but still generic.
 
@@ -120,7 +141,7 @@ Why this is not first:
 - the generic seed pack is already useful
 - splitting too early increases maintenance cost before usage patterns stabilize
 
-### 6. Evidence Ingestion Expansion
+### 7. Evidence Ingestion Expansion
 
 Current ingestion supports:
 
@@ -141,7 +162,7 @@ Why this matters:
 - these formats are closer to real static-analysis and security-tool outputs
 - they reduce ad hoc parsing in downstream validators
 
-### 7. Memory / Audit Tightening
+### 8. Memory / Audit Tightening
 
 Potential follow-up work:
 
@@ -150,7 +171,7 @@ Potential follow-up work:
 - make promotion decisions more transparent for high-risk platform work
 - keep proposal-time impact and runtime evidence linked in durable audit records
 
-### 8. Review Surface Tightening
+### 9. Review Surface Tightening
 
 Potential follow-up work:
 
@@ -187,3 +208,4 @@ It should avoid turning into:
 - a heavy language-analysis platform
 - a driver-development IDE workflow replacement
 - a generic policy-engine runtime
+- a code-generation-time interception layer inside the AI tool itself

@@ -281,8 +281,8 @@ Current behavior:
 
 Current limitation:
 
-- still partly heuristic
-- not yet semantic test-behavior verification
+- still partly heuristic and pattern-based
+- not yet AST-based or data-flow-based semantic test-behavior verification
 
 ### Drift Detection
 
@@ -296,7 +296,7 @@ Current behavior:
 Current limitation:
 
 - not yet a full dependency/import/include graph analyzer
-- still heuristic-first, not a semantic architecture model
+- still heuristic-first and pattern-based, not a semantic architecture model
 
 ### Rule-Pack Suggestion
 
@@ -385,7 +385,7 @@ Why this is first:
 
 Goal:
 
-- reduce adoption friction in normal day-to-day development
+- reduce adoption friction in normal day-to-day development while tightening the practical commit/merge-time governance path
 
 Recommended work:
 
@@ -393,10 +393,11 @@ Recommended work:
 - surface proposal guidance and evidence expectations earlier
 - make startup and handoff context easier to consume from agent tooling
 - keep startup/change-control summaries easy to review from CI artifacts and local smoke runs
+- keep strengthening git-hook and CI-gate paths for the entrypoints the framework is actually designed to govern
 
 Why this matters:
 
-- the next bottleneck is not missing validators, but whether developers naturally stay on the governance path
+- the next bottleneck is not missing validators, but whether developers naturally stay on the governance path at commit and merge time
 
 ### 3. Kernel-Driver Pack Refinement
 
@@ -484,3 +485,4 @@ Practical rule:
 - skills provide behavior guidance
 - runtime checks and policies make decisions
 - suggestion layers propose, but do not silently bind contracts
+- governance checks frame task/session boundaries; this repository does not try to intercept code generation token-by-token inside the AI tool itself

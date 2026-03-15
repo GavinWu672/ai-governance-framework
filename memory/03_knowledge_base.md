@@ -20,6 +20,7 @@
   - `driver_evidence_validator.py`
   - `architecture_drift_checker.py`
 - Current enforcement is evidence-aware and boundary-aware, but it is not yet a full semantic policy decision engine.
+- Current semantic verification is better described as pattern-based and structure-aware, not AST-based or data-flow-based.
 
 ## Domain Extension Seam
 
@@ -44,6 +45,7 @@
 - Skills provide behavior guidance.
 - Runtime checks and policies make decisions.
 - Suggestions remain advisory and must not silently mutate the active contract.
+- Governance happens around task/session boundaries; this repository does not aim to intercept AI token-by-token during code generation itself.
 - The repository should continue to act as a governance framework, not become a generic AI orchestration OS.
 
 ## Positioning
@@ -111,4 +113,10 @@
 
 - For this repository, each task should be completed, reviewed, committed, and pushed before starting the next task.
 - Task sequencing should favor small, isolated changesets so integration progress remains easy to audit and rollback.
+
+## Current Highest-Value Gaps
+
+- The main cross-repo gap is now real facts intake, not validator execution.
+- Workflow interception should focus on practical hook/CI coverage, not IDE-native generation-time control.
+- Semantic verification should keep moving from pattern-based checks toward deeper AST/data-flow-aware reasoning only where the value clearly justifies the cost.
 
