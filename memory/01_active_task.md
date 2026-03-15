@@ -64,6 +64,9 @@
 - Published trust-signal outputs now also keep `published/history/*` and `published/INDEX.md`, so the publication surface can be browsed historically instead of showing only the latest page.
 - Trust-signal publishing now also emits a publication-level manifest/index, so bundle and published surfaces can be discovered through one stable metadata layer.
 - Trust-signal publication now also has a dedicated reader via `governance_tools/trust_signal_publication_reader.py`, so `PUBLICATION_MANIFEST.json` can be consumed as a stable reviewer-facing summary instead of only raw JSON.
+- A third external domain has now started as `IC-Verification-Contract`, using a narrow Cocotb-oriented signal-map slice instead of a broad IC platform abstraction.
+- Framework-side governance contracts now also accept `LANG = Python`, which removes an artificial blocker for Python-heavy domains such as Cocotb verification.
+- Domain governance metadata now recognizes `ic-verification` as a first-class medium-risk domain instead of surfacing it as `unknown`.
 
 ## Next Steps
 

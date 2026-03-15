@@ -66,7 +66,7 @@ class TestValidateContractInvalid:
         assert not result.compliant
 
     def test_invalid_lang(self):
-        result = validate_contract(_make_contract(LANG="Python"))
+        result = validate_contract(_make_contract(LANG="Rust"))
         assert any("LANG" in e for e in result.errors)
 
     def test_missing_loaded(self):
@@ -107,7 +107,7 @@ class TestValidateContractInvalid:
 
 
 class TestValidateContractCompliant:
-    @pytest.mark.parametrize("lang", ["C++", "C#", "ObjC", "Swift", "JS"])
+    @pytest.mark.parametrize("lang", ["C++", "C#", "ObjC", "Swift", "JS", "Python"])
     def test_all_valid_langs(self, lang):
         assert validate_contract(_make_contract(LANG=lang)).compliant
 

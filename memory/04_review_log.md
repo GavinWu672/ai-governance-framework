@@ -172,6 +172,25 @@
 - Verification:
   - `tests/test_trust_signal_snapshot.py tests/test_trust_signal_publication_reader.py` -> `12 passed`
 
+## 2026-03-15 - IC Verification Domain Bootstrap
+
+- Started a third external domain repository: `IC-Verification-Contract`.
+- Chose a narrow Phase-1 slice instead of a broad IC platform abstraction:
+  - Cocotb-style signal mapping
+  - machine-readable `facts/signal_map.json`
+  - one advisory validator for unknown DUT signal access
+- The bootstrap work exposed two framework assumptions that were no longer valid for this domain:
+  - governance contracts did not allow `LANG = Python`
+  - `ic-verification` surfaced as an `unknown` domain risk tier
+- Updated framework metadata and validation logic so:
+  - `contract_validator.py` now accepts `Python`
+  - `domain_governance_metadata.py` now treats `ic-verification` as `medium`
+- Framework-side validation completed for the new domain:
+  - `domain_contract_loader.py` load successful
+  - `session_start.py` validator preflight successful
+  - `pre_task_check.py` rule activation successful
+  - `post_task_check.py` advisory validator execution successful
+
 ## 2026-03-14 - Install-And-Verify Hook Flow
 
 - Updated `scripts/install-hooks.sh` so real installs now auto-run `hook_install_validator.py` by default.
