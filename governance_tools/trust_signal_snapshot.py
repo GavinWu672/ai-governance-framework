@@ -161,15 +161,52 @@ def format_published_status_page(snapshot: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def format_published_index(history_dir: Path) -> str:
+    json_files = sorted(history_dir.glob("*.json"))
+    lines = ["# Published Trust Signal Index", "", f"- History dir: `{history_dir}`", f"- Reports: `{len(json_files)}`"]
+    if json_files:
+        lines.extend(["", "| Snapshot | OK | Release | Contract | Generated |", "| --- | --- | --- | --- | --- |"])
+        for path in reversed(json_files):
+            try:
+                payload = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                lines.append(f"| `{path.name}` | unreadable | - | - | - |")
+                continue
+            lines.append(
+                " | ".join(
+                    [
+                        f"| `{path.name}`",
+                        f"`{payload.get('ok')}`",
+                        f"`{payload.get('release_version')}`",
+                        f"`{payload.get('contract_path')}`",
+                        f"`{payload.get('generated_at')}` |",
+                    ]
+                )
+            )
+    return "\n".join(lines)
+
+
 def write_published_status(snapshot: dict[str, Any], publish_dir: Path) -> dict[str, str]:
     publish_dir.mkdir(parents=True, exist_ok=True)
+    history_dir = publish_dir / "history"
+    history_dir.mkdir(parents=True, exist_ok=True)
+    stem = _history_stem(snapshot)
     latest_md = publish_dir / "trust-signal-latest.md"
     latest_json = publish_dir / "trust-signal-latest.json"
     readme_md = publish_dir / "README.md"
+    history_md = history_dir / f"{stem}.md"
+    history_json = history_dir / f"{stem}.json"
+    index_md = publish_dir / "INDEX.md"
     manifest_json = publish_dir / "manifest.json"
 
-    latest_md.write_text(format_published_status_page(snapshot) + "\n", encoding="utf-8")
-    latest_json.write_text(json.dumps(snapshot, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    markdown_text = format_published_status_page(snapshot) + "\n"
+    json_text = json.dumps(snapshot, ensure_ascii=False, indent=2) + "\n"
+
+    latest_md.write_text(markdown_text, encoding="utf-8")
+    latest_json.write_text(json_text, encoding="utf-8")
+    history_md.write_text(markdown_text, encoding="utf-8")
+    history_json.write_text(json_text, encoding="utf-8")
+    index_md.write_text(format_published_index(history_dir) + "\n", encoding="utf-8")
     readme_md.write_text(
         "\n".join(
             [
@@ -179,6 +216,7 @@ def write_published_status(snapshot: dict[str, Any], publish_dir: Path) -> dict[
                 "",
                 "- [Latest Markdown Snapshot](trust-signal-latest.md)",
                 "- [Latest JSON Snapshot](trust-signal-latest.json)",
+                "- [History Index](INDEX.md)",
                 "- `manifest.json`",
                 "",
                 f"Latest generated_at: `{snapshot['generated_at']}`",
@@ -199,6 +237,11 @@ def write_published_status(snapshot: dict[str, Any], publish_dir: Path) -> dict[
                     "markdown": str(latest_md),
                     "json": str(latest_json),
                     "readme": str(readme_md),
+                    "index": str(index_md),
+                },
+                "history": {
+                    "markdown": str(history_md),
+                    "json": str(history_json),
                 },
             },
             ensure_ascii=False,
@@ -212,6 +255,9 @@ def write_published_status(snapshot: dict[str, Any], publish_dir: Path) -> dict[
         "latest_md": str(latest_md),
         "latest_json": str(latest_json),
         "readme_md": str(readme_md),
+        "history_md": str(history_md),
+        "history_json": str(history_json),
+        "index_md": str(index_md),
         "manifest_json": str(manifest_json),
     }
 

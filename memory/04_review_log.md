@@ -498,6 +498,13 @@
   - `published/manifest.json`
 - This reduces ambiguity around "which snapshot is current" and gives future tooling a stable metadata surface.
 
+## 2026-03-15 - Published Trust Signal History And Index
+
+- Extended the published status path so it now also keeps:
+  - `published/history/*`
+  - `published/INDEX.md`
+- This makes the publication side behave more like the bundle side: latest remains easy to link, but historical published snapshots are now also reviewable.
+
 ## 2026-03-14 - IC / SoC Governance Direction Recorded
 
 - Recorded a refined future-domain view for IC-related governance.

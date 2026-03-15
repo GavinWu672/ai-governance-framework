@@ -250,6 +250,8 @@ python governance_tools/trust_signal_snapshot.py \
   - `published/trust-signal-latest.md`
   - `published/trust-signal-latest.json`
   - `published/README.md`
+  - `published/history/*`
+  - `published/INDEX.md`
   - `published/manifest.json`
 
 這個工具適合用在：

@@ -7,6 +7,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from governance_tools.trust_signal_snapshot import (
     build_trust_signal_snapshot,
     format_published_status_page,
+    format_published_index,
     format_index,
     write_published_status,
     write_snapshot_bundle,
@@ -85,10 +86,16 @@ def test_write_published_status_creates_latest_pages(tmp_path):
     assert Path(published["latest_md"]).is_file()
     assert Path(published["latest_json"]).is_file()
     assert Path(published["readme_md"]).is_file()
+    assert Path(published["history_md"]).is_file()
+    assert Path(published["history_json"]).is_file()
+    assert Path(published["index_md"]).is_file()
     assert Path(published["manifest_json"]).is_file()
     assert "# Published Trust Signal Snapshot" in Path(published["latest_md"]).read_text(encoding="utf-8")
+    index_text = Path(published["index_md"]).read_text(encoding="utf-8")
+    assert "# Published Trust Signal Index" in index_text
     manifest_payload = json.loads(Path(published["manifest_json"]).read_text(encoding="utf-8"))
     assert manifest_payload["release_version"] == "v1.0.0-alpha"
+    assert "history" in manifest_payload
 
 
 def test_format_published_status_page_wraps_markdown_overview():
@@ -105,3 +112,13 @@ def test_format_published_status_page_wraps_markdown_overview():
 
     assert "# Published Trust Signal Snapshot" in rendered
     assert "# Trust Signal Overview" in rendered
+
+
+def test_format_published_index_handles_empty_history(tmp_path):
+    history_dir = tmp_path / "published-history"
+    history_dir.mkdir(parents=True, exist_ok=True)
+
+    rendered = format_published_index(history_dir)
+
+    assert "# Published Trust Signal Index" in rendered
+    assert "- Reports: `0`" in rendered
