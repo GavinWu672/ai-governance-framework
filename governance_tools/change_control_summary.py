@@ -15,6 +15,7 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from governance_tools.contract_context import contract_label, extract_contract_context, normalize_session_start_payload
+from governance_tools.human_summary import build_summary_line
 
 
 def _load_json(path: Path | None) -> dict[str, Any]:
@@ -75,21 +76,20 @@ def format_human_result(result: dict[str, Any]) -> str:
     runtime = result.get("runtime") or {}
     contract_resolution = result.get("contract_resolution") or {}
     lines = ["[change_control_summary]"]
-    summary_parts = []
-    if result.get("task"):
-        summary_parts.append(f"task={result['task']}")
-    if proposal.get("recommended_risk"):
-        summary_parts.append(f"proposal_risk={proposal.get('recommended_risk')}")
-    if runtime.get("decision"):
-        summary_parts.append(f"runtime_decision={runtime.get('decision')}")
-    if runtime.get("promoted") is not None:
-        summary_parts.append(f"promoted={runtime.get('promoted')}")
     label = contract_label(contract_resolution)
+    risk_tier = contract_resolution.get("risk_tier")
+    contract_part = None
     if label:
-        risk_tier = contract_resolution.get("risk_tier")
-        summary_parts.append(f"contract={label}/{risk_tier}" if risk_tier and risk_tier != "unknown" else f"contract={label}")
-    if summary_parts:
-        lines.append(f"summary={' | '.join(summary_parts)}")
+        contract_part = f"contract={label}/{risk_tier}" if risk_tier and risk_tier != "unknown" else f"contract={label}"
+    lines.append(
+        build_summary_line(
+            f"task={result['task']}" if result.get("task") else None,
+            f"proposal_risk={proposal.get('recommended_risk')}" if proposal.get("recommended_risk") else None,
+            f"runtime_decision={runtime.get('decision')}" if runtime.get("decision") else None,
+            f"promoted={runtime.get('promoted')}" if runtime.get("promoted") is not None else None,
+            contract_part,
+        )
+    )
 
     if result.get("task"):
         lines.append(f"task={result['task']}")
