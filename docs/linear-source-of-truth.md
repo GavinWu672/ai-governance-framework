@@ -106,4 +106,4 @@ python governance_tools/linear_integrator.py --sync --team-id <TEAM_ID> --format
 
 - [PLAN.md](../PLAN.md) — 主計畫文件
 - [governance_tools/linear_integrator.py](../governance_tools/linear_integrator.py) — 工具原始碼
-- [governance/02_workflow.md](../governance/02_workflow.md) — 整體工作流程
+- [memory/02_workflow.md](../memory/02_workflow.md) — 整體工作流程

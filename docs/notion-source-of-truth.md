@@ -164,4 +164,4 @@ python governance_tools/notion_integrator.py --sync
 - [PLAN.md](../PLAN.md) — 主計畫文件
 - [governance_tools/notion_integrator.py](../governance_tools/notion_integrator.py) — 工具原始碼
 - [docs/linear-source-of-truth.md](./linear-source-of-truth.md) — Linear 整合策略（對照參考）
-- [governance/02_workflow.md](../governance/02_workflow.md) — 整體工作流程
+- [memory/02_workflow.md](../memory/02_workflow.md) — 整體工作流程
