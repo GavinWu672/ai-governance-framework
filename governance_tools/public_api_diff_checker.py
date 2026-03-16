@@ -603,12 +603,11 @@ def diff_public_api_manifests(before: dict, after: dict) -> dict:
     warnings: list[str] = []
     errors: list[str] = []
 
-    if uncovered_removed:
+    compatibility = _assess_semantic_compatibility(before, after)
+    if uncovered_removed or compatibility["breaking_changes"]:
         errors.append("Public API surface removed or changed.")
     if uncovered_added:
         warnings.append("Public API surface added or changed.")
-
-    compatibility = _assess_semantic_compatibility(before, after)
     for item in compatibility["breaking_changes"]:
         errors.append(item)
     for item in compatibility["non_breaking_changes"]:
