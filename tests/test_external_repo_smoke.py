@@ -3,7 +3,7 @@ from __future__ import annotations
 import textwrap
 from pathlib import Path
 
-from governance_tools.external_repo_smoke import infer_smoke_rules, run_external_repo_smoke
+from governance_tools.external_repo_smoke import format_human, infer_smoke_rules, run_external_repo_smoke
 
 
 def _write(path: Path, text: str) -> None:
@@ -170,3 +170,35 @@ def test_run_external_repo_smoke_fails_for_missing_external_rule_pack(tmp_path: 
     assert result.ok is False
     assert result.pre_task_ok is False or result.session_start_ok is False
     assert any("Unknown rule packs" in item or "PLAN.md" not in item for item in result.errors)
+
+
+def test_format_human_uses_shared_summary_shape(tmp_path: Path) -> None:
+    _write(
+        tmp_path / "PLAN.md",
+        "> **?敺??*: 2026-03-15\n> **Owner**: tester\n> **Freshness**: Sprint (7d)\n",
+    )
+    _write(tmp_path / "AGENTS.md", "# Agents\n")
+    _write(tmp_path / "CHECKLIST.md", "# Checklist\n")
+    _write(tmp_path / "rules" / "firmware" / "safety.md", "# Firmware safety\n")
+    _write(
+        tmp_path / "contract.yaml",
+        "\n".join(
+            [
+                "name: sample-contract",
+                "domain: firmware",
+                "documents:",
+                "  - CHECKLIST.md",
+                "ai_behavior_override:",
+                "  - AGENTS.md",
+                "rule_roots:",
+                "  - rules",
+            ]
+        ),
+    )
+
+    result = run_external_repo_smoke(tmp_path)
+    output = format_human(result)
+
+    assert "[external_repo_smoke]" in output
+    assert "summary=ok=True | rules=common,firmware | pre_task_ok=True | session_start_ok=True | post_task_ok=None" in output
+    assert f"contract_path={tmp_path / 'contract.yaml'}" in output

@@ -15,6 +15,7 @@ if __package__ in (None, ""):
 
 from governance_tools.contract_context import extract_contract_context, normalize_session_start_payload
 from governance_tools.domain_governance_metadata import domain_priority_rank
+from governance_tools.human_summary import build_summary_line
 
 
 def _extract_summary_line(path: Path) -> str | None:
@@ -103,13 +104,10 @@ def build_change_control_index(artifacts_dir: Path) -> str:
 
     lines = ["[change_control_index]", f"artifacts_dir={artifacts_dir}"]
     lines.append(
-        "summary="
-        + " | ".join(
-            [
-                f"change_control_summaries={len(summary_files)}",
-                f"session_start_notes={len(session_files)}",
-                f"session_start_envelopes={len(json_files)}",
-            ]
+        build_summary_line(
+            f"change_control_summaries={len(summary_files)}",
+            f"session_start_notes={len(session_files)}",
+            f"session_start_envelopes={len(json_files)}",
         )
     )
     lines.append("[review_order]")

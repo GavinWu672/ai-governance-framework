@@ -16,6 +16,7 @@ if __package__ in (None, ""):
 
 from governance_tools.contract_resolver import resolve_contract
 from governance_tools.domain_contract_loader import load_domain_contract
+from governance_tools.human_summary import build_summary_line
 from governance_tools.rule_pack_loader import available_rule_packs, parse_rule_list
 from runtime_hooks.core.post_task_check import run_post_task_check
 from runtime_hooks.core.pre_task_check import run_pre_task_check
@@ -184,19 +185,19 @@ def run_external_repo_smoke(
 
 def format_human(result: ExternalRepoSmokeResult) -> str:
     lines = [
-        "External Repo Governance Smoke",
-        "",
-        f"ok                = {result.ok}",
-        f"repo_root         = {result.repo_root}",
-        f"plan_path         = {result.plan_path}",
-        f"contract_path     = {result.contract_path or '<missing>'}",
-        f"rules             = {','.join(result.rules)}",
-        f"pre_task_ok       = {result.pre_task_ok}",
-        f"session_start_ok  = {result.session_start_ok}",
-        f"post_task_ok      = {result.post_task_ok}",
+        "[external_repo_smoke]",
+        build_summary_line(
+            f"ok={result.ok}",
+            f"rules={','.join(result.rules)}",
+            f"pre_task_ok={result.pre_task_ok}",
+            f"session_start_ok={result.session_start_ok}",
+            f"post_task_ok={result.post_task_ok}",
+        ),
+        f"repo_root={result.repo_root}",
+        f"plan_path={result.plan_path}",
+        f"contract_path={result.contract_path or '<missing>'}",
     ]
     if result.post_task_cases:
-        lines.append("")
         lines.append("[post_task_cases]")
         for item in result.post_task_cases:
             lines.append(
@@ -213,13 +214,11 @@ def format_human(result: ExternalRepoSmokeResult) -> str:
             for error in item.get("errors") or []:
                 lines.append(f"  error: {error}")
     if result.errors:
-        lines.append("")
-        lines.append(f"errors: {len(result.errors)}")
+        lines.append(f"errors={len(result.errors)}")
         for item in result.errors:
             lines.append(f"- {item}")
     if result.warnings:
-        lines.append("")
-        lines.append(f"warnings: {len(result.warnings)}")
+        lines.append(f"warnings={len(result.warnings)}")
         for item in result.warnings:
             lines.append(f"- {item}")
     return "\n".join(lines)
