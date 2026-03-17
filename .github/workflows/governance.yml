@@ -174,3 +174,95 @@ jobs:
           name: runtime-smoke-handoff
           path: artifacts/runtime/smoke/
           if-no-files-found: warn
+
+  # ─────────────────────────────────────────────
+  # Job 5: Violation Triage Gate
+  # 對每個 violation 分類 (TP / FP / FN)
+  #
+  # Exit codes:
+  #   0  — PASS (no violations, or only FP tracked)
+  #   1  — FAIL (TP or unreviewed CRITICAL → code fix or triage required)
+  #   2  — FAIL (FN detected → framework validator bug, highest priority)
+  #
+  # Workflow:
+  #   1. 跑 governance_auditor，輸出 JSON
+  #   2. 若 triage/governance_auditor.triage.json 已存在，合併人工標記
+  #   3. 評估 gate，發出 GitHub Annotations
+  #
+  # 人工 triage 步驟：
+  #   - 遇到 [UNREVIEWED] 標記 → 在本地執行 generate，填寫 triage.type
+  #   - TP: code has real problem → fix code
+  #   - FP: false positive → fix rule (root_cause: contract)
+  #   - FN: framework missed it → fix validator (root_cause: validator)
+  #   - 將填好的 triage/*.json commit 進 repo
+  # ─────────────────────────────────────────────
+  violation-triage-gate:
+    name: Violation Triage Gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install documented dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run governance auditor → triage report
+        run: |
+          mkdir -p artifacts/triage
+
+          # Capture governance auditor output (|| true: exit 1 is expected on failure)
+          OUTPUT=$(python governance_tools/governance_auditor.py \
+            --project-root . --format json) || true
+          echo "$OUTPUT" > /tmp/ga_output.json
+
+          # Generate triage report; merge existing human annotations if committed
+          if [ -f "triage/governance_auditor.triage.json" ]; then
+            python governance_tools/violation_triage.py \
+              --mode generate \
+              --input /tmp/ga_output.json \
+              --input-format governance_auditor \
+              --triage-file triage/governance_auditor.triage.json \
+              --output artifacts/triage/governance_auditor.triage.json
+          else
+            python governance_tools/violation_triage.py \
+              --mode generate \
+              --input /tmp/ga_output.json \
+              --input-format governance_auditor \
+              --output artifacts/triage/governance_auditor.triage.json
+          fi
+
+      - name: Evaluate violation triage gate
+        run: |
+          # Emit GitHub Annotations and check gate
+          RESULT=$(python governance_tools/violation_triage.py \
+            --mode evaluate \
+            --triage-file artifacts/triage/governance_auditor.triage.json \
+            --format json)
+
+          echo "$RESULT" | python3 -c "
+          import json, sys
+          r = json.load(sys.stdin)
+          for ann in r.get('annotations', []):
+              level = ann['level']
+              msg   = ann['message'].replace('%', '%25').replace('\n', '%0A')
+              loc   = ann.get('file', '')
+              if level == 'error':
+                  print(f'::error file={loc}::{msg}')
+              elif level == 'warning':
+                  print(f'::warning file={loc}::{msg}')
+              else:
+                  print(f'::notice file={loc}::{msg}')
+          print(f'Triage gate: {r[\"summary\"]}')
+          sys.exit(r['exit_code'])
+          "
+
+      - name: Upload triage artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: violation-triage
+          path: artifacts/triage/
+          if-no-files-found: warn
