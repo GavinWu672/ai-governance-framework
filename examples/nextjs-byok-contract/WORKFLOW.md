@@ -164,3 +164,87 @@ The payload must contain `file_path` and `source_code` keys.
 
 Stages build on each other — Stage 2 + 3 together catch everything except
 UX gaps which require code review.
+
+---
+
+## Agent-specific integration
+
+### GitHub Copilot
+
+Copilot reads `.github/copilot-instructions.md` automatically from the
+workspace root.  The file is already provided at:
+
+```
+examples/nextjs-byok-contract/.github/copilot-instructions.md
+```
+
+Copy (or symlink) it to your project's `.github/` directory:
+
+```bash
+cp examples/nextjs-byok-contract/.github/copilot-instructions.md \
+   .github/copilot-instructions.md
+```
+
+Copilot will then enforce BYOK and rate-limit rules as part of its
+"before every task" protocol and output a `[Governance Contract]` header.
+
+**Runtime plan_freshness (Copilot):**
+Copilot has no hook system.  Use Stage 3 (CI) to automate plan staleness
+detection, or run Stage 1 manually before starting each session.
+
+---
+
+### OpenAI Codex CLI
+
+Codex reads `AGENTS.md` automatically from the project root and any
+subdirectory — no additional configuration needed for rule loading.
+
+Copy the contract's AGENTS.md to your project root (or add a reference):
+
+```bash
+# Option A: copy directly
+cp examples/nextjs-byok-contract/AGENTS.md AGENTS.md
+
+# Option B: reference from existing AGENTS.md
+echo "" >> AGENTS.md
+echo "## BYOK Domain Rules" >> AGENTS.md
+echo "See examples/nextjs-byok-contract/AGENTS.md and rules/byok.md" >> AGENTS.md
+```
+
+**Runtime plan_freshness (Codex):**
+Codex supports a `--before-task` hook.  Wire it via `.codex/config.json`:
+
+```json
+{
+  "before_task": "python examples/nextjs-byok-contract/hooks/codex_pre_task.py"
+}
+```
+
+Or run manually:
+
+```bash
+python examples/nextjs-byok-contract/hooks/codex_pre_task.py
+```
+
+Expected output:
+
+```
+[governance:pre-task]
+harness=codex
+plan_freshness=FRESH
+validator_preflight_ok=True
+domain=nextjs-byok
+active_rules=BYOK_INGEST_KEY_PROPAGATION,ROUTE_RATE_LIMIT_COVERAGE
+```
+
+---
+
+### Agent coverage summary
+
+| Capability | Claude Code | Copilot | Codex |
+|------------|-------------|---------|-------|
+| Rule loading (AGENTS.md) | ✅ auto | ✅ via copilot-instructions.md | ✅ native |
+| Session-start plan check | ✅ hook | manual / CI | ✅ --before-task |
+| Validator preflight | ✅ hook | CI | ✅ --before-task |
+| Post-task CLI validation | ✅ | ✅ | ✅ |
+| CI gate | ✅ | ✅ | ✅ |
