@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Violation Triage Record",
+  "description": "Schema for triaging a single governance violation.",
+  "type": "object",
+  "required": ["rule_id", "violation_id", "type", "root_cause", "action", "confidence"],
+  "properties": {
+    "rule_id": {
+      "type": "string",
+      "description": "e.g. ARCH_DOMAIN_PINVOKE",
+      "pattern": "^ARCH_[A-Z_]+$"
+    },
+    "violation_id": {
+      "type": "string",
+      "description": "Stable ID: sha1(rule_id + file_path + matched_pattern)"
+    },
+    "file": {
+      "type": "string",
+      "description": "File path where violation was found"
+    },
+    "line": {
+      "type": "integer",
+      "description": "Line number of violation (0 if unknown)"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["TP", "FP", "FN"],
+      "description": "TP=true positive, FP=false positive, FN=false negative"
+    },
+    "root_cause": {
+      "type": "string",
+      "enum": ["contract", "validator", "context", "workflow"],
+      "description": "What caused the wrong result"
+    },
+    "action": {
+      "type": "string",
+      "enum": ["fix_rule", "add_validator", "ignore", "fix_code"],
+      "description": "Required follow-up action"
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "Reviewer confidence in this triage decision"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional reviewer notes"
+    },
+    "triaged_by": {
+      "type": "string",
+      "description": "Who triaged this violation"
+    },
+    "triaged_at": {
+      "type": "string",
+      "format": "date",
+      "description": "ISO 8601 date of triage"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "file_path": "src/HP.OCI.Core/Services/OciNativeService.cs",
+  "source_code": "using System;\nusing System.Runtime.InteropServices;\n\nnamespace HP.OCI.Core.Services\n{\n    /// <summary>\n    /// Domain service that incorrectly pulls in native interop.\n    /// This violates ARCH_DOMAIN_PINVOKE.\n    /// </summary>\n    public sealed class OciNativeService\n    {\n        [DllImport(\"oci.dll\", CharSet = CharSet.Unicode)]\n        private static extern int OciGetDeviceStatus(string deviceId);\n\n        public bool IsDeviceReady(string deviceId)\n        {\n            return OciGetDeviceStatus(deviceId) == 0;\n        }\n    }\n}\n",
+  "domain_roots": [
+    "src/HP.OCI.Core/"
+  ],
+  "changed_files": [
+    "src/HP.OCI.Core/Services/OciNativeService.cs"
+  ],
+  "test_names": [
+    "OciNativeServiceTests.IsDeviceReady_WhenStatusZero_ReturnsTrue"
+  ],
+  "diagnostics": [
+    "dotnet build: 0 warnings, 0 errors"
+  ],
+  "summary": {
+    "failed": 0
+  },
+  "warnings": [],
+  "errors": []
+}

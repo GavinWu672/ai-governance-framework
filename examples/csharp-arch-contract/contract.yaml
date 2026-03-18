@@ -1,0 +1,14 @@
+name: csharp-arch
+plugin_version: "0.1"
+framework_interface_version: "1"
+framework_compatible: ">=1.0.0,<2.0.0"
+domain: csharp-arch
+documents:
+  - AGENTS.md
+  - rules/arch.md
+ai_behavior_override:
+  - AGENTS.md
+rule_roots:
+  - rules
+validators:
+  - validators/domain_pinvoke_validator.py

@@ -1,0 +1,24 @@
+{
+  "file_path": "src/HP.OCI.Core/Services/OciQueryService.cs",
+  "source_code": "using System;\n\nnamespace HP.OCI.Core.Services\n{\n    /// <summary>\n    /// Pure domain service — no native interop.\n    /// </summary>\n    public sealed class OciQueryService\n    {\n        private readonly IOciRepository _repo;\n\n        public OciQueryService(IOciRepository repo)\n        {\n            _repo = repo ?? throw new ArgumentNullException(nameof(repo));\n        }\n\n        public OciDevice GetDevice(string deviceId)\n        {\n            if (string.IsNullOrWhiteSpace(deviceId))\n                throw new ArgumentException(\"deviceId must not be empty\", nameof(deviceId));\n\n            return _repo.FindById(deviceId)\n                ?? throw new DeviceNotFoundException(deviceId);\n        }\n    }\n}\n",
+  "domain_roots": [
+    "src/HP.OCI.Core/"
+  ],
+  "changed_files": [
+    "src/HP.OCI.Core/Services/OciQueryService.cs"
+  ],
+  "test_names": [
+    "OciQueryServiceTests.GetDevice_KnownId_ReturnsDevice",
+    "OciQueryServiceTests.GetDevice_EmptyId_Throws",
+    "OciQueryServiceTests.GetDevice_Unknown_ThrowsNotFound"
+  ],
+  "diagnostics": [
+    "dotnet build: 0 warnings, 0 errors",
+    "Roslyn CA1000 pass"
+  ],
+  "summary": {
+    "failed": 0
+  },
+  "warnings": [],
+  "errors": []
+}
