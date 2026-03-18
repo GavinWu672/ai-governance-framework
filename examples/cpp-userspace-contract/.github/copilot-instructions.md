@@ -25,13 +25,20 @@ Full governance rules: `AGENTS.md` and `rules/cpp_safety.md`.
    If yes, apply the three C++ safety rules (see below) before generating or
    modifying code.
 
-5. **Output Governance Contract** — Start every non-trivial response with:
+5. **Assess task risk level** before writing any code:
+   - `L1` Low — isolated fix, single method, no interface change → proceed
+   - `L2` High — class extraction, interface change, threading touched → confirm PLAN.md scope first
+   - `L3` Critical — architectural boundary, threading model, IPC → **stop and surface design for human review**
+
+6. **Output Governance Contract** — Start every non-trivial response with
+   **all five fields** (omitting any field is a protocol violation):
 
 ```
 [Governance Contract]
 LANG     = C++
 PLAN     = <current phase / focus from PLAN.md>
 TOUCHES  = <mutex|heap|callback|other>
+RISK     = <L1|L2|L3>
 PRESSURE = <SAFE|WARNING|CRITICAL> (<n>/200)
 ```
 
@@ -135,6 +142,8 @@ in the response as build evidence.
 - Task would add `reinterpret_cast<>` without a subsequent null-check
 - `PLAN.md` is stale and the task touches architecture or refactoring boundaries
 - Memory pressure is CRITICAL (> 180 lines) and task is not a compaction
+- **RISK = L3** — architectural boundary change detected; stop and surface design for human approval before writing any code
+- Governance Contract header is missing any of the five required fields (LANG, PLAN, TOUCHES, RISK, PRESSURE)
 
 ---
 

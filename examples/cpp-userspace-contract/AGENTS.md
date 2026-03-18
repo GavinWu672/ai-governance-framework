@@ -55,15 +55,29 @@ If a required fact is missing, stop and ask for clarification.
 
 ## Governance Contract Header Format
 
-Every non-trivial AI agent response must begin with:
+Every non-trivial AI agent response must begin with **all five fields**:
 
 ```
 [Governance Contract]
 LANG     = C++
 PLAN     = <current phase / focus from PLAN.md>
-TOUCHES  = <mutex|heap|callback|other>
+TOUCHES  = <mutex|heap|callback|other>   ← REQUIRED, do not omit
+RISK     = <L1|L2|L3>
 PRESSURE = <SAFE|WARNING|CRITICAL> (<n>/200)
 ```
+
+**TOUCHES** — list every area the current task modifies:
+- `mutex` — any std::mutex, CRITICAL_SECTION, or synchronisation primitive
+- `heap` — any new/delete or smart-pointer allocation
+- `callback` — WinAPI callback, COM interface, function pointer, std::function
+- `other` — anything else (pure logic, string processing, UI layout)
+
+**RISK** — task risk level:
+- `L1` Low — isolated bug fix, single method change, no interface change
+- `L2` High — class extraction, interface change, multiple files modified,
+              threading or callback boundary touched
+- `L3` Critical — architectural boundary change, threading model replaced,
+                  IPC/protocol change, new external dependency
 
 **PRESSURE** is derived from the line count of `memory/MEMORY.md`:
 - SAFE: ≤ 150 lines
@@ -72,6 +86,17 @@ PRESSURE = <SAFE|WARNING|CRITICAL> (<n>/200)
 
 Run `hooks/codex_pre_task.py` at session start to get the current values
 for `plan_freshness` and `memory_pressure` automatically.
+
+## Risk Gate Policy
+
+| RISK | Required before proceeding |
+|------|---------------------------|
+| L1   | None — proceed directly |
+| L2   | Confirm PLAN.md scope; note affected interfaces in Decision Summary |
+| L3   | **Stop** — architectural review required; do not write code until human approves the design |
+
+If RISK = L3 is detected mid-task, stop and surface the design for review
+before continuing.
 
 ## Related Documents
 

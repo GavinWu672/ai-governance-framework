@@ -485,6 +485,33 @@ def test_copilot_instructions_contains_pressure_field():
     assert "PRESSURE" in content
 
 
+def test_copilot_instructions_contains_risk_field():
+    path = EXAMPLE_DIR / ".github" / "copilot-instructions.md"
+    content = path.read_text(encoding="utf-8")
+    assert "RISK" in content
+    assert "L1" in content
+    assert "L2" in content
+    assert "L3" in content
+
+
+def test_copilot_instructions_risk_l3_red_line():
+    """RISK = L3 must appear in Red Lines section."""
+    path = EXAMPLE_DIR / ".github" / "copilot-instructions.md"
+    content = path.read_text(encoding="utf-8")
+    assert "L3" in content
+    red_lines_idx = content.index("Red Lines")
+    assert "L3" in content[red_lines_idx:]
+
+
+def test_agents_md_contains_risk_gate_policy():
+    path = EXAMPLE_DIR / "AGENTS.md"
+    content = path.read_text(encoding="utf-8")
+    assert "Risk Gate Policy" in content
+    assert "L1" in content
+    assert "L2" in content
+    assert "L3" in content
+
+
 def test_codex_pre_task_hook_exists():
     path = EXAMPLE_DIR / "hooks" / "codex_pre_task.py"
     assert path.exists(), "codex_pre_task.py missing"
