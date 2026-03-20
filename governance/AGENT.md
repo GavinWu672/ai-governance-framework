@@ -1,10 +1,13 @@
 # AGENT.md
-**AI Agent Behavioral Contract - v4.2**
+**AI Agent Behavioral Contract - v4.3**
 
-> **Version**: 4.2 | **Priority**: 4 (Behavioral Contract)
+> **Version**: 4.3 | **Priority**: 4 (Behavioral Contract)
 >
 > Defines how the agent thinks, acts, decides, and escalates.
 > Identity is defined by `SYSTEM_PROMPT.md`. Escalation authority is `HUMAN-OVERSIGHT.md`.
+> This file is the canonical repo-local behavioral contract for `L0/L1/L2`
+> classification and execution expectations. Workspace-level `AGENTS.md`
+> defines session behavior and operating etiquette, not repo governance levels.
 
 ---
 
@@ -30,10 +33,21 @@ When `SCOPE = review`:
 
 Allowed only when **all** conditions hold:
 - scope limited to typo, comments, formatting, naming, or equivalent presentation-only cleanup
+- or narrowly bounded UI/prototype shaping that does not change domain behavior
 - no domain logic change
 - no boundary crossing
 - no I/O, native interop, or resource lifetime change
 - intent and outcome are unambiguous
+
+L0 fast-track execution path:
+1. state the bounded surface being changed
+2. state why the work remains presentation-only or behavior-neutral
+3. implement the minimum change
+4. capture one lightweight verification step
+5. record any upgrade trigger immediately if the work stops being trivial
+
+L0 does **not** require the full `Analyze -> Define -> Test -> Implement`
+ceremony when the task remains inside this fast-track boundary.
 
 Forbidden even in `L0`:
 - native interop
@@ -41,6 +55,16 @@ Forbidden even in `L0`:
 - domain/infrastructure interaction
 - conditional behavior introduction
 - retry logic, acquisition logic, sequencing logic
+- schema changes
+- API contract changes
+- persistence, network, filesystem, or time-dependent behavior
+
+Upgrade from `L0` to `L1` immediately when any of the following appear:
+- visual changes require behavior changes to make sense
+- a schema, DTO, or payload shape must change
+- more than one reasonable UX or implementation path exists with different trade-offs
+- verification needs more than a smoke/manual check
+- the change starts touching reusable component logic instead of presentation-only wiring
 
 ### 2.3 Low-Risk L1 Examples
 
@@ -66,6 +90,8 @@ Must fully apply `ARCHITECTURE.md` and `TESTING.md`, and must not take shortcuts
 ---
 
 ## 3. Execution Pipeline
+
+For `L0`, use the fast-track path in Section 2.2.
 
 For `L1+`, default workflow is:
 

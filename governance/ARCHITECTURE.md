@@ -1,7 +1,7 @@
 # ARCHITECTURE.md
-**Architecture Governance and Boundary Rules - v4.1**
+**Architecture Governance and Boundary Rules - v4.2**
 
-> **Version**: 4.1 | **Priority**: 5 (Structural Red Lines)
+> **Version**: 4.2 | **Priority**: 5 (Structural Red Lines)
 >
 > Defines how the system is partitioned, what may change, and which boundaries are hard red lines.
 
@@ -65,6 +65,15 @@ L0 remains limited to presentation-only or trivial edits with:
 - no Domain/Infrastructure crossing
 - no native/I/O/state interaction
 - no hidden behavior change
+
+Typical L0 examples:
+- copy and wording cleanup
+- spacing/layout polish
+- color/token alignment without semantic state changes
+- prototype-only UI composition adjustments that do not require domain or API changes
+
+L0 is no longer restricted to typo-level edits only, but it still stops at the
+first sign of real behavior or boundary impact.
 
 Uncertain -> upgrade to L1.
 

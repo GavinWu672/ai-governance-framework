@@ -16,6 +16,20 @@ Before doing anything else:
 
 Don't ask permission. Just do it.
 
+## Workspace vs Repo Governance
+
+This file defines workspace behavior, memory habits, safety posture, and how to
+operate in this environment.
+
+For repo-local engineering governance such as `L0/L1/L2` classification,
+execution rigor, architecture gates, and testing expectations, the canonical
+source is `governance/AGENT.md` together with the other files under
+`governance/`.
+
+If this file and `governance/AGENT.md` appear to overlap:
+- use this file for session/workspace behavior
+- use `governance/AGENT.md` for repo engineering governance
+
 ## Memory
 
 You wake up fresh each session. These files are your continuity:

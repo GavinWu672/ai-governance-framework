@@ -1,7 +1,7 @@
 # TESTING.md
-**Testing Strategy and Quality Gates - v4.1**
+**Testing Strategy and Quality Gates - v4.2**
 
-> **Version**: 4.1 | **Priority**: 6 (Quality Gatekeeper)
+> **Version**: 4.2 | **Priority**: 6 (Quality Gatekeeper)
 >
 > Defines under what conditions we can reasonably trust a piece of code.
 > Tests are guardrails, not KPIs.
@@ -29,8 +29,16 @@ Acceptable evidence:
 - smoke test
 - manual checklist
 - characterization check
+- visual confirmation for presentation-only work
+- before/after screenshot or equivalent lightweight UI evidence when useful
 
 `L0` must not be used to dodge required verification.
+
+For `L0 fast-track` work:
+- one lightweight verification step is enough when the task stays presentation-only
+- do not require a full regression matrix unless the task upgrades out of `L0`
+- if the change starts affecting behavior, schema, async flow, or shared logic,
+  upgrade to `L1`
 
 ### L1 - Maintainable
 

@@ -14,7 +14,11 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from governance_tools.domain_contract_loader import load_domain_contract
-from governance_tools.validator_interface import DomainValidator, ValidatorResult
+from governance_tools.validator_interface import (
+    DomainValidator,
+    VALIDATOR_PAYLOAD_SCHEMA_VERSION,
+    ValidatorResult,
+)
 
 
 C_FUNCTION_DEF_RE = re.compile(
@@ -229,10 +233,30 @@ def build_domain_validation_payload(
     fields: dict,
     resolved_rules: list[str],
     domain_contract: dict | None,
+    contract_file: str | Path | None = None,
 ) -> dict:
     effective_checks = checks or {}
     changed_functions = _extract_changed_functions(effective_checks)
+    changed_files = _normalize_string_list(effective_checks.get("changed_files") or effective_checks.get("files"))
+    contract_raw = (domain_contract or {}).get("raw") or {}
+    contract_path = str(Path(contract_file).resolve()) if contract_file else None
+    evidence_envelope = {
+        "schema_version": VALIDATOR_PAYLOAD_SCHEMA_VERSION,
+        "checks": effective_checks,
+        "source_keys": sorted(str(key) for key in effective_checks.keys()),
+        "response_present": bool(response_text.strip()),
+        "changed_files": changed_files,
+        "provenance": {
+            "contract_path": contract_path,
+            "contract_name": (domain_contract or {}).get("name"),
+            "contract_domain": contract_raw.get("domain") or (domain_contract or {}).get("name"),
+            "plugin_version": contract_raw.get("plugin_version"),
+            "framework_interface_version": contract_raw.get("framework_interface_version"),
+        },
+    }
     return {
+        "schema_version": VALIDATOR_PAYLOAD_SCHEMA_VERSION,
+        "payload_type": "domain-validator-payload",
         "rule_ids": resolved_rules,
         "checks": effective_checks,
         "response_text": response_text,
@@ -240,9 +264,24 @@ def build_domain_validation_payload(
         "isr_code": _extract_isr_code(effective_checks),
         "changed_functions": changed_functions,
         "interrupt_functions": _extract_interrupt_functions(changed_functions),
-        "changed_files": _normalize_string_list(effective_checks.get("changed_files") or effective_checks.get("files")),
+        "changed_files": changed_files,
         "domain_documents": (domain_contract or {}).get("documents", []),
         "ai_behavior_override": (domain_contract or {}).get("ai_behavior_override", []),
+        "contract_snapshot": {
+            "name": (domain_contract or {}).get("name"),
+            "domain": contract_raw.get("domain") or (domain_contract or {}).get("name"),
+            "plugin_version": contract_raw.get("plugin_version"),
+            "framework_interface_version": contract_raw.get("framework_interface_version"),
+            "rules": resolved_rules,
+            "risk": fields.get("RISK"),
+            "oversight": fields.get("OVERSIGHT"),
+            "memory_mode": fields.get("MEMORY_MODE"),
+        },
+        "evidence_envelope": evidence_envelope,
+        "compatibility": {
+            "additive_fields_allowed": True,
+            "legacy_top_level_fields_preserved": True,
+        },
     }
 
 

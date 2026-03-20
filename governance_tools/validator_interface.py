@@ -9,6 +9,10 @@ from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass, field
 
 
+VALIDATOR_RESULT_SCHEMA_VERSION = "1.0"
+VALIDATOR_PAYLOAD_SCHEMA_VERSION = "1.0"
+
+
 @dataclass
 class ValidatorResult:
     ok: bool
@@ -17,6 +21,7 @@ class ValidatorResult:
     warnings: list[str] = field(default_factory=list)
     evidence_summary: str = ""
     metadata: dict[str, object] = field(default_factory=dict)
+    schema_version: str = VALIDATOR_RESULT_SCHEMA_VERSION
 
     def to_dict(self) -> dict:
         return asdict(self)

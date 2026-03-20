@@ -547,3 +547,71 @@ def test_post_task_check_domain_validator_violation_can_trigger_hard_stop(tmp_pa
     assert any("domain-validator:temp_validator: TMP-VIOLATION-001" in error for error in result["errors"])
     output = format_human_result(result)
     assert "domain_hard_stop_rules=TMP-001" in output
+
+
+def test_post_task_check_passes_versioned_validator_envelope_to_domain_validator(tmp_path):
+    (tmp_path / "rules" / "temp-domain").mkdir(parents=True)
+    (tmp_path / "rules" / "temp-domain" / "safety.md").write_text("# Temp rule\n", encoding="utf-8")
+    (tmp_path / "validators").mkdir(parents=True)
+    (tmp_path / "validators" / "temp_validator.py").write_text(
+        textwrap.dedent(
+            """
+            from governance_tools.validator_interface import DomainValidator, ValidatorResult
+
+            class TempValidator(DomainValidator):
+                @property
+                def rule_ids(self):
+                    return ["temp-domain"]
+
+                def validate(self, payload: dict) -> ValidatorResult:
+                    envelope = payload.get("evidence_envelope") or {}
+                    provenance = envelope.get("provenance") or {}
+                    return ValidatorResult(
+                        ok=True,
+                        rule_ids=self.rule_ids,
+                        metadata={
+                            "payload_schema_version": payload.get("schema_version"),
+                            "payload_type": payload.get("payload_type"),
+                            "envelope_schema_version": envelope.get("schema_version"),
+                            "contract_name": provenance.get("contract_name"),
+                            "legacy_fields_preserved": payload.get("compatibility", {}).get("legacy_top_level_fields_preserved"),
+                        },
+                    )
+            """
+        ).strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    contract_file = tmp_path / "contract.yaml"
+    contract_file.write_text(
+        "name: temp-domain\n"
+        "domain: temp-domain\n"
+        "rule_roots:\n"
+        "  - rules\n"
+        "validators:\n"
+        "  - validators/temp_validator.py\n"
+        "plugin_version: \"1.0.0\"\n"
+        "framework_interface_version: \"1\"\n",
+        encoding="utf-8",
+    )
+
+    result = run_post_task_check(
+        _contract(RULES="common,temp-domain"),
+        risk="medium",
+        oversight="review-required",
+        contract_file=contract_file,
+        checks={
+            "changed_files": ["src/ui/layout.tsx"],
+            "test_names": [
+                "tests/test_layout.py::test_failure_path_signal",
+                "tests/test_layout.py::test_cleanup_release",
+            ],
+        },
+    )
+
+    assert result["ok"] is True
+    assert result["domain_validator_results"][0]["metadata"]["payload_schema_version"] == "1.0"
+    assert result["domain_validator_results"][0]["metadata"]["payload_type"] == "domain-validator-payload"
+    assert result["domain_validator_results"][0]["metadata"]["envelope_schema_version"] == "1.0"
+    assert result["domain_validator_results"][0]["metadata"]["contract_name"] == "temp-domain"
+    assert result["domain_validator_results"][0]["metadata"]["legacy_fields_preserved"] is True

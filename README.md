@@ -46,9 +46,17 @@ Current release-facing status:
 - status index: [docs/status/README.md](docs/status/README.md)
 - trust signal dashboard: [docs/status/trust-signal-dashboard.md](docs/status/trust-signal-dashboard.md)
 - domain enforcement matrix: [docs/status/domain-enforcement-matrix.md](docs/status/domain-enforcement-matrix.md)
+- current governance-friction notes: [memory/2026-03-20.md](memory/2026-03-20.md)
 
 This alpha is suitable for evaluation, internal adoption trials, and domain-contract experimentation.
 It should still be treated as a governance framework prototype rather than a fully closed enforcement platform.
+
+Recent governance simplification direction:
+
+- `L0 fast-track` is being treated as a real lightweight path for bounded
+  presentation-only and prototype work
+- root `AGENTS.md` and `governance/AGENT.md` are now explicitly split into
+  workspace behavior vs repo governance roles to reduce document-conflict load
 
 ### Validation Status
 
@@ -287,6 +295,7 @@ The framework currently supports an external domain extension seam with:
 - validator preflight
 - validator execution
 - contract-level hard-stop escalation for selected validator rule IDs
+- versioned validator payload envelopes with backward-compatible legacy fields
 
 This is the current transitional seam, not the final decision architecture.
 v2.6 keeps the domain assets in external repos, but moves final verdict

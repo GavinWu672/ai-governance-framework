@@ -102,10 +102,53 @@ def test_build_domain_validation_payload_extracts_firmware_focused_fields():
         domain_contract={"documents": [], "ai_behavior_override": []},
     )
 
+    assert payload["schema_version"] == "1.0"
+    assert payload["payload_type"] == "domain-validator-payload"
     assert payload["isr_code"] == "void USB_ISR() { printf('bad'); }"
     assert payload["changed_functions"] == ["USB_ISR", "CFU_Handler"]
     assert payload["interrupt_functions"] == ["USB_ISR"]
     assert payload["changed_files"] == ["src/usb/isr.c", "src/usb/cfu.c"]
+    assert payload["evidence_envelope"]["schema_version"] == "1.0"
+    assert payload["evidence_envelope"]["source_keys"] == ["changed_files", "changed_functions", "isr_code"]
+    assert payload["compatibility"]["additive_fields_allowed"] is True
+
+
+def test_build_domain_validation_payload_includes_contract_snapshot_and_provenance(tmp_path):
+    contract_file = tmp_path / "contract.yaml"
+    contract_file.write_text(
+        "name: temp-domain\n"
+        "domain: firmware\n"
+        "plugin_version: \"1.2.3\"\n"
+        "framework_interface_version: \"1\"\n",
+        encoding="utf-8",
+    )
+
+    payload = build_domain_validation_payload(
+        response_text="response",
+        checks={"changed_files": ["src/ui/layout.tsx"]},
+        fields={"RULES": "common,temp-domain", "RISK": "low", "OVERSIGHT": "auto", "MEMORY_MODE": "candidate"},
+        resolved_rules=["common", "temp-domain"],
+        domain_contract={
+            "name": "temp-domain",
+            "documents": [],
+            "ai_behavior_override": [],
+            "raw": {
+                "domain": "firmware",
+                "plugin_version": "1.2.3",
+                "framework_interface_version": "1",
+            },
+        },
+        contract_file=contract_file,
+    )
+
+    assert payload["contract_snapshot"]["name"] == "temp-domain"
+    assert payload["contract_snapshot"]["domain"] == "firmware"
+    assert payload["contract_snapshot"]["plugin_version"] == "1.2.3"
+    assert payload["contract_snapshot"]["framework_interface_version"] == "1"
+    assert payload["evidence_envelope"]["provenance"]["contract_name"] == "temp-domain"
+    assert payload["evidence_envelope"]["provenance"]["contract_domain"] == "firmware"
+    assert payload["evidence_envelope"]["provenance"]["plugin_version"] == "1.2.3"
+    assert payload["evidence_envelope"]["provenance"]["contract_path"] == str(contract_file.resolve())
 
 
 def test_build_domain_validation_payload_can_extract_functions_from_diff_text():

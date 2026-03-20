@@ -174,6 +174,14 @@ Malformed contract blocks are governance failures.
 
 Lower-rank conflicts with higher-rank -> **STOP** and escalate.
 
+### 3.1.1 Single-Truth Boundary
+
+- root-level `AGENTS.md` is a workspace/session operating document
+- repo-local `governance/AGENT.md` is the canonical behavioral contract for
+  `L0/L1/L2` task classification and execution expectations
+- if the two appear to conflict on governance level or execution rigor,
+  `governance/AGENT.md` wins for repo work and the mismatch should be corrected
+
 ### 3.2 PLAN.md Interpretation
 
 `PLAN.md` governs **what feature work is prioritized**.
@@ -192,6 +200,14 @@ It does **not** automatically block bounded adjacent engineering work such as bu
 | 2 | `NATIVE-INTEROP.md` | P/Invoke, ABI, native libraries, memory ownership |
 
 Do not load irrelevant documents by default. If uncertainty itself changes risk, **ESCALATE**.
+
+### 3.4 L0 Fast-Track Interpretation
+
+When a task is truly `L0`:
+- use the lightweight fast-track path from `AGENT.md`
+- do not force full `L1+` phase-gate ceremony
+- require only proportionate verification from `TESTING.md`
+- upgrade immediately if behavior, schema, boundary, or trade-off ambiguity appears
 
 ---
 
