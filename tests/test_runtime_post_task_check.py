@@ -683,3 +683,73 @@ def test_post_task_check_classifies_invalid_public_api_diff_schema():
     assert not any(item["violation_type"] == "missing_required_evidence" for item in result["evidence_violations"])
     output = format_human_result(result)
     assert "evidence_violation_count=1" in output
+
+
+
+def test_post_task_check_classifies_policy_conflict_from_precedence_matrix():
+    result = run_post_task_check(
+        _contract(),
+        risk="medium",
+        oversight="review-required",
+        checks={
+            "policy_conflicts": [
+                {
+                    "policy_type": "runtime-safety-policy",
+                    "override_target": "domain-policy",
+                    "scope": "all protected domains",
+                }
+            ],
+            "warnings": [],
+            "errors": [],
+        },
+    )
+
+    assert result["ok"] is False
+    assert result["policy_violations"] == [
+        {
+            "violation_type": "policy_conflict",
+            "policy_type": "runtime-safety-policy",
+            "override_target": "domain-policy",
+            "scope": "all protected domains",
+            "detected_by": "policy precedence resolver",
+            "verdict_impact": "escalate",
+            "message": "Runtime policy conflict requires precedence resolution: runtime-safety-policy -> domain-policy (runtime-safety-policy wins)",
+        }
+    ]
+    assert any("runtime-policy: Runtime policy conflict requires precedence resolution: runtime-safety-policy -> domain-policy" in error for error in result["errors"])
+    output = format_human_result(result)
+    assert "policy_violation_count=1" in output
+
+
+
+def test_post_task_check_classifies_illegal_policy_override():
+    result = run_post_task_check(
+        _contract(),
+        risk="medium",
+        oversight="review-required",
+        checks={
+            "policy_conflicts": [
+                {
+                    "policy_type": "repo-local workflow preference",
+                    "override_target": "runtime-safety-policy",
+                    "scope": "non-protected workflow behavior",
+                }
+            ],
+            "warnings": [],
+            "errors": [],
+        },
+    )
+
+    assert result["ok"] is False
+    assert result["policy_violations"] == [
+        {
+            "violation_type": "illegal_override",
+            "policy_type": "repo-local workflow preference",
+            "override_target": "runtime-safety-policy",
+            "scope": "non-protected workflow behavior",
+            "detected_by": "ownership and precedence validator",
+            "verdict_impact": "stop",
+            "message": "Illegal runtime policy override: repo-local workflow preference -> runtime-safety-policy",
+        }
+    ]
+    assert any("runtime-policy: Illegal runtime policy override: repo-local workflow preference -> runtime-safety-policy" in error for error in result["errors"])

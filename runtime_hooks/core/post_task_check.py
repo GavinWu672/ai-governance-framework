@@ -146,6 +146,11 @@ def _load_required_runtime_evidence_kinds() -> set[str]:
     }
 
 
+def _load_policy_precedence_rows() -> list[dict]:
+    payload = json.loads(DECISION_MODEL_PATH.read_text(encoding="utf-8"))
+    return list(payload.get("matrices", {}).get("policy_precedence", []))
+
+
 def _observed_runtime_evidence_kinds(
     checks: dict | None,
     *,
@@ -182,6 +187,80 @@ def _classify_invalid_evidence_schema(checks: dict | None) -> list[dict]:
             "message": f"Invalid runtime evidence schema: public-api-diff ({schema_error})",
         }
     ]
+
+
+def _classify_policy_conflicts(checks: dict | None) -> list[dict]:
+    if not checks:
+        return []
+
+    policy_conflicts = checks.get("policy_conflicts") or []
+    if not isinstance(policy_conflicts, list):
+        return []
+
+    precedence_rows = _load_policy_precedence_rows()
+    violations = []
+    for item in policy_conflicts:
+        if not isinstance(item, dict):
+            continue
+        policy_type = str(item.get("policy_type", "")).strip()
+        override_target = str(item.get("override_target", "")).strip()
+        scope = str(item.get("scope", "")).strip()
+        if not policy_type or not override_target:
+            continue
+
+        matched_row = next(
+            (
+                row
+                for row in precedence_rows
+                if str(row.get("policy_type")) == policy_type
+                and str(row.get("override_target")) == override_target
+            ),
+            None,
+        )
+
+        if matched_row is None:
+            violations.append(
+                {
+                    "violation_type": "policy_conflict",
+                    "policy_type": policy_type,
+                    "override_target": override_target,
+                    "scope": scope,
+                    "detected_by": "policy precedence resolver",
+                    "verdict_impact": "escalate",
+                    "message": f"Unresolved runtime policy conflict: {policy_type} -> {override_target}",
+                }
+            )
+            continue
+
+        if matched_row.get("allowed") is False:
+            violations.append(
+                {
+                    "violation_type": "illegal_override",
+                    "policy_type": policy_type,
+                    "override_target": override_target,
+                    "scope": scope or str(matched_row.get("scope", "")),
+                    "detected_by": "ownership and precedence validator",
+                    "verdict_impact": "stop",
+                    "message": f"Illegal runtime policy override: {policy_type} -> {override_target}",
+                }
+            )
+            continue
+
+        violations.append(
+            {
+                "violation_type": "policy_conflict",
+                "policy_type": policy_type,
+                "override_target": override_target,
+                "scope": scope or str(matched_row.get("scope", "")),
+                "detected_by": "policy precedence resolver",
+                "verdict_impact": "escalate",
+                "message": (
+                    f"Runtime policy conflict requires precedence resolution: {policy_type} -> {override_target} "
+                    f"({matched_row.get('conflict_resolution')})"
+                ),
+            }
+        )
+    return violations
 
 
 def _classify_missing_required_evidence(
@@ -356,8 +435,11 @@ def run_post_task_check(
             domain_validator_results=domain_validator_results,
         )
     )
+    policy_violations = _classify_policy_conflicts(effective_checks)
     for violation in evidence_violations:
         errors.append(f"runtime-evidence: {violation['message']}")
+    for violation in policy_violations:
+        errors.append(f"runtime-policy: {violation['message']}")
 
     if create_snapshot and validation.contract_found and validation.compliant and not errors:
         if memory_root is None:
@@ -393,6 +475,7 @@ def run_post_task_check(
         "refactor_evidence": refactor_evidence,
         "driver_evidence": driver_evidence,
         "evidence_violations": evidence_violations,
+        "policy_violations": policy_violations,
         "domain_validator_results": domain_validator_results,
         "domain_hard_stop_rules": sorted(domain_hard_stop_rules),
         "domain_contract": domain_contract,
@@ -440,6 +523,8 @@ def format_human_result(result: dict) -> str:
         lines.append(f"driver_evidence_ok={result['driver_evidence']['ok']}")
     if result.get("evidence_violations"):
         lines.append(f"evidence_violation_count={len(result['evidence_violations'])}")
+    if result.get("policy_violations"):
+        lines.append(f"policy_violation_count={len(result['policy_violations'])}")
     if result.get("domain_validator_results"):
         lines.append(f"domain_validator_count={len(result['domain_validator_results'])}")
     if result.get("domain_hard_stop_rules"):
