@@ -57,6 +57,8 @@ Recent governance simplification direction:
   presentation-only and prototype work
 - root `AGENTS.md` and `governance/AGENT.md` are now explicitly split into
   workspace behavior vs repo governance roles to reduce document-conflict load
+- failure-mode testing is now being defined as an explicit runtime trust gate,
+  not left as an implicit future concern
 
 ### Validation Status
 
