@@ -27,6 +27,16 @@ from memory_pipeline.session_snapshot import create_session_snapshot
 from runtime_hooks.core.human_summary import build_summary_line, format_contract_summary_label
 
 DECISION_MODEL_PATH = Path(__file__).resolve().parents[2] / "governance" / "governance_decision_model.v2.6.json"
+PUBLIC_API_DIFF_REQUIRED_KEYS = {
+    "ok",
+    "removed",
+    "added",
+    "compatibility_risk",
+    "breaking_changes",
+    "non_breaking_changes",
+    "warnings",
+    "errors",
+}
 
 
 def _merge_runtime_checks(errors: list[str], warnings: list[str], checks: dict | None) -> None:
@@ -52,6 +62,27 @@ def _merge_refactor_evidence_checks(errors: list[str], warnings: list[str], chec
     return result
 
 
+def _validate_public_api_diff_schema(payload: object) -> str | None:
+    if not isinstance(payload, dict):
+        return "public-api-diff evidence must be an object"
+
+    missing_keys = sorted(PUBLIC_API_DIFF_REQUIRED_KEYS - set(payload))
+    if missing_keys:
+        return f"public-api-diff evidence missing keys: {missing_keys}"
+
+    if not isinstance(payload.get("ok"), bool):
+        return "public-api-diff evidence field 'ok' must be a boolean"
+
+    for key in ("removed", "added", "breaking_changes", "non_breaking_changes", "warnings", "errors"):
+        if not isinstance(payload.get(key), list):
+            return f"public-api-diff evidence field '{key}' must be a list"
+
+    if not isinstance(payload.get("compatibility_risk"), str):
+        return "public-api-diff evidence field 'compatibility_risk' must be a string"
+
+    return None
+
+
 def _merge_public_api_diff_checks(
     errors: list[str],
     warnings: list[str],
@@ -64,7 +95,10 @@ def _merge_public_api_diff_checks(
         return None
 
     result = None
-    if checks and checks.get("public_api_diff"):
+    if checks and "public_api_diff" in checks:
+        schema_error = _validate_public_api_diff_schema(checks["public_api_diff"])
+        if schema_error:
+            return None
         result = checks["public_api_diff"]
     elif api_before_files and api_after_files:
         result = check_public_api_diff(api_before_files, api_after_files)
@@ -120,13 +154,34 @@ def _observed_runtime_evidence_kinds(
     domain_validator_results: list[dict],
 ) -> set[str]:
     observed = set(str(kind) for kind in (checks or {}).get("evidence_kinds", []) if str(kind).strip())
-    if public_api_diff is not None:
+    if checks and "public_api_diff" in checks:
+        observed.add("public-api-diff")
+    elif public_api_diff is not None:
         observed.add("public-api-diff")
     if driver_evidence and driver_evidence.get("ok"):
         observed.add("sdv-text")
     if domain_validator_results:
         observed.add("domain-validator-result")
     return observed
+
+
+def _classify_invalid_evidence_schema(checks: dict | None) -> list[dict]:
+    if not checks or "public_api_diff" not in checks:
+        return []
+
+    schema_error = _validate_public_api_diff_schema(checks["public_api_diff"])
+    if not schema_error:
+        return []
+
+    return [
+        {
+            "violation_type": "invalid_evidence_schema",
+            "evidence_kind": "public-api-diff",
+            "detected_by": "runtime evidence validator",
+            "verdict_impact": "stop",
+            "message": f"Invalid runtime evidence schema: public-api-diff ({schema_error})",
+        }
+    ]
 
 
 def _classify_missing_required_evidence(
@@ -292,11 +347,14 @@ def run_post_task_check(
             domain_validator_results,
             hard_stop_rules=domain_hard_stop_rules,
         )
-    evidence_violations = _classify_missing_required_evidence(
-        effective_checks,
-        public_api_diff=public_api_diff,
-        driver_evidence=driver_evidence,
-        domain_validator_results=domain_validator_results,
+    evidence_violations = _classify_invalid_evidence_schema(effective_checks)
+    evidence_violations.extend(
+        _classify_missing_required_evidence(
+            effective_checks,
+            public_api_diff=public_api_diff,
+            driver_evidence=driver_evidence,
+            domain_validator_results=domain_validator_results,
+        )
     )
     for violation in evidence_violations:
         errors.append(f"runtime-evidence: {violation['message']}")

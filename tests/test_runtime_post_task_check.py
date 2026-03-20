@@ -647,3 +647,39 @@ def test_post_task_check_classifies_missing_required_runtime_evidence():
     assert any("runtime-evidence: Missing required runtime evidence: public-api-diff" in error for error in result["errors"])
     output = format_human_result(result)
     assert "evidence_violation_count=1" in output
+
+
+
+def test_post_task_check_classifies_invalid_public_api_diff_schema():
+    result = run_post_task_check(
+        _contract(RULES="common,refactor"),
+        risk="medium",
+        oversight="review-required",
+        checks={
+            "required_runtime_evidence": ["public-api-diff"],
+            "public_api_diff": {
+                "ok": "yes",
+            },
+            "test_names": [
+                "tests/test_service.py::test_regression_contract",
+                "tests/test_service.py::test_cleanup_release",
+            ],
+            "warnings": [],
+            "errors": [],
+        },
+    )
+
+    assert result["ok"] is False
+    assert result["evidence_violations"] == [
+        {
+            "violation_type": "invalid_evidence_schema",
+            "evidence_kind": "public-api-diff",
+            "detected_by": "runtime evidence validator",
+            "verdict_impact": "stop",
+            "message": "Invalid runtime evidence schema: public-api-diff (public-api-diff evidence missing keys: ['added', 'breaking_changes', 'compatibility_risk', 'errors', 'non_breaking_changes', 'removed', 'warnings'])",
+        }
+    ]
+    assert any("runtime-evidence: Invalid runtime evidence schema: public-api-diff" in error for error in result["errors"])
+    assert not any(item["violation_type"] == "missing_required_evidence" for item in result["evidence_violations"])
+    output = format_human_result(result)
+    assert "evidence_violation_count=1" in output
