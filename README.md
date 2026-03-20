@@ -28,6 +28,7 @@ The most precise current positioning is:
 - a runnable `AI Coding Runtime Governance Framework prototype`
 - a framework with a real runtime governance spine, not just static policy documents
 - an established external domain validator seam, with the first firmware vertical slice already running
+- an explicit v2.6 decision-model draft for moving from mixed enforcement to runtime-centered enforcement
 - still actively strengthening:
   - semantic verification depth
   - practical git-hook / CI-gate interception coverage
@@ -76,7 +77,7 @@ The simplest way to describe the difference is:
 
 - this repository is designed around a **multi-repo runtime-governance stack** with:
   - external domain contracts
-  - mixed enforcement
+  - a transitional mixed-enforcement seam moving toward runtime-centered enforcement
   - reviewer / trust / release publication surfaces
 - and it operates primarily at the **task/session boundary**
   - rather than trying to govern every agent action or every generation token inside the model runtime
@@ -252,6 +253,7 @@ Highlights:
 - `kernel-driver` focuses on IRQL, memory boundaries, cleanup, unwind, and other privileged-risk concerns
 - `kernel-driver` evidence should come primarily from SDV / SAL / WDK analysis outputs and driver-focused tests, not from a homemade "do everything" parser
 - rule packs currently behave more like a policy activation layer than a full policy engine
+- the next runtime step is captured in `governance/governance_decision_model.v2.6.json`, which defines ownership, policy precedence, evidence trust, violation handling, and a determinism contract as machine-checkable spec inputs
 - `test_result_ingestor.py` now normalizes not only `pytest-text` / `junit-xml`, but also `sdv-text`, `msbuild-warning-text`, `sarif`, and `wdk-analysis-text`
 - `architecture_drift_checker.py` now supports before/after dependency edge diffs in addition to high-signal heuristics
 - `state_generator.py` now emits advisory `rule_pack_suggestions`, but does not silently rewrite `runtime_contract.rules`
@@ -285,6 +287,14 @@ The framework currently supports an external domain extension seam with:
 - validator preflight
 - validator execution
 - contract-level hard-stop escalation for selected validator rule IDs
+
+This is the current transitional seam, not the final decision architecture.
+v2.6 keeps the domain assets in external repos, but moves final verdict
+computation, violation handling, and fallback behavior into the runtime's
+explicit decision model:
+
+- design note: `docs/governance-runtime-v2.6.md`
+- machine-readable draft: `governance/governance_decision_model.v2.6.json`
 
 The built-in example is `examples/usb-hub-contract/`, which can currently:
 
