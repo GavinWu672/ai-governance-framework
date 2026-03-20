@@ -258,8 +258,12 @@ def test_session_end_preserves_contract_context_in_summary_and_curated_artifact(
     assert verdict_payload["contract_identity"]["name"] == "kernel-driver-contract"
     assert verdict_payload["contract_identity"]["domain"] == "kernel-driver"
     assert verdict_payload["contract_identity"]["risk_tier"] == "high"
+    assert verdict_payload["decision_governance"]["decision_source"] == "single decision computation source"
+    assert verdict_payload["decision_governance"]["decision_owner"] == "runtime"
     trace_payload = json.loads(Path(result["trace_artifact"]).read_text(encoding="utf-8"))
     assert trace_payload["contract_identity"]["plugin_version"] == "1.0.0"
+    assert trace_payload["decision_governance"]["decision_source"] == "single decision computation source"
+    assert trace_payload["decision_governance"]["decision_owner"] == "runtime"
 
     curated_payload = json.loads(Path(result["curated_artifact"]).read_text(encoding="utf-8"))
     assert any(item["source"] == "contract_resolution" for item in curated_payload["items"])
@@ -323,6 +327,8 @@ def test_session_end_fails_closed_on_forced_runtime_failure(local_project_root):
     assert trace_payload["runtime_failure"]["violation_type"] == "runtime_failure"
     assert trace_payload["runtime_failure"]["verdict_impact"] == "stop"
     assert trace_payload["runtime_failure"]["stage"] == "artifact_emission"
+    assert trace_payload["decision_governance"]["decision_source"] == "single decision computation source"
+    assert trace_payload["decision_governance"]["decision_owner"] == "runtime"
 
 
 

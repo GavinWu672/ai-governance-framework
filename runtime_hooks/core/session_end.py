@@ -19,7 +19,7 @@ from memory_pipeline.memory_curator import curate_candidate_artifact
 from memory_pipeline.memory_promoter import promote_candidate
 from memory_pipeline.promotion_policy import classify_promotion_policy
 from memory_pipeline.session_snapshot import create_session_snapshot
-from governance_tools.decision_model_loader import build_runtime_policy_ref, violation_verdict_impact
+from governance_tools.decision_model_loader import build_runtime_policy_ref, final_verdict_owner, runtime_decision_source, violation_verdict_impact
 from governance_tools.domain_governance_metadata import domain_risk_tier
 
 
@@ -103,6 +103,10 @@ def _build_verdict_artifact(
             "memory_mode": contract.get("memory_mode"),
         },
         "contract_identity": _contract_identity(contract_resolution, domain_contract),
+        "decision_governance": {
+            "decision_source": runtime_decision_source(),
+            "decision_owner": final_verdict_owner(),
+        },
         "evidence_summary": {
             "check_keys": sorted(str(key) for key in checks.keys()),
             "public_api_diff_present": checks.get("public_api_diff") is not None,
@@ -135,6 +139,10 @@ def _build_runtime_failure_trace_artifact(
         "policy_ref": build_runtime_policy_ref(),
         "contract_identity": _contract_identity(contract_resolution, domain_contract),
         "runtime_contract": contract,
+        "decision_governance": {
+            "decision_source": runtime_decision_source(),
+            "decision_owner": final_verdict_owner(),
+        },
         "decision_path": [
             "normalize runtime contract",
             "runtime failure interception",
@@ -185,6 +193,10 @@ def _build_trace_artifact(
         "policy_ref": build_runtime_policy_ref(),
         "contract_identity": _contract_identity(contract_resolution, domain_contract),
         "runtime_contract": contract,
+        "decision_governance": {
+            "decision_source": runtime_decision_source(),
+            "decision_owner": final_verdict_owner(),
+        },
         "decision_path": [
             "normalize runtime contract",
             "evaluate promotion policy",

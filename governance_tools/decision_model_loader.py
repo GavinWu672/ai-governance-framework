@@ -59,3 +59,15 @@ def violation_verdict_impact(violation_type: str, default: str) -> str:
             value = str(row.get("default_verdict_impact", "")).strip()
             return value or default
     return default
+
+
+def runtime_decision_source() -> str:
+    return str(load_decision_model().get("enforcement_model", {}).get("runtime_role", "unknown"))
+
+
+def final_verdict_owner() -> str:
+    rows = load_decision_model().get("matrices", {}).get("decision_ownership", [])
+    for row in rows:
+        if str(row.get("concern")) == "final governance verdict":
+            return str(row.get("owner", "unknown"))
+    return "unknown"
