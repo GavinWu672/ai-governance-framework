@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -40,7 +41,18 @@ def _contains_framework_marker(path: Path) -> bool:
         return False
 
 
-def validate_hook_install(repo_root: Path) -> HookInstallResult:
+def _normalize_framework_root(raw_value: str) -> Path:
+    """Accept Windows-native paths and Git Bash/MSYS paths like /e/work/repo."""
+    candidate = raw_value.strip()
+    msys_match = re.match(r"^/([a-zA-Z])/(.*)$", candidate)
+    if msys_match:
+        drive = msys_match.group(1).upper()
+        remainder = msys_match.group(2).replace("/", "\\")
+        return Path(f"{drive}:\\{remainder}").expanduser()
+    return Path(candidate).expanduser()
+
+
+def validate_hook_install(repo_root: Path, framework_root: Path | None = None) -> HookInstallResult:
     repo_root = repo_root.resolve()
     hook_dir = repo_root / ".git" / "hooks"
     checks: dict[str, bool] = {}
@@ -54,7 +66,7 @@ def validate_hook_install(repo_root: Path) -> HookInstallResult:
             hook_dir=str(hook_dir),
             framework_root=None,
             checks={"git_hooks_dir_present": False},
-            errors=[f"找不到 hooks 目錄: {hook_dir}"],
+            errors=[f"missing git hooks directory: {hook_dir}"],
         )
 
     checks["git_hooks_dir_present"] = True
@@ -68,34 +80,38 @@ def validate_hook_install(repo_root: Path) -> HookInstallResult:
     checks["framework_root_config_present"] = config_file.is_file()
 
     if not checks["pre_commit_installed"]:
-        errors.append(f"缺少 AI Governance pre-commit hook: {pre_commit}")
+        errors.append(f"missing AI Governance pre-commit hook: {pre_commit}")
     if not checks["pre_push_installed"]:
-        errors.append(f"缺少 AI Governance pre-push hook: {pre_push}")
+        errors.append(f"missing AI Governance pre-push hook: {pre_push}")
 
-    framework_root: Path | None = None
+    resolved_framework_root = framework_root.resolve() if framework_root is not None else None
     if config_file.is_file():
         raw_value = config_file.read_text(encoding="utf-8").strip()
         if raw_value:
-            framework_root = Path(raw_value).expanduser()
+            resolved_framework_root = _normalize_framework_root(raw_value)
         else:
-            errors.append(f"framework root 設定為空值: {config_file}")
+            errors.append(f"framework root config is empty: {config_file}")
+    elif resolved_framework_root is not None:
+        warnings.append(
+            f"ai-governance-framework-root not found; using explicit framework root: {resolved_framework_root}"
+        )
     else:
         warnings.append(
-            "未找到 ai-governance-framework-root；先嘗試將目標 repo 視為 framework repo 自我驗證。"
+            "ai-governance-framework-root not found; temporarily treating the target repo as the framework root."
         )
-        framework_root = repo_root
+        resolved_framework_root = repo_root
 
-    if framework_root is not None:
-        checks["framework_root_exists"] = framework_root.is_dir()
+    if resolved_framework_root is not None:
+        checks["framework_root_exists"] = resolved_framework_root.is_dir()
         if not checks["framework_root_exists"]:
-            errors.append(f"framework root 不存在: {framework_root}")
+            errors.append(f"framework root does not exist: {resolved_framework_root}")
         else:
             for relpath in REQUIRED_FRAMEWORK_FILES:
                 key = f"framework_file:{relpath}"
-                present = (framework_root / relpath).is_file()
+                present = (resolved_framework_root / relpath).is_file()
                 checks[key] = present
                 if not present:
-                    errors.append(f"framework root 缺少必要檔案: {framework_root / relpath}")
+                    errors.append(f"framework root missing required file: {resolved_framework_root / relpath}")
     else:
         checks["framework_root_exists"] = False
 
@@ -103,7 +119,11 @@ def validate_hook_install(repo_root: Path) -> HookInstallResult:
         valid=len(errors) == 0,
         repo_root=str(repo_root),
         hook_dir=str(hook_dir),
-        framework_root=str(framework_root.resolve()) if framework_root and framework_root.exists() else (str(framework_root) if framework_root else None),
+        framework_root=(
+            str(resolved_framework_root.resolve())
+            if resolved_framework_root and resolved_framework_root.exists()
+            else (str(resolved_framework_root) if resolved_framework_root else None)
+        ),
         checks=checks,
         errors=errors,
         warnings=warnings,
@@ -165,6 +185,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="Target git repo root to inspect (default: current directory).",
     )
     parser.add_argument(
+        "--framework-root",
+        help="Optional explicit framework root to validate against when hooks are not installed yet.",
+    )
+    parser.add_argument(
         "--format",
         choices=("human", "json"),
         default="human",
@@ -177,7 +201,10 @@ def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
 
-    result = validate_hook_install(Path(args.repo))
+    result = validate_hook_install(
+        Path(args.repo),
+        framework_root=Path(args.framework_root) if args.framework_root else None,
+    )
     if args.format == "json":
         print(format_json(result))
     else:

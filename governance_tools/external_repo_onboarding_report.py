@@ -33,12 +33,17 @@ def build_onboarding_report(
     repo_root: Path,
     *,
     contract_file: str | Path | None = None,
+    framework_root: str | Path | None = None,
     risk: str = "medium",
     oversight: str = "review-required",
     memory_mode: str = "candidate",
     task_text: str = "External governance onboarding smoke test",
 ) -> ExternalRepoOnboardingReport:
-    readiness = assess_external_repo(repo_root, contract_path=contract_file)
+    readiness = assess_external_repo(
+        repo_root,
+        contract_path=contract_file,
+        framework_root=Path(framework_root) if framework_root is not None else None,
+    )
     smoke = run_external_repo_smoke(
         repo_root,
         contract_file=contract_file,
@@ -218,6 +223,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Generate a combined onboarding report for an external governance repo.")
     parser.add_argument("--repo", default=".", help="Target repo root.")
     parser.add_argument("--contract", help="Optional explicit contract.yaml path.")
+    parser.add_argument("--framework-root", help="Optional explicit framework root for readiness validation.")
     parser.add_argument("--risk", default="medium")
     parser.add_argument("--oversight", default="review-required")
     parser.add_argument("--memory-mode", default="candidate")
@@ -233,6 +239,7 @@ def main() -> int:
     report = build_onboarding_report(
         Path(args.repo),
         contract_file=args.contract,
+        framework_root=args.framework_root,
         risk=args.risk,
         oversight=args.oversight,
         memory_mode=args.memory_mode,

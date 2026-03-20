@@ -15,6 +15,7 @@ if __package__ in (None, ""):
 
 from governance_tools.external_repo_onboarding_index import build_external_repo_onboarding_index
 from governance_tools.human_summary import build_summary_line
+from governance_tools.doc_drift_checker import assess_doc_drift
 from governance_tools.release_readiness import assess_release_readiness
 
 
@@ -103,13 +104,48 @@ def audit_governance(
     if cpp_pack_path.is_file():
         cpp_pack_text = _read_text(cpp_pack_path)
 
+    system_prompt_has_boundary_marker = any(
+        marker in system_prompt_text
+        for marker in (
+            "cross-project private include",
+            "hard safety or architecture boundary",
+            "hard safety or architecture red line",
+            "hard safety or architecture",
+        )
+    )
+    architecture_has_boundary_marker = any(
+        marker in architecture_text
+        for marker in (
+            "AdditionalIncludeDirectories",
+            "peer project's private directory",
+            "boundary violation",
+        )
+    )
+    review_has_boundary_marker = any(
+        marker in review_text
+        for marker in (
+            "AdditionalIncludeDirectories",
+            "C9 Project Include Boundary",
+            "C++ Build Boundary Addendum",
+            "boundary issue",
+        )
+    )
+    cpp_pack_has_boundary_marker = any(
+        marker in cpp_pack_text
+        for marker in (
+            "AdditionalIncludeDirectories",
+            "cross-project private header access",
+            "boundary violation",
+        )
+    )
+
     add_check(
         "alignment:build-boundary",
         (
-            "cross-project private include" in system_prompt_text
-            and "AdditionalIncludeDirectories" in architecture_text
-            and "C9 Project Include Boundary" in review_text
-            and "AdditionalIncludeDirectories" in cpp_pack_text
+            system_prompt_has_boundary_marker
+            and architecture_has_boundary_marker
+            and review_has_boundary_marker
+            and cpp_pack_has_boundary_marker
         ),
         "build-boundary rule is not aligned across constitution, review, and runtime pack",
     )
@@ -124,6 +160,20 @@ def audit_governance(
 
     if "runtime-enforcement" not in workflow_text:
         warnings.append("Workflow job name 'runtime-enforcement' was not found; enforcement may be harder to locate.")
+
+    doc_drift = assess_doc_drift(project_root)
+    checks.append(
+        {
+            "name": "docs:doc-drift",
+            "ok": doc_drift["ok"],
+            "detail": (
+                f"undocumented_routes={len(doc_drift['undocumented_routes'])}, "
+                f"undocumented_migrations={len(doc_drift['undocumented_migrations'])}"
+            ),
+        }
+    )
+    warnings.extend(f"doc-drift: {item}" for item in doc_drift.get("warnings", []))
+    warnings.extend(f"doc-drift: {item}" for item in doc_drift.get("errors", []))
 
     release_readiness = None
     if release_version:
@@ -152,6 +202,7 @@ def audit_governance(
         "checks": checks,
         "errors": errors,
         "warnings": warnings,
+        "doc_drift": doc_drift,
         "release_readiness": release_readiness,
         "external_onboarding": external_onboarding,
     }
@@ -163,10 +214,21 @@ def format_human_result(result: dict) -> str:
     ]
     release_readiness = result.get("release_readiness")
     external_onboarding = result.get("external_onboarding")
+    doc_drift = result.get("doc_drift")
     lines.append(
         build_summary_line(
             f"ok={result['ok']}",
             f"checks={len(result['checks'])}",
+            (
+                f"doc_drift_routes={len(doc_drift.get('undocumented_routes') or [])}"
+                if doc_drift is not None
+                else None
+            ),
+            (
+                f"doc_drift_migrations={len(doc_drift.get('undocumented_migrations') or [])}"
+                if doc_drift is not None
+                else None
+            ),
             (
                 f"release={release_readiness['version']}/"
                 + ("ready" if release_readiness["ok"] else "not-ready")
@@ -187,6 +249,10 @@ def format_human_result(result: dict) -> str:
     )
     lines.append(f"ok={result['ok']}")
     lines.append(f"checks={len(result['checks'])}")
+    if doc_drift is not None:
+        lines.append(f"doc_drift_ok={doc_drift['ok']}")
+        lines.append(f"doc_drift_undocumented_routes={len(doc_drift['undocumented_routes'])}")
+        lines.append(f"doc_drift_undocumented_migrations={len(doc_drift['undocumented_migrations'])}")
 
     if release_readiness is not None:
         lines.append(f"release_version={release_readiness['version']}")

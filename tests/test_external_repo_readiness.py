@@ -1,9 +1,21 @@
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 
 from governance_tools.external_repo_readiness import assess_external_repo, format_human
+
+
+FIXTURE_ROOT = Path("tests/_tmp_external_repo_readiness")
+
+
+def _reset_fixture(name: str) -> Path:
+    path = FIXTURE_ROOT / name
+    if path.exists():
+        shutil.rmtree(path)
+    path.mkdir(parents=True, exist_ok=True)
+    return path
 
 
 def _write(path: Path, text: str) -> None:
@@ -25,7 +37,7 @@ def _make_target_repo(target_root: Path, framework_root: Path) -> None:
     _write(hook_dir / "ai-governance-framework-root", str(framework_root))
     _write(
         target_root / "PLAN.md",
-        "> **?敺??*: 2026-03-14\n> **Owner**: test\n> **Freshness**: Sprint (7d)\n",
+        "> **最後更新**: 2026-03-14\n> **Owner**: test\n> **Freshness**: Sprint (7d)\n",
     )
     _write(target_root / "AGENTS.md", "# Agents\n")
     _write(target_root / "CHECKLIST.md", "# Checklist\n")
@@ -64,9 +76,10 @@ def _write_lock(target_root: Path, adopted_release: str, compatibility: str = ">
     _write(target_root / "governance" / "framework.lock.json", json.dumps(payload, indent=2))
 
 
-def test_assess_external_repo_returns_ready_for_complete_repo(tmp_path: Path) -> None:
-    framework_root = tmp_path / "framework"
-    target_root = tmp_path / "target"
+def test_assess_external_repo_returns_ready_for_complete_repo() -> None:
+    root = _reset_fixture("complete_repo")
+    framework_root = root / "framework"
+    target_root = root / "target"
 
     _make_framework(framework_root)
     _make_target_repo(target_root, framework_root)
@@ -82,12 +95,13 @@ def test_assess_external_repo_returns_ready_for_complete_repo(tmp_path: Path) ->
     assert result.contract["name"] == "sample-contract"
 
 
-def test_assess_external_repo_reports_missing_contract_and_hooks(tmp_path: Path) -> None:
-    target_root = tmp_path / "target"
+def test_assess_external_repo_reports_missing_contract_and_hooks() -> None:
+    root = _reset_fixture("missing_contract_and_hooks")
+    target_root = root / "target"
     _write(target_root / ".git" / "HEAD", "ref: refs/heads/main\n")
     _write(
         target_root / "PLAN.md",
-        "> **?敺??*: 2026-03-14\n> **Owner**: test\n> **Freshness**: Sprint (7d)\n",
+        "> **最後更新**: 2026-03-14\n> **Owner**: test\n> **Freshness**: Sprint (7d)\n",
     )
 
     result = assess_external_repo(target_root)
@@ -99,9 +113,31 @@ def test_assess_external_repo_reports_missing_contract_and_hooks(tmp_path: Path)
     assert any("contract.yaml not resolved" in item for item in result.warnings)
 
 
-def test_assess_external_repo_marks_outdated_without_failing_readiness(tmp_path: Path) -> None:
-    framework_root = tmp_path / "framework"
-    target_root = tmp_path / "target"
+def test_assess_external_repo_can_use_explicit_framework_root() -> None:
+    root = _reset_fixture("explicit_framework_root")
+    framework_root = root / "framework"
+    target_root = root / "target"
+    hook_dir = target_root / ".git" / "hooks"
+
+    _make_framework(framework_root)
+    _write(hook_dir / "pre-commit", "# AI Governance Framework\n")
+    _write(hook_dir / "pre-push", "# AI Governance Framework\n")
+    _write(
+        target_root / "PLAN.md",
+        "> **最後更新**: 2026-03-14\n> **Owner**: test\n> **Freshness**: Sprint (7d)\n",
+    )
+
+    result = assess_external_repo(target_root, framework_root=framework_root)
+
+    assert result.checks["hooks_ready"] is True
+    assert result.hooks["framework_root"] == str(framework_root.resolve())
+    assert any("using explicit framework root" in item for item in result.warnings)
+
+
+def test_assess_external_repo_marks_outdated_without_failing_readiness() -> None:
+    root = _reset_fixture("outdated_but_compatible")
+    framework_root = root / "framework"
+    target_root = root / "target"
 
     _make_framework(framework_root)
     _make_target_repo(target_root, framework_root)
@@ -115,9 +151,10 @@ def test_assess_external_repo_marks_outdated_without_failing_readiness(tmp_path:
     assert result.checks["framework_version_current"] is False
 
 
-def test_assess_external_repo_fails_when_current_release_is_incompatible(tmp_path: Path) -> None:
-    framework_root = tmp_path / "framework"
-    target_root = tmp_path / "target"
+def test_assess_external_repo_fails_when_current_release_is_incompatible() -> None:
+    root = _reset_fixture("incompatible_release")
+    framework_root = root / "framework"
+    target_root = root / "target"
 
     _make_framework(framework_root)
     _make_target_repo(target_root, framework_root)
@@ -131,8 +168,9 @@ def test_assess_external_repo_fails_when_current_release_is_incompatible(tmp_pat
     assert any("outside declared compatibility range" in item for item in result.errors)
 
 
-def test_format_human_surfaces_framework_version_section(tmp_path: Path) -> None:
-    target_root = tmp_path / "target"
+def test_format_human_surfaces_framework_version_section() -> None:
+    root = _reset_fixture("human_output")
+    target_root = root / "target"
     _write(target_root / ".git" / "HEAD", "ref: refs/heads/main\n")
 
     result = assess_external_repo(target_root)

@@ -150,6 +150,17 @@ The `.github/` directory also provides a pre-runtime interaction layer:
 - `.github/agents/*.agent.md` as role definitions
 - `.github/skills/*/skill.md` as behavior-level skill policies
 
+The repo now also carries Claude-local workflow skills under [`.claude/skills/`](./.claude/skills/), with a small index at [`.claude/README.md`](./.claude/README.md).
+
+Current local skills:
+
+- `external-onboarding`
+- `reviewer-handoff`
+- `domain-contract-authoring`
+- `runtime-smoke`
+
+These are intentionally narrow workflow skills for common repo-local tasks such as external repo onboarding, reviewer packet generation, domain contract scaffolding, and runtime smoke validation.
+
 ### 2. Static Governance Tooling
 
 `governance_tools/` currently includes:
@@ -291,6 +302,10 @@ This seam has already been validated with three external contract repos:
 - `Kernel-Driver-Contract`
   - the second low-level domain slice
   - already running through contract loading, validator preflight, external rule activation, and a multi-validator post-task loop with contract-driven hard-stop escalation
+  - current tested coverage includes:
+    - synthetic fixture coverage for dispatch registration, IRQL safety, DPC/ISR blocking behavior, pageable-section checks, pool-allocation policy, sync primitives, static-analysis evidence ingestion, and WDF interrupt lifecycle handling
+    - ground-truth callback classification against real Windows sample-driver families including KMDF PCI/NDIS-style samples (`pcidrv_*`), KMDF USB FX2 samples (`fx2_*`), a WDM cancel-safe IRP queue sample (`cancel_cancel`), and the `kbfiltr` keyboard-filter sample
+  - it has not yet been connected to one real product driver repository as the source of truth; current validation is still based on fixtures plus sample-driver ground truth rather than intake from a live driver codebase
 - `IC-Verification-Contract`
   - the third domain slice, focused on Cocotb-style signal-map verification
   - already running through contract loading, validator preflight, external rule activation, and a mixed hard-stop/advisory post-task loop driven by machine-readable DUT facts

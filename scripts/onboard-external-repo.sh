@@ -119,7 +119,7 @@ if ! set_python_cmd; then
     exit 0
 fi
 
-READINESS_ARGS=(--repo "$(realpath "$TARGET_REPO")" --format "$OUTPUT_FORMAT")
+READINESS_ARGS=(--repo "$(realpath "$TARGET_REPO")" --framework-root "$FRAMEWORK_ROOT" --format "$OUTPUT_FORMAT")
 if [ -n "$CONTRACT_PATH" ]; then
     READINESS_ARGS+=(--contract "$(realpath "$CONTRACT_PATH")")
 fi
@@ -155,7 +155,7 @@ fi
 
 report_status=0
 if [ -f "$REPORT_TOOL" ]; then
-    REPORT_ARGS=(--repo "$(realpath "$TARGET_REPO")" --format json --output "$REPORT_FILE" --write-bundle "$REPORT_DIR")
+    REPORT_ARGS=(--repo "$(realpath "$TARGET_REPO")" --framework-root "$FRAMEWORK_ROOT" --format json --output "$REPORT_FILE" --write-bundle "$REPORT_DIR")
     if [ -n "$CONTRACT_PATH" ]; then
         REPORT_ARGS+=(--contract "$(realpath "$CONTRACT_PATH")")
     fi

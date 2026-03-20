@@ -54,12 +54,24 @@ tests/_tmp_governance_auditor/
 tests/_tmp_failure_test_validator/
 tests/_tmp_rule_pack_suggester/
 tests/_tmp_public_api_diff/
+tests/_tmp_doc_drift_checker/
+tests/_tmp_external_repo_onboarding_report/
+tests/_tmp_external_repo_readiness/
+tests/_tmp_feature_surface_snapshot/
+tests/_tmp_hook_install_validator/
 .coverage
 htmlcov/
+validation_tmp/
+validation_tmp2/
+validation_tmp3/
 
 # Runtime governance artifacts
 artifacts/runtime/
 memory/candidates/*.json
+
+# Claude / local workspace
+.claude/settings.local.json
+*.code-workspace
 
 # Documentation build
 docs/_build/

@@ -34,7 +34,11 @@ class ExternalRepoReadiness:
     errors: list[str] = field(default_factory=list)
 
 
-def assess_external_repo(repo_root: Path, contract_path: str | Path | None = None) -> ExternalRepoReadiness:
+def assess_external_repo(
+    repo_root: Path,
+    contract_path: str | Path | None = None,
+    framework_root: Path | None = None,
+) -> ExternalRepoReadiness:
     repo_root = repo_root.resolve()
     checks: dict[str, bool] = {}
     warnings: list[str] = []
@@ -51,7 +55,7 @@ def assess_external_repo(repo_root: Path, contract_path: str | Path | None = Non
             errors=errors,
         )
 
-    hook_result = validate_hook_install(repo_root)
+    hook_result = validate_hook_install(repo_root, framework_root=framework_root)
     hooks = {
         "valid": hook_result.valid,
         "framework_root": hook_result.framework_root,
@@ -268,13 +272,18 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--repo", default=".", help="Target repo root.")
     parser.add_argument("--contract", help="Optional explicit contract.yaml path.")
+    parser.add_argument("--framework-root", help="Optional explicit framework root for hook validation.")
     parser.add_argument("--format", choices=("human", "json"), default="human")
     return parser
 
 
 def main() -> int:
     args = build_parser().parse_args()
-    result = assess_external_repo(Path(args.repo), contract_path=args.contract)
+    result = assess_external_repo(
+        Path(args.repo),
+        contract_path=args.contract,
+        framework_root=Path(args.framework_root) if args.framework_root else None,
+    )
     if args.format == "json":
         print(format_json(result))
     else:

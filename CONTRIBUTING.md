@@ -118,3 +118,16 @@ git push origin feature/amazing-feature
 ## 🙏 感謝你的貢獻!
 
 每一個貢獻都讓這個專案變得更好。❤️
+---
+
+## Claude Skills
+
+This repo also includes Claude-local skills under [`.claude/skills/`](./.claude/skills/) with an index at [`.claude/README.md`](./.claude/README.md).
+
+If you add or refine a repo-local skill:
+
+- keep the skill narrow and workflow-specific
+- write trigger logic into `SKILL.md` frontmatter `description`
+- keep detailed commands and gotchas in `references/`
+- add `assets/` only when reusable templates are genuinely useful
+- avoid duplicating large sections of `README.md`

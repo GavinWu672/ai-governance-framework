@@ -54,6 +54,7 @@ def test_governance_auditor_passes_on_repo_root():
     result = audit_governance(Path(".").resolve())
     assert result["ok"] is True
     assert result["errors"] == []
+    assert "doc_drift" in result
 
 
 def test_governance_auditor_can_include_release_readiness():
@@ -70,6 +71,7 @@ def test_governance_auditor_human_output_is_summary_first():
 
     assert "[governance_auditor]" in output
     assert "summary=ok=True | checks=" in output
+    assert "doc_drift_routes=" in output
     assert "release=v1.0.0-alpha/ready" in output
 
 
@@ -128,3 +130,17 @@ def test_governance_auditor_can_include_external_onboarding_index():
     assert result["external_onboarding"]["indexed_count"] == 2
     assert result["external_onboarding"]["top_issues"][0]["repo_root"].endswith("external-bad")
     assert any("external:onboarding-index" in error for error in result["errors"])
+
+
+def test_governance_auditor_surfaces_doc_drift_as_warning():
+    root = _reset_fixture("doc_drift")
+    _seed_minimal_project(root)
+    _write(root / "PLAN.md", "# Plan\n\n## Phase 7\n- goals\n")
+    _write(root / "app/goals/page.tsx", "export default function Goals() {}\n")
+    _write(root / "app/api/report/route.ts", "export async function GET() {}\n")
+
+    result = audit_governance(root)
+
+    assert result["ok"] is True
+    assert result["doc_drift"]["ok"] is False
+    assert any("doc-drift:" in warning for warning in result["warnings"])

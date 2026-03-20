@@ -1,14 +1,25 @@
 from __future__ import annotations
 
-from pathlib import Path
-
 import json
+import shutil
+from pathlib import Path
 
 from governance_tools.external_repo_onboarding_report import (
     build_onboarding_report,
     format_human,
     write_report_bundle,
 )
+
+
+FIXTURE_ROOT = Path("tests/_tmp_external_repo_onboarding_report")
+
+
+def _reset_fixture(name: str) -> Path:
+    path = FIXTURE_ROOT / name
+    if path.exists():
+        shutil.rmtree(path)
+    path.mkdir(parents=True, exist_ok=True)
+    return path
 
 
 def _write(path: Path, text: str) -> None:
@@ -23,11 +34,8 @@ def _make_framework(framework_root: Path) -> None:
     _write(framework_root / "governance_tools/contract_validator.py", "")
 
 
-def test_build_onboarding_report_combines_readiness_and_smoke(tmp_path: Path) -> None:
-    framework_root = tmp_path / "framework"
-    repo_root = tmp_path / "target"
+def _make_contract_repo(repo_root: Path, framework_root: Path) -> None:
     hook_dir = repo_root / ".git" / "hooks"
-
     _make_framework(framework_root)
     _write(hook_dir / "pre-commit", "# AI Governance Framework\n")
     _write(hook_dir / "pre-push", "# AI Governance Framework\n")
@@ -58,6 +66,14 @@ def test_build_onboarding_report_combines_readiness_and_smoke(tmp_path: Path) ->
         ),
     )
 
+
+def test_build_onboarding_report_combines_readiness_and_smoke() -> None:
+    root = _reset_fixture("combined_report")
+    framework_root = root / "framework"
+    repo_root = root / "target"
+
+    _make_contract_repo(repo_root, framework_root)
+
     report = build_onboarding_report(repo_root)
 
     assert report.ok is True
@@ -66,8 +82,9 @@ def test_build_onboarding_report_combines_readiness_and_smoke(tmp_path: Path) ->
     assert report.smoke["rules"] == ["common", "firmware"]
 
 
-def test_format_human_surfaces_readiness_and_smoke_sections(tmp_path: Path) -> None:
-    repo_root = tmp_path / "target"
+def test_format_human_surfaces_readiness_and_smoke_sections() -> None:
+    root = _reset_fixture("human_output")
+    repo_root = root / "target"
     _write(repo_root / ".git" / "HEAD", "ref: refs/heads/main\n")
 
     report = build_onboarding_report(repo_root)
@@ -79,40 +96,12 @@ def test_format_human_surfaces_readiness_and_smoke_sections(tmp_path: Path) -> N
     assert "errors:" in rendered
 
 
-def test_write_report_bundle_creates_latest_history_and_index(tmp_path: Path) -> None:
-    framework_root = tmp_path / "framework"
-    repo_root = tmp_path / "target"
-    hook_dir = repo_root / ".git" / "hooks"
+def test_write_report_bundle_creates_latest_history_and_index() -> None:
+    root = _reset_fixture("bundle_output")
+    framework_root = root / "framework"
+    repo_root = root / "target"
 
-    _make_framework(framework_root)
-    _write(hook_dir / "pre-commit", "# AI Governance Framework\n")
-    _write(hook_dir / "pre-push", "# AI Governance Framework\n")
-    _write(hook_dir / "ai-governance-framework-root", str(framework_root))
-    _write(
-        repo_root / "PLAN.md",
-        "> **最後更新**: 2026-03-15\n> **Owner**: tester\n> **Freshness**: Sprint (7d)\n",
-    )
-    _write(repo_root / "AGENTS.md", "# Agents\n")
-    _write(repo_root / "CHECKLIST.md", "# Checklist\n")
-    _write(repo_root / "rules" / "firmware" / "safety.md", "# Firmware safety\n")
-    _write(repo_root / "validators" / "check.py", "def x():\n    return True\n")
-    _write(
-        repo_root / "contract.yaml",
-        "\n".join(
-            [
-                "name: sample-contract",
-                "domain: firmware",
-                "documents:",
-                "  - CHECKLIST.md",
-                "ai_behavior_override:",
-                "  - AGENTS.md",
-                "rule_roots:",
-                "  - rules",
-                "validators:",
-                "  - validators/check.py",
-            ]
-        ),
-    )
+    _make_contract_repo(repo_root, framework_root)
 
     report = build_onboarding_report(repo_root)
     bundle = write_report_bundle(report, repo_root / "memory" / "governance_onboarding")

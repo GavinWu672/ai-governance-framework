@@ -1,6 +1,6 @@
 # Four-Repo Integration Progress
 
-Updated: 2026-03-15
+Updated: 2026-03-19
 Status: Active Development
 
 ## Current Snapshot
@@ -155,11 +155,39 @@ Current state:
 - most complete low-level contract repo
 - mixed enforcement already validated
 - onboarding and post-task smoke are in place
+- external hook onboarding and readiness now validate cleanly in a real sibling repo setup
 - still needs real driver facts and real codebase connection
+
+Recent integration signal:
+
+- a live coding response against a driver-adjacent task did show useful contract influence
+  - the model favored extracting pure C helper logic
+  - it reduced WDK dependency in tests
+  - it separated mapping logic from the driver-facing function
+- that is a real improvement in engineering shape, but it is not yet the full target behavior
+  - the response still read mostly as an implementation progress log
+  - it did not cite kernel-driver rules explicitly
+  - it did not state driver-sensitive boundaries up front
+  - it did not report verification evidence clearly
+  - it likely changed more files than the narrow task required
+
+Interpretation:
+
+- Kernel-Driver-Contract is already influencing structure and testability choices
+- it is not yet consistently forcing driver-specific reasoning to appear in the model's written response
+- the next refinement should focus less on new validators and more on response-shaping:
+  - rule basis
+  - safety boundary declaration
+  - verification evidence
+  - tighter change-scope discipline
 
 Best next step:
 
 - connect a real driver repo and populate the first confirmed facts
+- pair that with a response template that requires:
+  - which driver-sensitive boundaries are intentionally untouched
+  - why extracted helper logic is safe outside the driver path
+  - what verification actually ran
 
 ### IC Verification Contract
 
