@@ -147,6 +147,7 @@ def assess_external_repo(
             except (OSError, json.JSONDecodeError) as exc:
                 warnings.append(f"project-facts: unable to read existing intake artifact ({exc})")
         project_facts = {
+            "status": "drifted" if drift_detected else "available",
             "available": True,
             "source_file": facts_payload["fact_source"]["source_file"],
             "source_filename": facts_payload["fact_source"]["source_filename"],
@@ -156,6 +157,7 @@ def assess_external_repo(
             "artifact_exists": artifact_exists,
             "artifact_content_sha256": artifact_sha256,
             "artifact_drift": drift_detected,
+            "reason": None,
         }
         checks["project_facts_present"] = True
         checks["project_facts_intakeable"] = True
@@ -164,11 +166,21 @@ def assess_external_repo(
         checks["project_facts_present"] = False
         checks["project_facts_intakeable"] = False
         checks["project_facts_drift_free"] = False
+        project_facts = {
+            "status": "missing",
+            "available": False,
+            "reason": str(exc),
+        }
         warnings.append(f"project-facts: {exc}")
     except Exception as exc:
         checks["project_facts_present"] = True
         checks["project_facts_intakeable"] = False
         checks["project_facts_drift_free"] = False
+        project_facts = {
+            "status": "intake-error",
+            "available": False,
+            "reason": str(exc),
+        }
         warnings.append(f"project-facts: intake failed ({exc})")
 
     version_status = assess_framework_version_status(repo_root, contract_raw=contract_raw)
@@ -284,6 +296,7 @@ def format_human(result: ExternalRepoReadiness) -> str:
             [
                 "",
                 "[project_facts]",
+                f"status             = {result.project_facts.get('status')}",
                 f"available          = {result.project_facts.get('available')}",
                 f"source_file        = {result.project_facts.get('source_file')}",
                 f"source_filename    = {result.project_facts.get('source_filename')}",
@@ -291,6 +304,7 @@ def format_human(result: ExternalRepoReadiness) -> str:
                 f"artifact_path      = {result.project_facts.get('artifact_path')}",
                 f"artifact_exists    = {result.project_facts.get('artifact_exists')}",
                 f"artifact_drift     = {result.project_facts.get('artifact_drift')}",
+                f"reason             = {result.project_facts.get('reason')}",
             ]
         )
 

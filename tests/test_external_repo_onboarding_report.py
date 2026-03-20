@@ -81,6 +81,7 @@ def test_build_onboarding_report_combines_readiness_and_smoke() -> None:
     assert report.readiness["ready"] is True
     assert report.smoke["ok"] is True
     assert report.smoke["rules"] == ["common", "firmware"]
+    assert report.readiness["project_facts"]["status"] == "available"
     assert report.readiness["project_facts"]["source_filename"] == "02_project_facts.md"
     assert report.readiness["project_facts"]["artifact_path"].replace("/", "\\").endswith(r"artifacts\external-project-facts\target.json")
 
@@ -97,6 +98,7 @@ def test_format_human_surfaces_readiness_and_smoke_sections() -> None:
     assert "External Repo Onboarding Report" in rendered
     assert "[readiness]" in rendered
     assert "[project_facts]" in rendered
+    assert "status" in rendered
     assert "artifact_path" in rendered
     assert "artifact_drift" in rendered
     assert "[smoke]" in rendered

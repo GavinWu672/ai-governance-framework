@@ -385,6 +385,7 @@ That tool writes a framework-side JSON artifact under `artifacts/external-projec
 `external_repo_readiness.py` and the onboarding report now also surface this external fact-source metadata, so external `project_facts` become visible in readiness/onboarding output even when they are not yet a hard gate.
 Those surfaces now also expose the canonical framework-side `artifact_path` and `artifact_exists` state, so reviewers can tell where the intake artifact should live before treating external facts as reusable framework input.
 They also surface a minimal drift signal: when an existing framework-side intake artifact has a different `content_sha256` than the current external `project_facts`, readiness/onboarding now mark that as `artifact_drift` without turning it into a hard readiness failure yet.
+The `project_facts` surface now also carries a small status model: `available`, `missing`, `drifted`, or `intake-error`, so external fact gaps are machine-readable instead of being implied only by warning strings.
 Example:
 
 ```bash
