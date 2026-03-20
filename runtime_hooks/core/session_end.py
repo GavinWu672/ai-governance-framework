@@ -22,15 +22,19 @@ from memory_pipeline.session_snapshot import create_session_snapshot
 from governance_tools.domain_governance_metadata import domain_risk_tier
 
 
-def _ensure_runtime_artifact_dirs(project_root: Path) -> tuple[Path, Path, Path]:
+def _ensure_runtime_artifact_dirs(project_root: Path) -> tuple[Path, Path, Path, Path, Path]:
     runtime_root = project_root / "artifacts" / "runtime"
     candidates_dir = runtime_root / "candidates"
     curated_dir = runtime_root / "curated"
     summaries_dir = runtime_root / "summaries"
+    verdicts_dir = runtime_root / "verdicts"
+    traces_dir = runtime_root / "traces"
     candidates_dir.mkdir(parents=True, exist_ok=True)
     curated_dir.mkdir(parents=True, exist_ok=True)
     summaries_dir.mkdir(parents=True, exist_ok=True)
-    return candidates_dir, curated_dir, summaries_dir
+    verdicts_dir.mkdir(parents=True, exist_ok=True)
+    traces_dir.mkdir(parents=True, exist_ok=True)
+    return candidates_dir, curated_dir, summaries_dir, verdicts_dir, traces_dir
 
 
 def _write_json(path: Path, payload: dict[str, Any]) -> None:
@@ -50,6 +54,109 @@ def _normalize_runtime_contract(runtime_contract: dict[str, Any]) -> dict[str, A
         "risk": runtime_contract.get("risk", "medium"),
         "oversight": runtime_contract.get("oversight", "auto"),
         "memory_mode": runtime_contract.get("memory_mode", "candidate"),
+    }
+
+
+def _contract_identity(contract_resolution: dict[str, Any], domain_contract: dict[str, Any]) -> dict[str, Any]:
+    domain_raw = domain_contract.get("raw") or {}
+    return {
+        "source": contract_resolution.get("source"),
+        "path": contract_resolution.get("path"),
+        "name": domain_contract.get("name"),
+        "domain": domain_raw.get("domain"),
+        "plugin_version": domain_raw.get("plugin_version"),
+        "risk_tier": contract_resolution.get("risk_tier"),
+    }
+
+
+def _build_verdict_artifact(
+    *,
+    session_id: str,
+    now: str,
+    contract: dict[str, Any],
+    checks: dict[str, Any],
+    decision: str,
+    errors: list[str],
+    warnings: list[str],
+    contract_resolution: dict[str, Any],
+    domain_contract: dict[str, Any],
+) -> dict[str, Any]:
+    override_present = bool(checks.get("override_trace") or checks.get("reviewer_override"))
+    escalation_present = decision == "REVIEW_REQUIRED" or contract.get("oversight") != "auto"
+    return {
+        "schema_version": "1.0",
+        "artifact_type": "runtime-verdict",
+        "session_id": session_id,
+        "generated_at": now,
+        "policy_ref": {
+            "governance_runtime_decision_model": "2.6-draft",
+            "artifact_schema_version": "1.0",
+        },
+        "verdict": {
+            "decision": decision,
+            "ok": len(errors) == 0,
+            "risk": contract.get("risk"),
+            "oversight": contract.get("oversight"),
+            "memory_mode": contract.get("memory_mode"),
+        },
+        "contract_identity": _contract_identity(contract_resolution, domain_contract),
+        "evidence_summary": {
+            "check_keys": sorted(str(key) for key in checks.keys()),
+            "public_api_diff_present": checks.get("public_api_diff") is not None,
+            "error_count": len(errors),
+            "warning_count": len(warnings),
+        },
+        "override_or_escalation": {
+            "override_present": override_present,
+            "escalation_present": escalation_present,
+        },
+    }
+
+
+def _build_trace_artifact(
+    *,
+    session_id: str,
+    now: str,
+    contract: dict[str, Any],
+    checks: dict[str, Any],
+    decision: str,
+    policy: dict[str, Any],
+    errors: list[str],
+    warnings: list[str],
+    contract_resolution: dict[str, Any],
+    domain_contract: dict[str, Any],
+) -> dict[str, Any]:
+    return {
+        "schema_version": "1.0",
+        "artifact_type": "runtime-trace",
+        "session_id": session_id,
+        "generated_at": now,
+        "policy_ref": {
+            "governance_runtime_decision_model": "2.6-draft",
+            "artifact_schema_version": "1.0",
+        },
+        "contract_identity": _contract_identity(contract_resolution, domain_contract),
+        "runtime_contract": contract,
+        "decision_path": [
+            "normalize runtime contract",
+            "evaluate promotion policy",
+            "summarize evidence keys",
+            "emit verdict and trace artifacts",
+        ],
+        "evidence_summary": {
+            "check_keys": sorted(str(key) for key in checks.keys()),
+            "check_ok": checks.get("ok"),
+        },
+        "result": {
+            "decision": decision,
+            "policy": policy,
+            "errors": errors,
+            "warnings": warnings,
+        },
+        "override_or_escalation": {
+            "override_present": bool(checks.get("override_trace") or checks.get("reviewer_override")),
+            "escalation_present": decision == "REVIEW_REQUIRED" or contract.get("oversight") != "auto",
+        },
     }
 
 
@@ -122,10 +229,12 @@ def run_session_end(
         warnings.append("AUTO_PROMOTE policy resolved without a candidate snapshot.")
 
     now = datetime.now(timezone.utc).isoformat()
-    candidate_artifact, curated_artifact, summary_artifact = _ensure_runtime_artifact_dirs(project_root)
+    candidate_artifact, curated_artifact, summary_artifact, verdict_artifact_dir, trace_artifact_dir = _ensure_runtime_artifact_dirs(project_root)
     candidate_path = candidate_artifact / f"{session_id}.json"
     curated_path = curated_artifact / f"{session_id}.json"
     summary_path = summary_artifact / f"{session_id}.json"
+    verdict_path = verdict_artifact_dir / f"{session_id}.json"
+    trace_path = trace_artifact_dir / f"{session_id}.json"
 
     candidate_payload = {
         "session_id": session_id,
@@ -178,10 +287,35 @@ def run_session_end(
         "warning_count": len(warnings),
         "error_count": len(errors),
     }
+    verdict_payload = _build_verdict_artifact(
+        session_id=session_id,
+        now=now,
+        contract=contract,
+        checks=checks,
+        decision=decision,
+        errors=errors,
+        warnings=warnings,
+        contract_resolution=contract_resolution,
+        domain_contract=domain_contract,
+    )
+    trace_payload = _build_trace_artifact(
+        session_id=session_id,
+        now=now,
+        contract=contract,
+        checks=checks,
+        decision=decision,
+        policy=policy,
+        errors=errors,
+        warnings=warnings,
+        contract_resolution=contract_resolution,
+        domain_contract=domain_contract,
+    )
 
     _write_json(candidate_path, candidate_payload)
     curated_result = curate_candidate_artifact(candidate_path, output_path=curated_path)
     _write_json(summary_path, summary_payload)
+    _write_json(verdict_path, verdict_payload)
+    _write_json(trace_path, trace_payload)
 
     return {
         "ok": len(errors) == 0,
@@ -194,6 +328,8 @@ def run_session_end(
         "candidate_artifact": str(candidate_path),
         "curated_artifact": str(curated_path),
         "summary_artifact": str(summary_path),
+        "verdict_artifact": str(verdict_path),
+        "trace_artifact": str(trace_path),
         "warnings": warnings,
         "errors": errors,
     }
@@ -207,6 +343,8 @@ def format_human_result(result: dict[str, Any]) -> str:
         f"candidate_artifact={result['candidate_artifact']}",
         f"curated_artifact={result['curated_artifact']}",
         f"summary_artifact={result['summary_artifact']}",
+        f"verdict_artifact={result['verdict_artifact']}",
+        f"trace_artifact={result['trace_artifact']}",
     ]
     summary_payload = json.loads(Path(result["summary_artifact"]).read_text(encoding="utf-8"))
     if summary_payload.get("contract_resolution_present"):

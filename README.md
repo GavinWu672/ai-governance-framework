@@ -279,6 +279,8 @@ Highlights:
   - proposal-time concerns and expected evidence are carried into summary and curated artifacts as part of the audit trail
 - `session_end.py` / `memory_curator.py` now preserve `proposal_summary`
   - proposal-time risk / oversight guidance, concerns, and required evidence are carried into summary and curated artifacts
+- `session_end.py` now also emits minimal `verdict` and `trace` artifacts under
+  `artifacts/runtime/verdicts/` and `artifacts/runtime/traces/`
 - `post_task_check --format human` now prints evidence summaries such as `public_api_ok=...` and `failure_completeness_ok=...`
 - `architecture_impact_estimator.py` can now produce a structured `Governance Impact Report` during the proposal phase
   - path-based layer heuristics (`touched_layers`, `boundary_risk`)

@@ -53,6 +53,12 @@ def test_session_end_auto_promotes_low_risk_candidate(local_project_root):
 
     summary_payload = json.loads(Path(result["summary_artifact"]).read_text(encoding="utf-8"))
     assert summary_payload["promoted"] is True
+    verdict_payload = json.loads(Path(result["verdict_artifact"]).read_text(encoding="utf-8"))
+    assert verdict_payload["artifact_type"] == "runtime-verdict"
+    assert verdict_payload["verdict"]["decision"] == "AUTO_PROMOTE"
+    trace_payload = json.loads(Path(result["trace_artifact"]).read_text(encoding="utf-8"))
+    assert trace_payload["artifact_type"] == "runtime-trace"
+    assert trace_payload["result"]["decision"] == "AUTO_PROMOTE"
     curated_payload = json.loads(Path(result["curated_artifact"]).read_text(encoding="utf-8"))
     assert curated_payload["curation_status"] == "CURATED"
 
@@ -248,6 +254,12 @@ def test_session_end_preserves_contract_context_in_summary_and_curated_artifact(
     candidate_payload = json.loads(Path(result["candidate_artifact"]).read_text(encoding="utf-8"))
     assert candidate_payload["contract_resolution"]["source"] == "discovery"
     assert candidate_payload["domain_contract"]["name"] == "kernel-driver-contract"
+    verdict_payload = json.loads(Path(result["verdict_artifact"]).read_text(encoding="utf-8"))
+    assert verdict_payload["contract_identity"]["name"] == "kernel-driver-contract"
+    assert verdict_payload["contract_identity"]["domain"] == "kernel-driver"
+    assert verdict_payload["contract_identity"]["risk_tier"] == "high"
+    trace_payload = json.loads(Path(result["trace_artifact"]).read_text(encoding="utf-8"))
+    assert trace_payload["contract_identity"]["plugin_version"] == "1.0.0"
 
     curated_payload = json.loads(Path(result["curated_artifact"]).read_text(encoding="utf-8"))
     assert any(item["source"] == "contract_resolution" for item in curated_payload["items"])
@@ -282,3 +294,5 @@ def test_session_end_human_output_includes_contract_context(local_project_root):
     assert "contract_domain=kernel-driver" in output
     assert "contract_plugin_version=1.0.0" in output
     assert "contract_risk_tier=high" in output
+    assert "verdict_artifact=" in output
+    assert "trace_artifact=" in output
