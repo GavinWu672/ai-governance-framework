@@ -26,6 +26,8 @@ from governance_tools.rule_pack_loader import available_rule_packs, describe_rul
 from memory_pipeline.session_snapshot import create_session_snapshot
 from runtime_hooks.core.human_summary import build_summary_line, format_contract_summary_label
 
+DECISION_MODEL_PATH = Path(__file__).resolve().parents[2] / "governance" / "governance_decision_model.v2.6.json"
+
 
 def _merge_runtime_checks(errors: list[str], warnings: list[str], checks: dict | None) -> None:
     if not checks:
@@ -98,6 +100,73 @@ def _merge_driver_evidence_checks(errors: list[str], warnings: list[str], checks
     for error in result["errors"]:
         errors.append(f"driver-evidence: {error}")
     return result
+
+
+def _load_required_runtime_evidence_kinds() -> set[str]:
+    payload = json.loads(DECISION_MODEL_PATH.read_text(encoding="utf-8"))
+    rows = payload.get("matrices", {}).get("evidence_classification", [])
+    return {
+        str(row["evidence_kind"])
+        for row in rows
+        if row.get("required") is True and str(row.get("evidence_kind", "")).strip()
+    }
+
+
+def _observed_runtime_evidence_kinds(
+    checks: dict | None,
+    *,
+    public_api_diff: dict | None,
+    driver_evidence: dict | None,
+    domain_validator_results: list[dict],
+) -> set[str]:
+    observed = set(str(kind) for kind in (checks or {}).get("evidence_kinds", []) if str(kind).strip())
+    if public_api_diff is not None:
+        observed.add("public-api-diff")
+    if driver_evidence and driver_evidence.get("ok"):
+        observed.add("sdv-text")
+    if domain_validator_results:
+        observed.add("domain-validator-result")
+    return observed
+
+
+def _classify_missing_required_evidence(
+    checks: dict | None,
+    *,
+    public_api_diff: dict | None,
+    driver_evidence: dict | None,
+    domain_validator_results: list[dict],
+) -> list[dict]:
+    declared_required = [
+        str(kind)
+        for kind in (checks or {}).get("required_runtime_evidence", [])
+        if str(kind).strip()
+    ]
+    if not declared_required:
+        return []
+
+    known_required = _load_required_runtime_evidence_kinds()
+    observed = _observed_runtime_evidence_kinds(
+        checks,
+        public_api_diff=public_api_diff,
+        driver_evidence=driver_evidence,
+        domain_validator_results=domain_validator_results,
+    )
+    violations = []
+    for evidence_kind in declared_required:
+        if evidence_kind not in known_required:
+            continue
+        if evidence_kind in observed:
+            continue
+        violations.append(
+            {
+                "violation_type": "missing_required_evidence",
+                "evidence_kind": evidence_kind,
+                "detected_by": "runtime evidence validator",
+                "verdict_impact": "escalate",
+                "message": f"Missing required runtime evidence: {evidence_kind}",
+            }
+        )
+    return violations
 
 
 def _domain_hard_stop_rules(domain_contract: dict | None) -> set[str]:
@@ -223,6 +292,14 @@ def run_post_task_check(
             domain_validator_results,
             hard_stop_rules=domain_hard_stop_rules,
         )
+    evidence_violations = _classify_missing_required_evidence(
+        effective_checks,
+        public_api_diff=public_api_diff,
+        driver_evidence=driver_evidence,
+        domain_validator_results=domain_validator_results,
+    )
+    for violation in evidence_violations:
+        errors.append(f"runtime-evidence: {violation['message']}")
 
     if create_snapshot and validation.contract_found and validation.compliant and not errors:
         if memory_root is None:
@@ -257,6 +334,7 @@ def run_post_task_check(
         "failure_completeness": failure_completeness,
         "refactor_evidence": refactor_evidence,
         "driver_evidence": driver_evidence,
+        "evidence_violations": evidence_violations,
         "domain_validator_results": domain_validator_results,
         "domain_hard_stop_rules": sorted(domain_hard_stop_rules),
         "domain_contract": domain_contract,
@@ -302,6 +380,8 @@ def format_human_result(result: dict) -> str:
         lines.append(f"refactor_evidence_ok={result['refactor_evidence']['ok']}")
     if result["driver_evidence"] is not None:
         lines.append(f"driver_evidence_ok={result['driver_evidence']['ok']}")
+    if result.get("evidence_violations"):
+        lines.append(f"evidence_violation_count={len(result['evidence_violations'])}")
     if result.get("domain_validator_results"):
         lines.append(f"domain_validator_count={len(result['domain_validator_results'])}")
     if result.get("domain_hard_stop_rules"):

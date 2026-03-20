@@ -615,3 +615,35 @@ def test_post_task_check_passes_versioned_validator_envelope_to_domain_validator
     assert result["domain_validator_results"][0]["metadata"]["envelope_schema_version"] == "1.0"
     assert result["domain_validator_results"][0]["metadata"]["contract_name"] == "temp-domain"
     assert result["domain_validator_results"][0]["metadata"]["legacy_fields_preserved"] is True
+
+
+
+def test_post_task_check_classifies_missing_required_runtime_evidence():
+    result = run_post_task_check(
+        _contract(RULES="common,refactor"),
+        risk="medium",
+        oversight="review-required",
+        checks={
+            "required_runtime_evidence": ["public-api-diff"],
+            "test_names": [
+                "tests/test_service.py::test_regression_contract",
+                "tests/test_service.py::test_cleanup_release",
+            ],
+            "warnings": [],
+            "errors": [],
+        },
+    )
+
+    assert result["ok"] is False
+    assert result["evidence_violations"] == [
+        {
+            "violation_type": "missing_required_evidence",
+            "evidence_kind": "public-api-diff",
+            "detected_by": "runtime evidence validator",
+            "verdict_impact": "escalate",
+            "message": "Missing required runtime evidence: public-api-diff",
+        }
+    ]
+    assert any("runtime-evidence: Missing required runtime evidence: public-api-diff" in error for error in result["errors"])
+    output = format_human_result(result)
+    assert "evidence_violation_count=1" in output
