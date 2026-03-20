@@ -51,6 +51,7 @@ $env:AI_GOVERNANCE_PYTHON='C:\Path\To\python.exe'
 | [trust_signal_publication_reader.py](#trust_signal_publication_readerpy) | publication manifest reader | release / status consumption |
 | [trust_signal_overview.py](#trust_signal_overviewpy) | 高層 trust signal 總覽 | adoption / release / audit |
 | [external_contract_policy_index.py](#external_contract_policy_indexpy) | external domain enforcement matrix | multi-domain policy comparison |
+| [external_project_facts_intake.py](#external_project_facts_intakepy) | external project facts intake artifact | external fact-source normalization |
 | [plan_freshness.py](#plan_freshnesspy) | PLAN.md 新鮮度檢查 | CI gate / Git hook |
 | [state_generator.py](#state_generatorpy) | .governance-state.yaml 生成 | 狀態快照 |
 | [linear_integrator.py](#linear_integratorpy) | PLAN.md → Linear 同步 | 任務追蹤 |
@@ -874,6 +875,24 @@ onboarding flow 預設還會再跑一個最小 governance smoke，驗證 externa
 預設也會把 JSON onboarding report 寫到 target repo 的 `memory/governance_onboarding/latest.json`，讓接入狀態不只存在於當下終端輸出。
 現在也會同步維護 `latest.txt`、`history/`、與 `INDEX.txt`，讓 external repo onboarding 狀態有基本的時間序列與索引。
 若要在 framework repo 端集中查看多個 external repo 的 onboarding 狀態，可用 `governance_tools/external_repo_onboarding_index.py --repo /path/to/repo1 --repo /path/to/repo2`。
+---
+
+## external_project_facts_intake.py
+
+? external repo ? `memory/02_project_facts.md` ? `memory/02_tech_stack.md` intake ? framework ????? JSON artifact?
+
+???
+- ? external-domain factual baselines ??? alias ?????? framework ?? intake
+- ?? provenance??? repo?????sync direction?content hash
+- ???? readiness / onboarding / reviewer ???????? fact source
+
+```bash
+python governance_tools/external_project_facts_intake.py --repo /path/to/Kernel-Driver-Contract --format human
+```
+
+?????
+- `artifacts/external-project-facts/<repo-name>.json`
+
 ---
 
 ## Runtime Layer

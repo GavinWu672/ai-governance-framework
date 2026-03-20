@@ -380,6 +380,8 @@ If you want a single onboarding entrypoint, run `scripts/onboard-external-repo.s
 That onboarding flow now includes a minimal governance smoke test by default, so onboarding checks that `session_start` and `pre_task_check` can actually run against the external contract instead of only verifying static setup.
 By default it writes onboarding artifacts under `memory/governance_onboarding/` inside the target repo, including `latest.json`, `latest.txt`, `history/*.json`, `history/*.txt`, and `INDEX.txt`, so external repo setup state remains reviewable after the terminal session ends.
 If you are tracking multiple external repos, you can aggregate their latest onboarding states with `governance_tools/external_repo_onboarding_index.py --repo /path/to/repo1 --repo /path/to/repo2`.
+If you want to intake an external repo's `memory/02_project_facts.md` or `memory/02_tech_stack.md` into a provenance-rich framework artifact, run `governance_tools/external_project_facts_intake.py --repo /path/to/repo`.
+That tool writes a framework-side JSON artifact under `artifacts/external-project-facts/<repo>.json` and records source file provenance, sync direction, and content hash so external facts become reviewable input instead of only an accepted alias.
 Example:
 
 ```bash
