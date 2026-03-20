@@ -15,9 +15,9 @@ Use it when you want to answer:
 
 ```bash
 python governance_tools/external_contract_policy_index.py \
-  --repo D:/USB-Hub-Firmware-Architecture-Contract \
-  --repo D:/Kernel-Driver-Contract \
-  --repo D:/IC-Verification-Contract \
+  --repo /path/to/USB-Hub-Firmware-Architecture-Contract \
+  --repo /path/to/Kernel-Driver-Contract \
+  --repo /path/to/IC-Verification-Contract \
   --format human
 ```
 
@@ -25,16 +25,16 @@ Markdown output:
 
 ```bash
 python governance_tools/external_contract_policy_index.py \
-  --repo D:/USB-Hub-Firmware-Architecture-Contract \
-  --repo D:/Kernel-Driver-Contract \
-  --repo D:/IC-Verification-Contract \
+  --repo /path/to/USB-Hub-Firmware-Architecture-Contract \
+  --repo /path/to/Kernel-Driver-Contract \
+  --repo /path/to/IC-Verification-Contract \
   --format markdown
 ```
 
 ## Current Reading
 
 At the moment, the framework's three real external contract repos all expose a
-mixed-enforcement posture:
+runtime policy-input posture:
 
 | Repo | Domain | Hard-Stop Rules | Advisory Surface |
 | --- | --- | --- | --- |
@@ -48,7 +48,7 @@ This matrix makes one important project boundary explicit:
 
 - the framework no longer stops at validator discovery
 - domain validators already execute
-- selected domain rule IDs can now affect runtime outcomes through `hard_stop_rules`
+- selected domain rule IDs can now affect runtime outcomes through runtime policy reclassification of `hard_stop_rules`
 
 But this still does **not** mean:
 

@@ -8,9 +8,9 @@ Status: Active Development
 This is the clearest current view of the four-repo governance stack:
 
 - `ai-governance-framework`: core runtime-governance engine, functionally complete at prototype level
-- `USB-Hub-Firmware-Architecture-Contract`: first real firmware contract slice, now on mixed enforcement
-- `Kernel-Driver-Contract`: strongest low-level domain slice, with mixed-enforcement baselines and onboarding flow
-- `IC-Verification-Contract`: narrow IC verification slice with machine-readable facts and mixed enforcement
+- `USB-Hub-Firmware-Architecture-Contract`: first real firmware contract slice, now on runtime policy reclassification via `hard_stop_rules` inputs
+- `Kernel-Driver-Contract`: strongest low-level domain slice, with onboarding flow and runtime policy-input enforcement seams
+- `IC-Verification-Contract`: narrow IC verification slice with machine-readable facts and runtime policy-input enforcement seams
 
 Practical maturity estimate:
 
@@ -33,7 +33,7 @@ This is no longer a document-only framework. It already has:
 - contract resolution and contract loading
 - runtime rule activation
 - domain-validator discovery and execution
-- mixed enforcement through `hard_stop_rules`
+- runtime policy reclassification through `hard_stop_rules` inputs
 - review-facing artifacts and status surfaces
 - CI-backed phase gates and trust/release surfaces
 
@@ -42,7 +42,7 @@ Most important correction:
 - `validator execution` is no longer the primary gap
 - `post_task_check.py` already executes domain validators
 - validator findings can now influence decisions
-- selected rule IDs can escalate from advisory to blocking through contract-level `hard_stop_rules`
+- selected rule IDs can be reclassified from advisory findings into runtime policy stops through contract-level `hard_stop_rules`
 
 ### Domain Plugin State
 
@@ -65,7 +65,7 @@ An earlier assessment was accurate at the time:
 That specific gap is now closed:
 
 - validator execution exists
-- mixed enforcement exists
+- runtime policy-input enforcement exists
 - cross-domain policy comparison exists
 - onboarding smoke can now validate real post-task fixture replay
 
@@ -141,7 +141,7 @@ Current state:
 
 - full contract repo structure exists
 - rules, validators, fixtures, and memory exist
-- mixed enforcement exists
+- runtime policy-input enforcement exists
 - still needs real firmware facts intake
 
 Best next step:

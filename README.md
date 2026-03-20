@@ -376,11 +376,15 @@ When hooks are installed into another repo, the install script now writes a fram
 After installation, you can also run `governance_tools/hook_install_validator.py --repo /path/to/repo` to verify copied hooks and framework-root wiring.
 By default, `scripts/install-hooks.sh` now runs this validator automatically after installation; if you only want installation without verification, use `--no-verify`.
 If you want a single readiness check for an external repo's hook / PLAN / contract state, run `governance_tools/external_repo_readiness.py --repo /path/to/repo`.
-If you want a single onboarding entrypoint, run `scripts/onboard-external-repo.sh --target /path/to/repo`, which combines hook installation with a readiness report.
-That onboarding flow now also includes a minimal governance smoke test by default, so onboarding checks that `session_start` and `pre_task_check` can actually run against the external contract instead of only verifying static setup.
-By default it also writes a JSON onboarding report to `memory/governance_onboarding/latest.json` inside the target repo, so onboarding state remains reviewable after the terminal session ends.
-That onboarding report now also maintains `history/*.json`, `history/*.txt`, `latest.txt`, and `INDEX.txt`, so external repo setup state becomes a small auditable artifact set instead of a single overwritten file.
+If you want a single onboarding entrypoint, run `scripts/onboard-external-repo.sh --target /path/to/repo`, which combines hook installation, readiness checks, governance smoke, and onboarding report emission.
+That onboarding flow now includes a minimal governance smoke test by default, so onboarding checks that `session_start` and `pre_task_check` can actually run against the external contract instead of only verifying static setup.
+By default it writes onboarding artifacts under `memory/governance_onboarding/` inside the target repo, including `latest.json`, `latest.txt`, `history/*.json`, `history/*.txt`, and `INDEX.txt`, so external repo setup state remains reviewable after the terminal session ends.
 If you are tracking multiple external repos, you can aggregate their latest onboarding states with `governance_tools/external_repo_onboarding_index.py --repo /path/to/repo1 --repo /path/to/repo2`.
+Example:
+
+```bash
+bash scripts/onboard-external-repo.sh --target /path/to/Kernel-Driver-Contract --format human
+```
 If you also want to know whether an adopter repo is still on the latest framework release, record its adoption state in `governance/framework.lock.json` inside the target repo.
 The lock file should include at least `adopted_release`, `adopted_commit`, `framework_interface_version`, and `framework_compatible`.
 `external_repo_readiness.py` now surfaces that version state as `current`, `outdated`, `incompatible`, or `unknown`.
