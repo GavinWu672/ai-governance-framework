@@ -144,6 +144,7 @@ def format_human_result(result: dict[str, Any]) -> str:
                 [
                     item["repo_root"],
                     f"reasons={','.join(item['reasons'])}",
+                    f"project_facts={item.get('project_facts_summary')}",
                     f"suggested_command={item.get('suggested_command')}",
                 ]
             )
@@ -242,7 +243,7 @@ def format_markdown_result(result: dict[str, Any]) -> str:
         )
         for item in top_issues:
             lines.append(
-                f"- `{item['repo_root']}` reasons=`{','.join(item['reasons'])}` next=`{item.get('suggested_command')}`"
+                f"- `{item['repo_root']}` reasons=`{','.join(item['reasons'])}` project_facts=`{item.get('project_facts_summary')}` next=`{item.get('suggested_command')}`"
             )
 
     if external_contract_policy:

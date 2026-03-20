@@ -119,6 +119,7 @@ def build_external_repo_onboarding_index(repo_roots: list[Path]) -> dict:
                 "repo_root": entry["repo_root"],
                 "reasons": reasons,
                 "contract_path": entry.get("contract_path"),
+                "project_facts_summary": entry.get("project_facts_summary"),
                 "suggested_command": _suggested_command(entry),
             }
         )

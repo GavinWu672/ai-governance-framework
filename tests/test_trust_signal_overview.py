@@ -1,5 +1,6 @@
 import sys
 import json
+import shutil
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -10,6 +11,17 @@ from governance_tools.trust_signal_overview import (
     format_markdown_result,
     main,
 )
+
+
+FIXTURE_ROOT = Path("tests/_tmp_trust_signal_overview")
+
+
+def _reset_fixture(name: str) -> Path:
+    path = FIXTURE_ROOT / name
+    if path.exists():
+        shutil.rmtree(path)
+    path.mkdir(parents=True, exist_ok=True)
+    return path
 
 
 def _write_contract(repo_root: Path, contract_text: str, *, validator_names: list[str] | None = None) -> None:
@@ -31,7 +43,16 @@ def _write_onboarding_report(repo_root: Path, *, ok: bool = True, post_task_ok: 
                 "ok": ok,
                 "generated_at": "2026-03-15T00:00:00+00:00",
                 "contract_path": str((repo_root / "contract.yaml").resolve()),
-                "readiness": {"ready": True, "errors": []},
+                "readiness": {
+                    "ready": True,
+                    "errors": [],
+                    "project_facts": {
+                        "status": "drifted" if not ok else "available",
+                        "artifact_exists": not ok,
+                        "artifact_drift": not ok,
+                        "source_filename": "02_project_facts.md",
+                    },
+                },
                 "smoke": {
                     "ok": ok,
                     "post_task_ok": post_task_ok,
@@ -64,10 +85,11 @@ def test_trust_signal_overview_passes_on_repo_root():
     assert result["auditor"]["ok"] is True
 
 
-def test_trust_signal_overview_can_include_external_contract_policies(tmp_path):
+def test_trust_signal_overview_can_include_external_contract_policies():
+    root = _reset_fixture("external_contract_policies")
     project_root = Path(".").resolve()
     contract_file = project_root / "examples" / "usb-hub-contract" / "contract.yaml"
-    repo = tmp_path / "kernel-contract"
+    repo = root / "kernel-contract"
     _write_contract(
         repo,
         "\n".join(
@@ -98,10 +120,11 @@ def test_trust_signal_overview_can_include_external_contract_policies(tmp_path):
     assert result["auditor"]["external_onboarding"]["missing_reports"] == []
 
 
-def test_trust_signal_overview_surfaces_external_onboarding_top_issues(tmp_path):
+def test_trust_signal_overview_surfaces_external_onboarding_top_issues():
+    root = _reset_fixture("external_top_issues")
     project_root = Path(".").resolve()
     contract_file = project_root / "examples" / "usb-hub-contract" / "contract.yaml"
-    repo = tmp_path / "kernel-contract"
+    repo = root / "kernel-contract"
     _write_contract(
         repo,
         "\n".join(
@@ -131,6 +154,7 @@ def test_trust_signal_overview_surfaces_external_onboarding_top_issues(tmp_path)
     assert result["auditor"]["external_onboarding"]["top_issues"][0]["reasons"] == ["smoke", "post-task"]
     assert "external_top_issue=" in output
     assert "reasons=smoke,post-task" in output
+    assert "project_facts=status=drifted | artifact_exists=True | artifact_drift=True | source=02_project_facts.md" in output
 
 
 def test_trust_signal_overview_human_output_is_summary_first():
@@ -150,10 +174,11 @@ def test_trust_signal_overview_human_output_is_summary_first():
     assert "release_version=v1.0.0-alpha" in output
 
 
-def test_trust_signal_overview_human_output_can_surface_external_contracts(tmp_path):
+def test_trust_signal_overview_human_output_can_surface_external_contracts():
+    root = _reset_fixture("human_external_contracts")
     project_root = Path(".").resolve()
     contract_file = project_root / "examples" / "usb-hub-contract" / "contract.yaml"
-    repo = tmp_path / "ic-contract"
+    repo = root / "ic-contract"
     _write_contract(
         repo,
         "\n".join(
@@ -202,10 +227,11 @@ def test_trust_signal_overview_markdown_output_is_dashboard_like():
     assert "| Quickstart | `True` | contract=`firmware/medium` |" in output
 
 
-def test_trust_signal_overview_markdown_can_include_external_contracts(tmp_path):
+def test_trust_signal_overview_markdown_can_include_external_contracts():
+    root = _reset_fixture("markdown_external_contracts")
     project_root = Path(".").resolve()
     contract_file = project_root / "examples" / "usb-hub-contract" / "contract.yaml"
-    repo = tmp_path / "firmware-contract"
+    repo = root / "firmware-contract"
     _write_contract(
         repo,
         "\n".join(
@@ -236,10 +262,11 @@ def test_trust_signal_overview_markdown_can_include_external_contracts(tmp_path)
     assert "`HUB-004`" in output
 
 
-def test_trust_signal_overview_can_write_output_file(monkeypatch, tmp_path):
+def test_trust_signal_overview_can_write_output_file(monkeypatch):
+    root = _reset_fixture("write_output")
     project_root = Path(".").resolve()
     contract_file = project_root / "examples" / "usb-hub-contract" / "contract.yaml"
-    output_path = tmp_path / "trust_signal_overview.txt"
+    output_path = root / "trust_signal_overview.txt"
 
     monkeypatch.setattr(
         sys,
