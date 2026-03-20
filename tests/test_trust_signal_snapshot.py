@@ -413,6 +413,18 @@ def test_format_publication_index_is_summary_like():
             "release_version": "v1.0.0-alpha",
             "contract_path": "example/contract.yaml",
             "strict_runtime": True,
+            "overview": {
+                "auditor": {
+                    "external_onboarding": {
+                        "top_issues": [
+                            {
+                                "repo_root": "/tmp/kernel-driver-contract",
+                                "project_facts_summary": "status=drifted | artifact_exists=True | artifact_drift=True | source=memory/02_project_facts.md",
+                            }
+                        ]
+                    }
+                }
+            },
         },
         bundle_paths={"latest_json": "a.json", "latest_txt": "a.txt", "latest_md": "a.md", "history_json": "h.json", "history_txt": "h.txt", "history_md": "h.md", "index_md": "INDEX.md", "manifest_json": "MANIFEST.json"},
         published_paths={"latest_md": "p.md", "latest_json": "p.json", "readme_md": "README.md", "history_md": "ph.md", "history_json": "ph.json", "index_md": "PINDEX.md", "manifest_json": "pmanifest.json"},
@@ -422,3 +434,5 @@ def test_format_publication_index_is_summary_like():
     assert "- Bundle published: `True`" in rendered
     assert "- Status pages published: `True`" in rendered
     assert "- External contract profiles: `none`" in rendered
+    assert "## External Fact States" in rendered
+    assert "/tmp/kernel-driver-contract: status=drifted | artifact_exists=True | artifact_drift=True | source=memory/02_project_facts.md" in rendered

@@ -81,6 +81,18 @@ def _external_contract_profile_summary(snapshot: dict[str, Any]) -> str:
     return ",".join(f"{key}={counts[key]}" for key in sorted(counts))
 
 
+def _external_onboarding_project_facts_summaries(snapshot: dict[str, Any]) -> list[str]:
+    overview = snapshot.get("overview") or {}
+    auditor = overview.get("auditor") or {}
+    external_onboarding = auditor.get("external_onboarding") or {}
+    summaries: list[str] = []
+    for item in external_onboarding.get("top_issues") or []:
+        summary = item.get("project_facts_summary")
+        if summary:
+            summaries.append(f"{item.get('repo_root')}: {summary}")
+    return summaries
+
+
 def build_trust_signal_snapshot(
     *,
     project_root: Path,
@@ -481,6 +493,10 @@ def format_publication_index(
                 ]
             )
 
+    fact_summaries = _external_onboarding_project_facts_summaries(snapshot)
+    if fact_summaries:
+        lines.extend(["", "## External Fact States", ""] + [f"- `{item}`" for item in fact_summaries])
+
     if published_paths:
         lines.extend(
             [
@@ -530,6 +546,7 @@ def write_publication_manifest(
         "external_contract_repo_count": len(snapshot.get("external_contract_repos") or []),
         "external_contract_profile_counts": _external_contract_profile_counts(snapshot),
         "external_contract_policies": _external_contract_policy_entries(snapshot),
+        "external_onboarding_project_facts": _external_onboarding_project_facts_summaries(snapshot),
         "strict_runtime": snapshot["strict_runtime"],
         "bundle_published": bundle_paths is not None,
         "status_pages_published": published_paths is not None,
@@ -556,12 +573,17 @@ def write_publication_manifest(
         f"- External contract profiles: `{_external_contract_profile_summary(snapshot)}`",
         "",
         "This directory is the stable root for generated trust-signal publication outputs.",
+    ]
+    fact_summaries = _external_onboarding_project_facts_summaries(snapshot)
+    if fact_summaries:
+        lines.extend(["", "## External Fact States", ""] + [f"- `{item}`" for item in fact_summaries])
+    lines.extend([
         "",
         "## Entry Points",
         "",
         "- [Publication Index](PUBLICATION_INDEX.md)",
         "- [Publication Manifest](PUBLICATION_MANIFEST.json)",
-    ]
+    ])
     if bundle_paths:
         lines.extend(
             [
@@ -578,6 +600,7 @@ def write_publication_manifest(
             lines.append(
                 f"- External policy latest: `{_display_path(root_dir, bundle_paths.get('external_policy_latest_md'))}`"
             )
+
     if published_paths:
         lines.extend(
             [

@@ -584,7 +584,7 @@ CI generates the following on every push:
 
 | Path | Contents |
 |------|----------|
-| `artifacts/trust-signals/` | Trust-signal snapshot with history/index and publication manifest |
+| `artifacts/trust-signals/` | Trust-signal snapshot with history/index, publication manifest, and external fact-state summaries |
 | `artifacts/release-package/` | Release-package bundle (docs, status surfaces, verification commands) |
 | `artifacts/release-surface/` | Release-surface overview (readiness + package + publication posture) |
 | `artifacts/reviewer-handoff/` | Highest-level reviewer handoff bundle |
