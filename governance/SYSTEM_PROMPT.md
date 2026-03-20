@@ -38,7 +38,7 @@ Before **any** action, complete **in order**:
 Output and confirm:
 
 ```text
-LANG  = C++ | C# | ObjC | Swift | JS | Python
+LANG  = C | C++ | C# | ObjC | Swift | JS | Python
 LEVEL = L0 | L1 | L2
 SCOPE = feature | refactor | bugfix | I/O | tooling | review | governance
 ```
@@ -144,7 +144,7 @@ SESSION  = <YYYY-MM-DD-NN>  # optional; required when AGENT_ID is present
 ```
 
 Field rules:
-- `LANG`: `C++ | C# | ObjC | Swift | JS | Python`
+- `LANG`: `C | C++ | C# | ObjC | Swift | JS | Python`
 - `LEVEL`: `L0 | L1 | L2`
 - `SCOPE`: `feature | refactor | bugfix | I/O | tooling | review | governance`
 - `PLAN`: free text from `PLAN.md`; may state `Out-of-scope` when human explicitly authorizes governance analysis
