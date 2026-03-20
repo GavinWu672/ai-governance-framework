@@ -96,6 +96,7 @@ def test_format_human_surfaces_readiness_and_smoke_sections() -> None:
     rendered = format_human(report)
 
     assert "External Repo Onboarding Report" in rendered
+    assert "project_facts      = status=available" in rendered
     assert "[readiness]" in rendered
     assert "[project_facts]" in rendered
     assert "status" in rendered

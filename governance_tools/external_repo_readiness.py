@@ -43,6 +43,19 @@ def _project_facts_remediation_hint(repo_root: Path, status: str) -> str | None:
     return None
 
 
+def _project_facts_summary(project_facts: dict | None) -> str | None:
+    if not project_facts:
+        return None
+    return " | ".join(
+        [
+            f"status={project_facts.get('status')}",
+            f"artifact_exists={project_facts.get('artifact_exists')}",
+            f"artifact_drift={project_facts.get('artifact_drift')}",
+            f"source={project_facts.get('source_filename')}",
+        ]
+    )
+
+
 def assess_external_repo(
     repo_root: Path,
     contract_path: str | Path | None = None,
@@ -243,6 +256,7 @@ def format_human(result: ExternalRepoReadiness) -> str:
         "",
         f"ready              = {result.ready}",
         f"repo_root          = {result.repo_root}",
+        f"project_facts      = {_project_facts_summary(result.project_facts)}",
         "",
         "[checks]",
     ]

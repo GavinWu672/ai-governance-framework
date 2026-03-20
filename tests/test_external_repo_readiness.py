@@ -178,6 +178,7 @@ def test_format_human_surfaces_framework_version_section() -> None:
     rendered = format_human(result)
 
     assert "External Repo Readiness" in rendered
+    assert "project_facts      = status=missing" in rendered
     assert "[checks]" in rendered
     assert "[framework_version]" in rendered
     assert "warnings:" in rendered

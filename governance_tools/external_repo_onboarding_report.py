@@ -82,6 +82,19 @@ def build_onboarding_report(
     )
 
 
+def _project_facts_summary(project_facts: dict | None) -> str | None:
+    if not project_facts:
+        return None
+    return " | ".join(
+        [
+            f"status={project_facts.get('status')}",
+            f"artifact_exists={project_facts.get('artifact_exists')}",
+            f"artifact_drift={project_facts.get('artifact_drift')}",
+            f"source={project_facts.get('source_filename')}",
+        ]
+    )
+
+
 def format_human(report: ExternalRepoOnboardingReport) -> str:
     lines = [
         "External Repo Onboarding Report",
@@ -92,6 +105,7 @@ def format_human(report: ExternalRepoOnboardingReport) -> str:
         f"generated_at      = {report.generated_at}",
         f"readiness_ready   = {report.readiness.get('ready')}",
         f"smoke_ok          = {report.smoke.get('ok')}",
+        f"project_facts      = {_project_facts_summary(report.readiness.get('project_facts'))}",
         "",
         "[readiness]",
     ]
