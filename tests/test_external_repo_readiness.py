@@ -41,6 +41,7 @@ def _make_target_repo(target_root: Path, framework_root: Path) -> None:
     )
     _write(target_root / "AGENTS.md", "# Agents\n")
     _write(target_root / "CHECKLIST.md", "# Checklist\n")
+    _write(target_root / "memory" / "02_project_facts.md", "# Project Facts\n\n- target_os: windows\n")
     _write(target_root / "rules/domain/safety.md", "# rule\n")
     _write(target_root / "validators/checker.py", "print('ok')\n")
     _write(
@@ -180,3 +181,20 @@ def test_format_human_surfaces_framework_version_section() -> None:
     assert "[checks]" in rendered
     assert "[framework_version]" in rendered
     assert "warnings:" in rendered
+
+
+def test_assess_external_repo_surfaces_project_facts_intake() -> None:
+    root = _reset_fixture("project_facts_intake")
+    framework_root = root / "framework"
+    target_root = root / "target"
+
+    _make_framework(framework_root)
+    _make_target_repo(target_root, framework_root)
+    _write_lock(target_root, "v1.0.0-alpha")
+
+    result = assess_external_repo(target_root)
+
+    assert result.checks["project_facts_present"] is True
+    assert result.checks["project_facts_intakeable"] is True
+    assert result.project_facts["source_filename"] == "02_project_facts.md"
+    assert result.project_facts["sync_direction"] == "external_to_framework"

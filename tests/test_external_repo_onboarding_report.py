@@ -46,6 +46,7 @@ def _make_contract_repo(repo_root: Path, framework_root: Path) -> None:
     )
     _write(repo_root / "AGENTS.md", "# Agents\n")
     _write(repo_root / "CHECKLIST.md", "# Checklist\n")
+    _write(repo_root / "memory" / "02_project_facts.md", "# Project Facts\n\n- target_os: windows\n")
     _write(repo_root / "rules" / "firmware" / "safety.md", "# Firmware safety\n")
     _write(repo_root / "validators" / "check.py", "def x():\n    return True\n")
     _write(
@@ -80,18 +81,21 @@ def test_build_onboarding_report_combines_readiness_and_smoke() -> None:
     assert report.readiness["ready"] is True
     assert report.smoke["ok"] is True
     assert report.smoke["rules"] == ["common", "firmware"]
+    assert report.readiness["project_facts"]["source_filename"] == "02_project_facts.md"
 
 
 def test_format_human_surfaces_readiness_and_smoke_sections() -> None:
     root = _reset_fixture("human_output")
     repo_root = root / "target"
     _write(repo_root / ".git" / "HEAD", "ref: refs/heads/main\n")
+    _write(repo_root / "memory" / "02_project_facts.md", "# Project Facts\n\n- target_os: windows\n")
 
     report = build_onboarding_report(repo_root)
     rendered = format_human(report)
 
     assert "External Repo Onboarding Report" in rendered
     assert "[readiness]" in rendered
+    assert "[project_facts]" in rendered
     assert "[smoke]" in rendered
     assert "errors:" in rendered
 
@@ -114,6 +118,7 @@ def test_write_report_bundle_creates_latest_history_and_index() -> None:
 
     latest_payload = json.loads(Path(bundle["latest_json"]).read_text(encoding="utf-8"))
     assert latest_payload["ok"] is True
+    assert latest_payload["readiness"]["project_facts"]["source_filename"] == "02_project_facts.md"
     index_text = Path(bundle["index_txt"]).read_text(encoding="utf-8")
     assert "[external_repo_onboarding_index]" in index_text
     assert "ok=True" in index_text

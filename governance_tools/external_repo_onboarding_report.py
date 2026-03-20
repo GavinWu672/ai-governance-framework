@@ -63,6 +63,7 @@ def build_onboarding_report(
             "contract": readiness.contract,
             "plan": readiness.plan,
             "hooks": readiness.hooks,
+            "project_facts": readiness.project_facts,
             "warnings": readiness.warnings,
             "errors": readiness.errors,
         },
@@ -96,6 +97,18 @@ def format_human(report: ExternalRepoOnboardingReport) -> str:
     ]
     for key, value in sorted((report.readiness.get("checks") or {}).items()):
         lines.append(f"{key:<24} = {value}")
+
+    project_facts = report.readiness.get("project_facts") or {}
+    if project_facts:
+        lines.extend(
+            [
+                "",
+                "[project_facts]",
+                f"source_file        = {project_facts.get('source_file')}",
+                f"source_filename    = {project_facts.get('source_filename')}",
+                f"sync_direction     = {project_facts.get('sync_direction')}",
+            ]
+        )
 
     lines.extend(
         [

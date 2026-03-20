@@ -16,6 +16,7 @@ if __package__ in (None, ""):
 
 from governance_tools.contract_resolver import resolve_contract
 from governance_tools.domain_contract_loader import load_domain_contract
+from governance_tools.external_project_facts_intake import build_external_project_facts_intake
 from governance_tools.framework_versioning import assess_framework_version_status
 from governance_tools.hook_install_validator import validate_hook_install
 from governance_tools.plan_freshness import check_freshness
@@ -30,6 +31,7 @@ class ExternalRepoReadiness:
     framework_version: dict[str, object] | None = None
     plan: dict[str, object] | None = None
     hooks: dict[str, object] | None = None
+    project_facts: dict[str, object] | None = None
     warnings: list[str] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
 
@@ -126,6 +128,27 @@ def assess_external_repo(
         checks["contract_files_complete"] = False
         warnings.append("contract: contract.yaml not resolved")
 
+    project_facts: dict[str, object] | None = None
+    try:
+        facts_payload = build_external_project_facts_intake(repo_root)
+        project_facts = {
+            "available": True,
+            "source_file": facts_payload["fact_source"]["source_file"],
+            "source_filename": facts_payload["fact_source"]["source_filename"],
+            "content_sha256": facts_payload["fact_source"]["content_sha256"],
+            "sync_direction": facts_payload["provenance"]["sync_direction"],
+        }
+        checks["project_facts_present"] = True
+        checks["project_facts_intakeable"] = True
+    except FileNotFoundError as exc:
+        checks["project_facts_present"] = False
+        checks["project_facts_intakeable"] = False
+        warnings.append(f"project-facts: {exc}")
+    except Exception as exc:
+        checks["project_facts_present"] = True
+        checks["project_facts_intakeable"] = False
+        warnings.append(f"project-facts: intake failed ({exc})")
+
     version_status = assess_framework_version_status(repo_root, contract_raw=contract_raw)
     framework_version = {
         "current_release": version_status.current_release,
@@ -164,6 +187,7 @@ def assess_external_repo(
         framework_version=framework_version,
         plan=plan,
         hooks=hooks,
+        project_facts=project_facts,
         warnings=warnings,
         errors=errors,
     )
@@ -233,6 +257,18 @@ def format_human(result: ExternalRepoReadiness) -> str:
             ]
         )
 
+    if result.project_facts:
+        lines.extend(
+            [
+                "",
+                "[project_facts]",
+                f"available          = {result.project_facts.get('available')}",
+                f"source_file        = {result.project_facts.get('source_file')}",
+                f"source_filename    = {result.project_facts.get('source_filename')}",
+                f"sync_direction     = {result.project_facts.get('sync_direction')}",
+            ]
+        )
+
     if result.errors:
         lines.append("")
         lines.append(f"errors: {len(result.errors)}")
@@ -258,6 +294,7 @@ def format_json(result: ExternalRepoReadiness) -> str:
             "framework_version": result.framework_version,
             "plan": result.plan,
             "hooks": result.hooks,
+            "project_facts": result.project_facts,
             "errors": result.errors,
             "warnings": result.warnings,
         },
