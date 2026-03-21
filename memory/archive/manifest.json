@@ -1,0 +1,14 @@
+{
+  "version": "1.0",
+  "archives": [
+    {
+      "timestamp": "20260321_172912",
+      "datetime": "2026-03-21 17:29:12",
+      "archive_file": "archive/active_task_20260321_172912.md",
+      "source_file": "memory\\01_active_task.md",
+      "original_lines": 135,
+      "new_lines": 46,
+      "reason": "Memory pressure: EMERGENCY (135/200 lines, 20455/10000 chars)"
+    }
+  ]
+}

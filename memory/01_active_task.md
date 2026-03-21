@@ -1,3 +1,11 @@
+<!-- ARCHIVED: active_task_20260321_172912.md (2026-03-21 17:29:12) -->
+<!-- 完整歷史請查閱: archive/active_task_20260321_172912.md -->
+
+> **[歸檔紀錄]** 2026-03-21 17:29:12 — 本檔案已歸檔至 `archive/active_task_20260321_172912.md`
+> 歸檔原因: 記憶壓力 EMERGENCY（原始 135 行, 20455 字元）
+
+---
+
 # Active Task
 
 ## Current Focus
@@ -18,97 +26,8 @@
 - `scripts/verify_phase_gates.sh` now passes locally, and `scripts/run-runtime-governance.sh --mode smoke` completes successfully with the same interpreter override.
 - `contract.yaml`-based domain plugin discovery now exists for `pre_task_check`, `session_start`, and `post_task_check`, including external documents, rule roots, and validator metadata.
 - A minimal `examples/usb-hub-contract/` sample now validates the dual-repo seam with `contract.yaml`, domain documents, behavior overrides, external rules, validator preflight, advisory validator execution, and firmware-focused payload extraction.
-- `post_task_check.py` now closes the domain-validator enforcement gap: validator findings still default to advisory, but contract-level `hard_stop_rules` can escalate selected rule violations into blocking errors.
-- USB-Hub advisory validation can now infer interrupt context from `diff_text`, unified diff snippets, and changed C file contents, not just manually supplied `isr_code`.
-- The example now includes `post_task_check --checks-file` fixtures so the advisory validator path can be exercised through a file-based runtime entrypoint.
-- Cross-repo git hooks can now write and reuse a framework-root pointer under `.git/hooks/ai-governance-framework-root`, so external contract repos can call back into `ai-governance-framework` instead of assuming the governance scripts live inside the target repo.
-- Hook installation now has a dedicated verifier via `governance_tools/hook_install_validator.py`, so copied hooks and framework-root wiring can be checked without relying only on dry-run output.
-- `scripts/install-hooks.sh` now behaves more like install-and-verify by default, automatically invoking `hook_install_validator.py` after a real install unless `--no-verify` is used.
-- External repo onboarding now also has a single readiness entrypoint via `governance_tools/external_repo_readiness.py`, which summarizes hook state, PLAN freshness, and contract resolution/completeness in one report.
-- External repo onboarding now also has a shell entrypoint via `scripts/onboard-external-repo.sh`, combining hook installation and readiness assessment into one flow.
-- External repo onboarding now also includes a minimal governance smoke stage, so onboarding can fail when a contract resolves incorrectly or its rule roots do not actually power `session_start` / `pre_task_check`.
-- External repo onboarding now also emits a JSON onboarding report, so readiness/smoke status can be tracked after the shell session instead of living only in terminal output.
-- Onboarding artifacts now keep `latest + history + index`, so external repo setup state has a minimal audit trail rather than a single overwritten report.
-- The framework repo can now build a cross-repo onboarding index, so multiple external contract repos can be reviewed together instead of one-by-one.
-- `governance_auditor.py` can now optionally incorporate external onboarding state, so framework self-audits can surface external repo adoption drift as part of the same report.
-- Cross-repo onboarding views now surface `top_issues`, so reviewer-facing outputs can point to the most urgent external repos instead of only listing raw status rows.
-- Cross-repo onboarding `top_issues` now also carry suggested next commands, so reviewer-facing audit output is closer to directly actionable triage.
-- External onboarding triage now explicitly points to the next remediation command, reducing the gap between audit output and operator action.
-- Direct-script governance entrypoints under `governance_tools/` are now resilient when invoked as `python governance_tools/<tool>.py ...`, not only when imported as a package.
-- The local/runtime CI path is back to green after restoring package bootstrap for `change_control_summary.py`, `change_control_index.py`, and related governance-tool entrypoints.
-- The repo now includes a minimal external-adoption baseline:
-  - `requirements.txt`
-  - `start_session.md`
-  - clarified example statuses for runnable demo vs walkthrough vs scaffold
-- The onboarding path now also has a single executable verifier via `governance_tools/quickstart_smoke.py`, so quickstart docs map to a real smoke command instead of only a sequence of copy-paste steps.
-- `scripts/verify_phase_gates.sh` now also exercises `quickstart_smoke.py` against the bundled USB-Hub example, so onboarding drift is covered by the same phase gates as the core runtime tools.
-- GitHub Actions runtime/test jobs now install from repo root `requirements.txt` instead of separately installing only `pytest`, reducing drift between local onboarding docs and CI setup.
-- The example inventory now has a dedicated readiness checker via `governance_tools/example_readiness.py`, and `verify_phase_gates.sh` also exercises it so example drift is part of the normal regression surface.
-- `example_readiness.py` now does a deeper runnable-demo smoke when dependencies are present, including app-object and `/health` route checks; GitHub Actions uses `--strict-runtime` so CI validates runnable examples more strictly than local phase gates.
-- The repo now also has explicit release-facing trust signals in-tree:
-  - `docs/releases/v1.0.0-alpha.md`
-  - `CHANGELOG.md`
-  - synchronized `PLAN.md` / status docs for the current alpha stage
-- GitLab CI now also mirrors the newer adoption baseline more closely: `requirements.txt`, phase gates, strict example readiness, and runtime governance enforcement are no longer GitHub-only.
-- Release-facing trust signals are now partially machine-checked: `release_readiness.py` validates the current alpha note / changelog / README / status-doc alignment, and `verify_phase_gates.sh` now exercises it.
-- `governance_auditor.py` can now also include release-facing readiness through `--release-version`, so constitution/runtime drift and release-doc drift can be reviewed in the same high-level audit surface.
-- `scripts/verify_phase_gates.sh` now also runs `governance_auditor.py --release-version ...`, so the high-level self-audit path is part of the normal regression surface instead of remaining an optional manual check.
-- High-level governance tools now also converge on reviewer-first `summary=...` human output, reducing formatting drift between runtime hooks, release checks, onboarding indexes, and the auditor.
-- The repo now also has a single trust-signal entrypoint via `governance_tools/trust_signal_overview.py`, aggregating quickstart, example readiness, release readiness, and governance self-audit into one reviewer-facing overview.
-- Release-facing trust signals now also include a dedicated `docs/releases/alpha-checklist.md`, and `release_readiness.py` verifies its presence and basic alignment.
-- CI pipelines now also emit `trust_signal_overview.py` artifacts in human / JSON / Markdown forms, so the repo's high-level adoption/release posture can be reviewed or shared after the run instead of only during local CLI use.
-- `docs/status/trust-signal-dashboard.md` now provides a stable in-repo landing page for those trust signals, and `release_readiness.py` verifies that this entrypoint remains present and aligned.
-- `docs/status/README.md` now provides a stable index over the repo's status-facing pages, so release/status/trust-signal reading order is clearer for external readers.
-- `governance_tools/trust_signal_snapshot.py` now provides a formal latest/history/index publishing path for trust signals, and both CI pipelines use it instead of manually stitching overview outputs.
-- The trust-signal publisher now also supports `publish-status-dir`, so bundle generation and publish-style status pages can be emitted from the same command.
-- Trust-signal snapshot outputs now also include manifest JSON, making it easier for future tooling to resolve the current published snapshot without inferring from filenames alone.
-- Published trust-signal outputs now also keep `published/history/*` and `published/INDEX.md`, so the publication surface can be browsed historically instead of showing only the latest page.
-- Trust-signal publishing now also emits a publication-level manifest/index, so bundle and published surfaces can be discovered through one stable metadata layer.
-- Trust-signal publication now also has a dedicated reader via `governance_tools/trust_signal_publication_reader.py`, so `PUBLICATION_MANIFEST.json` can be consumed as a stable reviewer-facing summary instead of only raw JSON.
-- A third external domain has now started as `IC-Verification-Contract`, using a narrow Cocotb-oriented signal-map slice instead of a broad IC platform abstraction.
-- Framework-side governance contracts now also accept `LANG = Python`, which removes an artificial blocker for Python-heavy domains such as Cocotb verification.
-- Domain governance metadata now recognizes `ic-verification` as a first-class medium-risk domain instead of surfacing it as `unknown`.
-- `IC-Verification-Contract` now also exercises a mixed enforcement model: machine-readable unknown-signal mismatches can hard-stop through `ICV-001`, while clock/reset declaration gaps remain advisory.
-- `USB-Hub-Firmware-Architecture-Contract` now also exercises mixed enforcement: `HUB-004` interrupt-safety violations can hard-stop, while broader firmware review still remains advisory-first.
-- The framework repo now also has a dedicated cross-domain enforcement view, so `hard_stop_rules` vs advisory-only policy can be compared without manually opening each external contract repo.
-- Trust-signal overview and snapshot publishing can now optionally include that same cross-domain enforcement view when external contract repos are provided, so release/status surfaces no longer need to stop at repo-local signals only.
-- Trust-signal publication manifests and the publication reader now also preserve a compact cross-domain policy summary (`external_contract_profile_counts`, per-repo enforcement posture), so release-facing consumers no longer need the full markdown dashboard just to inspect mixed enforcement across external repos.
-- Trust-signal snapshot publishing now also emits dedicated external policy pages (`external-contract-policy-latest.*`, `published/domain-enforcement-matrix.*`) when external contract repos are provided, moving cross-domain enforcement posture from manifest-only metadata into first-class status pages.
-- Trust-signal snapshot publishing now also supports a standard `docs/status/generated/` publication mode via `--publish-docs-status`, reducing friction when a stable repo-local consumption path is preferred over ad-hoc output directories.
-- The publication reader can now also consume that stable docs-status path directly via `--docs-status`, so generated repo-local status no longer requires manually resolving `PUBLICATION_MANIFEST.json`.
-- The docs-status publication root now also emits its own `README.md` landing page, so the generated status path is readable even before using the reader against the manifest.
-- The higher-level `docs/status/README.md` now also treats that generated path as a first-class consumption surface instead of a footnote, and release readiness verifies those generated-entry references.
-- Alpha-facing release docs now also explicitly mention the repo-local generated status path and its reader flow, so the external release story and the in-repo status surface no longer drift.
-- The repo now also carries a dedicated GitHub release draft document for `v1.0.0-alpha`, so release-page copy can be reviewed and versioned inside the repo instead of being composed ad hoc at publish time.
-- The release surface now also includes a publish checklist for `v1.0.0-alpha`, so the actual GitHub release step has a repo-tracked, reviewable procedure instead of only a narrative draft.
-- The release surface now also includes `governance_tools/release_package_summary.py`, so alpha docs, status surfaces, and publish commands can be reviewed as one package instead of opening each file manually.
-- The release surface now also includes `governance_tools/release_package_snapshot.py`, so that same package can now be preserved as a latest/history/index bundle instead of only a one-time CLI summary.
-- The release surface now also includes `governance_tools/release_package_reader.py`, so generated release-package bundles can now be consumed through a stable reader flow instead of opening `MANIFEST.json` by hand.
-- Repo-local release-package publishing now also maintains a stable generated root under `docs/releases/generated/`, reducing the need to know the exact version subdirectory before consuming the latest package.
-- The generated release root now also has a dedicated publication reader, making the latest release-package state consumable without opening raw metadata files.
-- Release-facing docs now also have a stable index under `docs/releases/README.md`, reducing reliance on direct deep links to a single version file.
-- CI now also emits `artifacts/release-package/`, so release-package evidence is preserved even when generated docs paths are not used locally.
-- The release surface now also has a single reviewer-first aggregator via `governance_tools/release_surface_overview.py`, reducing the need to manually jump between release readiness, package summary, and publication readers during release prep.
-- Trust-signal artifact publication now also defaults its `publication_root` when bundle/published outputs are requested, closing a clean-workspace CI gap where `trust_signal_publication_reader.py` could fail despite local runs passing with stale manifests.
-- CI now also emits that same release-surface overview under `artifacts/release-surface/`, so the reviewer entrypoint is preserved after the run instead of only at local CLI time.
-- The repo now also has a single reviewer packet via `governance_tools/reviewer_handoff_summary.py`, and CI preserves it under `artifacts/reviewer-handoff/` so trust and release surfaces can be handed off together.
-- `docs/status/reviewer-handoff.md` now turns that reviewer packet into a first-class status page, and release readiness checks it as part of the visible alpha status surface.
-- Reviewer handoff now also has its own snapshot/reader flow:
-  - `governance_tools/reviewer_handoff_snapshot.py`
-  - `governance_tools/reviewer_handoff_reader.py`
-  - CI now preserves reviewer-handoff output as a versioned latest/history/index/manifest bundle instead of only three flat files.
-- Reviewer handoff now also has a publication-layer reader:
-  - `governance_tools/reviewer_handoff_publication_reader.py`
-  - reviewer packet publishing now also maintains a root publication manifest/index plus a small published site under `artifacts/reviewer-handoff/published/`
-- Reviewer handoff now also supports a stable repo-local generated path under `docs/status/generated/reviewer-handoff/`, aligning its consumption model more closely with the other status surfaces.
-- `runtime_hooks/smoke_test.py` can now replay the documented example payloads against an explicit external contract through `--contract`, without requiring the example JSON files to be edited first.
-- `scripts/run-runtime-governance.sh` now forwards `--contract`, `--project-root`, and `--plan-path` into those smoke flows, so the shared shell entrypoint can exercise contract-aware runtime examples too.
-- `scripts/verify_phase_gates.sh` now directly runs that contract-aware wrapper smoke path, so the shared shell entrypoint is part of the normal regression surface rather than a documentation-only convenience.
-- `runtime_hooks/dispatcher.py` now mirrors the same contract-aware override path, and phase gates exercise that shared-event route too.
-- When only `--contract` is supplied to those runtime demo entrypoints, they now default `project_root` and `plan_path` from the contract repo itself only when that repo also exposes `PLAN.md`, reducing manual flags for real external repo trials without breaking bundled examples.
-- Shared runtime demo entrypoints now also accept `--response-file` and `--checks-file`, so post-task fixture replay can use file-based evidence instead of only the bundled response example.
-- External repo onboarding smoke now opportunistically replays compliant `fixtures/*.checks.json` baselines through `post_task_check` when a repo exposes `fixtures/post_task_response.txt`, so onboarding can validate a real domain-validator path instead of stopping at startup-only checks.
-- `trust_signal_overview.py` now treats supplied external contract repos as both policy sources and onboarding-health inputs, so higher-level trust surfaces can reflect external `post_task_ok` / top-issue drift instead of only static contract policy.
+
+---
 
 ## Next Steps
 
@@ -125,11 +44,3 @@
 - Keep reducing adoption friction for first-time users by validating example runnable paths and keeping quickstart docs aligned with the actual local environment.
 - Consider whether `quickstart_smoke.py` should eventually join CI or docs validation as a dedicated adoption-path regression check.
 - Keep IC / EDA Python governance as an evaluated future domain fit, but only after validating a narrow contract-first slice such as Cocotb mapping, golden-model translation, or internal toolchain scripting.
-
-## 2026-03-20 Governance Revision
-
-- Revised governance core to reduce low-risk workflow friction while preserving hard safety and architecture red lines.
-- Added adjacent-engineering scope policy, milestone-based Governance Contract cadence, and milestone-based memory updates.
-- Added `Continue / Escalate / Stop` decision model, dirty-worktree guidance, and low-risk L1 UI examples.
-- Added legacy refactor baseline validation, authoritative build expectations, and baseline-aware warning policy.
-
