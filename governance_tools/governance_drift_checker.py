@@ -2,7 +2,7 @@
 """
 Check whether a repo's governance files have drifted from the recorded baseline.
 
-15 named checks across 4 categories:
+16 named checks across 4 categories:
 
   Category 1 — Baseline Metadata (4 checks):
     baseline_yaml_present       .governance/baseline.yaml exists and is parseable
@@ -15,10 +15,11 @@ Check whether a repo's governance files have drifted from the recorded baseline.
     protected_files_unmodified  sha256 of protected files matches recorded hash
     protected_file_sentinel_present  AGENTS.base.md contains governance sentinel comment
 
-  Category 3 — Overridable File Required Fields (5 checks):
+  Category 3 — Overridable File Required Fields (6 checks):
     contract_required_fields_present  contract.yaml has all required fields
     contract_agents_base_referenced   AGENTS.base.md wired into contract documents
     contract_no_placeholders          contract.yaml values contain no <...> template tokens
+    contract_not_framework_copy       contract.yaml is not a verbatim copy of the framework's own contract
     plan_required_sections_present    PLAN.md contains required section headings
     agents_sections_filled            AGENTS.md governance:key sections have real content
 
@@ -391,13 +392,39 @@ def check_governance_drift(
                 )
             else:
                 _pass("contract_no_placeholders")
+
+            # contract_not_framework_copy — warn if contract appears to be the framework's own
+            framework_contract_path = framework_root / "contract.yaml"
+            if repo_root != framework_root and framework_contract_path.exists():
+                try:
+                    fw_contract = _parse_contract_yaml(
+                        framework_contract_path.read_text(encoding="utf-8")
+                    )
+                    repo_name = contract_data.get("name", "")
+                    fw_name = fw_contract.get("name", "")
+                    if repo_name and fw_name and repo_name == fw_name:
+                        _fail(
+                            "contract_not_framework_copy",
+                            "warning",
+                            f"contract.yaml 'name' matches the framework's own contract "
+                            f"('{repo_name}') — update name and domain to identify this repo",
+                        )
+                    else:
+                        _pass("contract_not_framework_copy")
+                except (ValueError, OSError):
+                    _pass("contract_not_framework_copy")
+            else:
+                # Framework validating itself, or framework contract not available — skip
+                _pass("contract_not_framework_copy")
         except (ValueError, OSError) as exc:
             _fail("contract_required_fields_present", "critical", f"failed to parse contract.yaml: {exc}")
 
     # PLAN.md required sections
     # plan_required_sections = governance mandate (only enforced when explicitly set)
     # plan_section_inventory = observed snapshot (informational, not enforced)
-    plan_path = repo_root / "PLAN.md"
+    # plan_path may be non-standard (e.g. governance/PLAN.md) — read from baseline
+    plan_rel = baseline_data.get("plan_path", "PLAN.md")
+    plan_path = repo_root / str(plan_rel)
     required_plan_sections = _as_list(baseline_data.get("plan_required_sections"))
     plan_section_inventory = _as_list(baseline_data.get("plan_section_inventory"))
 

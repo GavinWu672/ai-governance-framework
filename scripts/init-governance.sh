@@ -142,15 +142,42 @@ source_commit() {
 
 PLAN_REQUIRED_SECTIONS=()
 PLAN_INVENTORY_SECTIONS=()
+# Relative path to PLAN.md within the target repo (default: PLAN.md at root).
+# Set by discover_plan_path(); used by detect_plan_sections() and write_baseline_yaml().
+PLAN_PATH="PLAN.md"
 
-# Detect ## headings in existing PLAN.md → PLAN_INVENTORY_SECTIONS
+# Search for PLAN.md in common locations; set PLAN_PATH to the first match.
+# Falls back to "PLAN.md" (root) if nothing found — caller decides whether to create it.
+discover_plan_path() {
+    local target="$1"
+    local candidates=("PLAN.md" "governance/PLAN.md" "memory/PLAN.md" "docs/PLAN.md")
+    for p in "${candidates[@]}"; do
+        if [[ -f "$target/$p" ]]; then
+            PLAN_PATH="$p"
+            return
+        fi
+    done
+    PLAN_PATH="PLAN.md"  # default; will be created from template if still missing
+}
+
+# Read plan_path recorded in an existing baseline.yaml → PLAN_PATH
+# Used by --refresh-baseline so it re-hashes the same file that was recorded at adoption.
+read_plan_path_from_baseline() {
+    local target="$1"
+    local recorded
+    recorded=$(grep -m1 '^plan_path:' "$target/.governance/baseline.yaml" 2>/dev/null \
+        | sed 's/plan_path:[[:space:]]*//' | tr -d '[:space:]')
+    PLAN_PATH="${recorded:-PLAN.md}"
+}
+
+# Detect ## headings in PLAN.md (at path PLAN_PATH) → PLAN_INVENTORY_SECTIONS
 detect_plan_sections() {
     local target="$1"
     PLAN_INVENTORY_SECTIONS=()
-    if [[ -f "$target/PLAN.md" ]]; then
+    if [[ -f "$target/$PLAN_PATH" ]]; then
         while IFS= read -r line; do
             PLAN_INVENTORY_SECTIONS+=("$line")
-        done < <(grep '^## ' "$target/PLAN.md" 2>/dev/null | head -20 | sed 's/[[:space:]]*$//')
+        done < <(grep '^## ' "$target/$PLAN_PATH" 2>/dev/null | head -20 | sed 's/[[:space:]]*$//')
     fi
 }
 
@@ -187,10 +214,17 @@ write_baseline_yaml() {
     now="$(date -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || python3 -c 'from datetime import datetime,timezone; print(datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"))')"
 
     local hash_agents hash_plan hash_contract hash_agents_ext
+    local plan_file="${PLAN_PATH:-PLAN.md}"
     hash_agents="$(sha256_of "$target/AGENTS.base.md")"
-    hash_plan="$(sha256_of "$target/PLAN.md")"
+    hash_plan="$(sha256_of "$target/$plan_file" 2>/dev/null || echo "missing")"
     hash_contract="$(sha256_of "$target/contract.yaml")"
-    hash_agents_ext="$(sha256_of "$target/AGENTS.md")"
+    hash_agents_ext="$(sha256_of "$target/AGENTS.md" 2>/dev/null || echo "missing")"
+
+    # Record plan_path only when non-standard (omitting keeps root as default)
+    local plan_path_block=""
+    if [[ "$plan_file" != "PLAN.md" ]]; then
+        plan_path_block="plan_path: $plan_file"$'\n'
+    fi
 
     # Build plan_required_sections block (governance mandate — only if set)
     local required_block=""
@@ -231,6 +265,7 @@ source_commit: $commit
 framework_root: $FRAMEWORK_ROOT
 initialized_at: $now
 initialized_by: scripts/init-governance.sh
+${plan_path_block}
 
 # ── INTEGRITY ─────────────────────────────────────────────────────────────────
 # sha256.<file>: hash recorded at init/refresh time; "protected" files are hash-verified
@@ -314,15 +349,27 @@ do_adopt_existing() {
     echo "Baseline source: $BASELINE_SOURCE"
     echo ""
 
+    # Discover PLAN.md location before any dry-run output
+    discover_plan_path "$TARGET"
+
     if [[ "$DRY_RUN" == true ]]; then
-        echo "[dry-run] AGENTS.base.md — always copied (protected baseline, new to this repo)"
-        for f in AGENTS.md PLAN.md contract.yaml; do
+        echo "[dry-run] AGENTS.base.md — always copied (protected baseline)"
+        for f in AGENTS.md contract.yaml; do
             if [[ -f "$TARGET/$f" ]]; then
                 echo "[dry-run] $f — kept as-is (already exists)"
             else
                 echo "[dry-run] $f — would copy from template (missing)"
             fi
         done
+        if [[ -f "$TARGET/$PLAN_PATH" ]]; then
+            if [[ "$PLAN_PATH" != "PLAN.md" ]]; then
+                echo "[dry-run] PLAN.md — found at $PLAN_PATH (non-standard location, will record plan_path)"
+            else
+                echo "[dry-run] PLAN.md — kept as-is (already exists)"
+            fi
+        else
+            echo "[dry-run] PLAN.md — would copy from template (missing)"
+        fi
         detect_plan_sections "$TARGET"
         if [[ ${#PLAN_INVENTORY_SECTIONS[@]} -gt 0 ]]; then
             echo "[dry-run] plan_section_inventory — ${#PLAN_INVENTORY_SECTIONS[@]} heading(s) detected:"
@@ -340,7 +387,7 @@ do_adopt_existing() {
     echo "  Copied AGENTS.base.md (protected baseline)"
 
     # Overridable files: create from template only if missing
-    for f in AGENTS.md PLAN.md contract.yaml; do
+    for f in AGENTS.md contract.yaml; do
         if [[ -f "$TARGET/$f" ]]; then
             echo "  $f — kept as-is (already exists)"
         else
@@ -349,12 +396,25 @@ do_adopt_existing() {
         fi
     done
 
+    # PLAN.md: use discovered path; create at root from template only if not found anywhere
+    if [[ -f "$TARGET/$PLAN_PATH" ]]; then
+        if [[ "$PLAN_PATH" != "PLAN.md" ]]; then
+            echo "  PLAN.md — found at $PLAN_PATH (non-standard location; plan_path recorded in baseline)"
+        else
+            echo "  PLAN.md — kept as-is (already exists)"
+        fi
+    else
+        cp "$BASELINE_SOURCE/PLAN.md" "$TARGET/PLAN.md"
+        PLAN_PATH="PLAN.md"
+        echo "  PLAN.md — copied from template (was missing)"
+    fi
+
     # No governance mandate imposed — only record inventory
     PLAN_REQUIRED_SECTIONS=()
     detect_plan_sections "$TARGET"
     if [[ ${#PLAN_INVENTORY_SECTIONS[@]} -gt 0 ]]; then
         echo ""
-        echo "  plan_section_inventory: ${#PLAN_INVENTORY_SECTIONS[@]} heading(s) observed in PLAN.md"
+        echo "  plan_section_inventory: ${#PLAN_INVENTORY_SECTIONS[@]} heading(s) observed in $PLAN_PATH"
         for s in "${PLAN_INVENTORY_SECTIONS[@]}"; do
             echo "    $s"
         done
@@ -394,9 +454,12 @@ do_refresh_baseline() {
         exit 1
     fi
 
+    # Restore PLAN_PATH from baseline so we re-hash the same file recorded at adoption
+    read_plan_path_from_baseline "$TARGET"
+
     if [[ "$DRY_RUN" == true ]]; then
         detect_plan_sections "$TARGET"
-        echo "[dry-run] Would recompute hashes for: AGENTS.base.md AGENTS.md PLAN.md contract.yaml"
+        echo "[dry-run] Would recompute hashes for: AGENTS.base.md AGENTS.md $PLAN_PATH contract.yaml"
         echo "[dry-run] plan_required_sections — preserved from existing baseline.yaml"
         if [[ ${#PLAN_INVENTORY_SECTIONS[@]} -gt 0 ]]; then
             echo "[dry-run] plan_section_inventory — ${#PLAN_INVENTORY_SECTIONS[@]} heading(s) detected:"

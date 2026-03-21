@@ -483,8 +483,8 @@ def test_source_commit_invalid_sha_is_warning(tmp_path):
     assert result.checks.get("source_commit_recorded") is False
 
 
-def test_all_15_checks_present_in_ok_repo(clean_repo):
-    """Verify exactly 15 named checks appear in a fully valid repo."""
+def test_all_16_checks_present_in_ok_repo(clean_repo):
+    """Verify exactly 16 named checks appear in a fully valid repo."""
     result = check_governance_drift(clean_repo, framework_root=FRAMEWORK_ROOT)
     expected_checks = {
         "baseline_yaml_present",
@@ -497,6 +497,7 @@ def test_all_15_checks_present_in_ok_repo(clean_repo):
         "contract_required_fields_present",
         "contract_agents_base_referenced",
         "contract_no_placeholders",
+        "contract_not_framework_copy",
         "plan_required_sections_present",
         "agents_sections_filled",
         "plan_freshness",
@@ -504,7 +505,7 @@ def test_all_15_checks_present_in_ok_repo(clean_repo):
         "baseline_yaml_freshness",
     }
     assert set(result.checks.keys()) == expected_checks
-    assert len(result.checks) == 15
+    assert len(result.checks) == 16
 
 
 # ── Custom plan_required_sections (--adopt-existing use case) ─────────────────
@@ -1038,3 +1039,57 @@ def test_plan_inventory_current_passes_when_both_empty(tmp_path):
     )
     result = check_governance_drift(tmp_path, framework_root=FRAMEWORK_ROOT, skip_hash=True)
     assert result.checks.get("plan_inventory_current") is True
+
+
+# ── contract_not_framework_copy ───────────────────────────────────────────────
+
+def test_contract_not_framework_copy_passes_for_distinct_contract(tmp_path):
+    """contract.yaml with a different name than the framework's own passes."""
+    agents = _write_agents_base(tmp_path)
+    plan = _write_plan(tmp_path)
+    contract = _write_contract(tmp_path)  # name=test-contract — distinct from framework
+    _write_baseline_yaml(
+        tmp_path,
+        agents_hash=_compute_hash(agents),
+        plan_hash=_compute_hash(plan),
+        contract_hash=_compute_hash(contract),
+    )
+    result = check_governance_drift(tmp_path, framework_root=FRAMEWORK_ROOT, skip_hash=True)
+    assert result.checks.get("contract_not_framework_copy") is True
+
+
+def test_contract_not_framework_copy_fails_when_name_matches_framework(tmp_path):
+    """contract.yaml whose name matches the framework's own contract is a warning."""
+    agents = _write_agents_base(tmp_path)
+    plan = _write_plan(tmp_path)
+    fw_contract_text = (FRAMEWORK_ROOT / "contract.yaml").read_text(encoding="utf-8")
+    contract = tmp_path / "contract.yaml"
+    contract.write_text(fw_contract_text, encoding="utf-8")
+    _write_baseline_yaml(
+        tmp_path,
+        agents_hash=_compute_hash(agents),
+        plan_hash=_compute_hash(plan),
+        contract_hash=_compute_hash(contract),
+    )
+    result = check_governance_drift(tmp_path, framework_root=FRAMEWORK_ROOT, skip_hash=True)
+    assert result.checks.get("contract_not_framework_copy") is False
+    assert any("name" in w for w in result.warnings)
+
+
+def test_contract_not_framework_copy_passes_when_repo_is_framework(tmp_path):
+    """When repo_root == framework_root the check passes (framework validates itself)."""
+    agents = _write_agents_base(tmp_path)
+    plan = _write_plan(tmp_path)
+    contract = tmp_path / "contract.yaml"
+    contract.write_text(
+        (FRAMEWORK_ROOT / "contract.yaml").read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
+    _write_baseline_yaml(
+        tmp_path,
+        agents_hash=_compute_hash(agents),
+        plan_hash=_compute_hash(plan),
+        contract_hash=_compute_hash(contract),
+    )
+    result = check_governance_drift(tmp_path, framework_root=tmp_path, skip_hash=True)
+    assert result.checks.get("contract_not_framework_copy") is True
