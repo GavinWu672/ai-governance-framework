@@ -4,7 +4,7 @@
 > **技術棧**: Markdown / Python / Bash
 > **複雜度**: L2
 > **預計工期**: 2026/03 ~ 2026/06
-> **最後更新**: 2026-03-15
+> **最後更新**: 2026-03-21
 > **Owner**: GavinWu
 > **Freshness**: Sprint (7d)
 
@@ -133,7 +133,8 @@
 - [x] 補齊工具單元測試（state_generator）✓ 2026/03/21 — 78% 覆蓋率
 - [x] 補齊工具單元測試（linear_integrator、notion_integrator）✓ 2026/03/21
 - [x] 評估 BUG-003（記憶壓力多維度指標）✓ 2026/03/21 — 決定修：已加字元數閾值（soft 8000 / hard 10000 / critical 12000），防止單行塞大量內容繞過行數限制，結案
-- [ ] 補齊對外 release-facing 信號（GitHub Releases 實體頁面、alpha release note 對外同步）
+- [x] 補齊對外 release-facing 信號 ✓ 2026/03/21 — CHANGELOG post-alpha entry 補齊；framework 自身已完成 --adopt-existing 並通過 drift check 12/12
+- [x] Cross-repo governance baseline distribution system ✓ 2026/03/21 — init / adopt-existing / upgrade / refresh-baseline 四個 lifecycle；governance_drift_checker 12 checks；plan_required_sections vs plan_section_inventory 語義分離；governance:key 錨點
 - [ ] 持續收斂 example / onboarding path，降低首次採用摩擦
 - [ ] 持續補強 practical interception coverage（git hook、CI gate、external onboarding），降低 direct commit 或非標準工作流繞過檢查的機率
 - [ ] 持續補強 workflow embedding（contract discovery、runtime smoke、reviewer handoff、change-control flow），讓治理更自然嵌入日常開發流程
@@ -154,6 +155,9 @@
 - ✅ Validator 使用正規表達式驗證（更彈性，支援 markdown code block 與純文字兩種格式）
 - ✅ state_generator.py 使用 YAML 輸出（pyyaml 非必要，自製序列化避免依賴）
 - ✅ PLAN.md 為 Single Source of Truth，Linear / Notion 為從屬同步目標
+- ✅ plan_required_sections（治理強制）與 plan_section_inventory（觀察快照）分開，--adopt-existing 不強加 mandate
+- ✅ governance:key anchor pattern 確立：section 識別靠 key，不靠 heading 文字，支援多語言 repo
+- ✅ lifecycle 四段定義：init / adopt-existing / upgrade / refresh-baseline，各有明確觸發條件
 
 ---
 
