@@ -1,35 +1,46 @@
 # .governance/baseline.yaml
 # Written by scripts/init-governance.sh — do not edit manually.
 # Verified by: python governance_tools/governance_drift_checker.py --repo .
+#
+# Semantic layers in this file:
+#   PROVENANCE  — who generated this baseline and from which commit
+#   INTEGRITY   — sha256 hashes + overridability of tracked files
+#   CONTRACT    — governance mandates that MUST be satisfied (enforced by drift checker)
+#   OBSERVED    — snapshot of repo structure at adoption time (informational, not enforced)
 
+# ── PROVENANCE ────────────────────────────────────────────────────────────────
 schema_version: "1"
 baseline_version: 1.0.0
-source_commit: 6a0e0fadf546dc4266a4449595288e4d4804163c
+source_commit: 8dd45c74830eb3cc186cc6fbd3a472eb52118ca5
 framework_root: /d/ai-governance-framework
-initialized_at: 2026-03-21T14:04:46Z
+initialized_at: 2026-03-21T16:35:16Z
 initialized_by: scripts/init-governance.sh
 
-# SHA256 hashes recorded at init time (prefix: sha256.<filename>)
+# ── INTEGRITY ─────────────────────────────────────────────────────────────────
+# sha256.<file>: hash recorded at init/refresh time; "protected" files are hash-verified
+# overridable.<file>: protected = must not change | overridable = repo may extend freely
 sha256.AGENTS.base.md: 1465ac22cce87583d7c673bf4ad15ac554299d8588c9d4f3e9a42c8a99dc7baa
 sha256.PLAN.md: d0d1bf5966eff4cc762ec5722a418c9b0b9afb8fc79d9018b2d5fca9777a30b6
 sha256.contract.yaml: 881230fe1ad69b1c8a260c998a6ca82340e849f610ffa6355666e52e83dca19a
 sha256.AGENTS.md: 5ec49a2a2f7eabd9375fb9e70d2d52f3d704d46b45cd6e60f81d72611b32262d
-
-# Overridability: "protected" = must not change, "overridable" = repo may extend
 overridable.AGENTS.base.md: protected
 overridable.PLAN.md: overridable
 overridable.contract.yaml: overridable
 overridable.AGENTS.md: overridable
 
-# Required fields in contract.yaml
+# ── CONTRACT (framework-enforced mandates) ────────────────────────────────────
+# Fields listed here are actively checked by drift checker; violations block ci/gate.
+# plan_required_sections: ## headings that MUST be present in PLAN.md (governance mandate).
+#   Empty = no mandate enforced (adopt-existing default). Set explicitly to harden.
 contract_required_fields:
   - name
   - framework_interface_version
   - framework_compatible
   - domain
 
-# plan_required_sections: governance mandate (only sections listed here are enforced)
-# plan_section_inventory: observed snapshot of ## headings (informational, not enforced)
+# ── OBSERVED (repo snapshot — informational only, never enforced) ──────────────
+# plan_section_inventory: ## headings detected in PLAN.md at adoption/refresh time.
+#   Drift checker surfaces these for visibility but never fails on missing inventory items.
 plan_section_inventory:
   - "## 📋 專案目標"
   - "## 🏗️ 當前階段"

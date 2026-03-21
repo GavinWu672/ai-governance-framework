@@ -217,7 +217,14 @@ write_baseline_yaml() {
 # .governance/baseline.yaml
 # Written by scripts/init-governance.sh — do not edit manually.
 # Verified by: python governance_tools/governance_drift_checker.py --repo .
+#
+# Semantic layers in this file:
+#   PROVENANCE  — who generated this baseline and from which commit
+#   INTEGRITY   — sha256 hashes + overridability of tracked files
+#   CONTRACT    — governance mandates that MUST be satisfied (enforced by drift checker)
+#   OBSERVED    — snapshot of repo structure at adoption time (informational, not enforced)
 
+# ── PROVENANCE ────────────────────────────────────────────────────────────────
 schema_version: "1"
 baseline_version: $baseline_version
 source_commit: $commit
@@ -225,28 +232,32 @@ framework_root: $FRAMEWORK_ROOT
 initialized_at: $now
 initialized_by: scripts/init-governance.sh
 
-# SHA256 hashes recorded at init time (prefix: sha256.<filename>)
+# ── INTEGRITY ─────────────────────────────────────────────────────────────────
+# sha256.<file>: hash recorded at init/refresh time; "protected" files are hash-verified
+# overridable.<file>: protected = must not change | overridable = repo may extend freely
 sha256.AGENTS.base.md: $hash_agents
 sha256.PLAN.md: $hash_plan
 sha256.contract.yaml: $hash_contract
 sha256.AGENTS.md: $hash_agents_ext
-
-# Overridability: "protected" = must not change, "overridable" = repo may extend
 overridable.AGENTS.base.md: protected
 overridable.PLAN.md: overridable
 overridable.contract.yaml: overridable
 overridable.AGENTS.md: overridable
 
-# Required fields in contract.yaml
+# ── CONTRACT (framework-enforced mandates) ────────────────────────────────────
+# Fields listed here are actively checked by drift checker; violations block ci/gate.
+# plan_required_sections: ## headings that MUST be present in PLAN.md (governance mandate).
+#   Empty = no mandate enforced (adopt-existing default). Set explicitly to harden.
 contract_required_fields:
   - name
   - framework_interface_version
   - framework_compatible
   - domain
-
-# plan_required_sections: governance mandate (only sections listed here are enforced)
-# plan_section_inventory: observed snapshot of ## headings (informational, not enforced)
-${required_block}${inventory_block}
+${required_block}
+# ── OBSERVED (repo snapshot — informational only, never enforced) ──────────────
+# plan_section_inventory: ## headings detected in PLAN.md at adoption/refresh time.
+#   Drift checker surfaces these for visibility but never fails on missing inventory items.
+${inventory_block}
 EOF
     echo "  Wrote $target/.governance/baseline.yaml"
 }
