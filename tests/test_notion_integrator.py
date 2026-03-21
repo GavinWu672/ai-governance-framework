@@ -111,3 +111,132 @@ def test_update_active_task(temp_memory, api_key_env):
     integrator = NotionIntegrator(temp_memory, client)
     integrator.update_active_task_with_notion_ids({"Task 1": "NOT-ID"})
     assert "NOT-ID" in active_task.read_text(encoding="utf-8")
+
+def test_update_active_task_file_missing(temp_memory, api_key_env):
+    """update_active_task_with_notion_ids should silently return when file absent."""
+    client = NotionClient()
+    integrator = NotionIntegrator(temp_memory, client)
+    integrator.update_active_task_with_notion_ids({"Task 1": "XXXXXXXX"})
+
+def test_parse_active_task_file_missing(temp_memory, api_key_env):
+    """parse_active_task returns [] when file doesn't exist."""
+    client = NotionClient()
+    integrator = NotionIntegrator(temp_memory, client)
+    assert integrator.parse_active_task() == []
+
+def test_sync_task_fail(temp_memory, api_key_env):
+    """sync_task_to_notion returns None on exception."""
+    with patch.object(NotionClient, 'create_page', side_effect=Exception("fail")):
+        client = NotionClient()
+        integrator = NotionIntegrator(temp_memory, client)
+        res = integrator.sync_task_to_notion({"title": "X", "description": "Y"}, "DB-1")
+        assert res is None
+
+
+# ─── _request error paths ────────────────────────────────────────────────────
+
+def test_request_http_error(api_key_env, monkeypatch):
+    """HTTPError is re-raised with body."""
+    err = urllib.error.HTTPError("url", 400, "bad", {}, None)
+    err.read = lambda: b"error body"
+    monkeypatch.setattr(urllib.request, "urlopen", MagicMock(side_effect=err))
+    client = NotionClient()
+    with pytest.raises(urllib.error.HTTPError):
+        client._request("GET", "/test")
+
+def test_request_url_error(api_key_env, monkeypatch):
+    """URLError is re-raised."""
+    monkeypatch.setattr(
+        urllib.request, "urlopen",
+        MagicMock(side_effect=urllib.error.URLError("refused"))
+    )
+    client = NotionClient()
+    with pytest.raises(urllib.error.URLError):
+        client._request("GET", "/test")
+
+
+# ─── _request_with_retry ─────────────────────────────────────────────────────
+
+def test_retry_succeeds_after_429(api_key_env, monkeypatch):
+    good = json.dumps({"ok": True}).encode("utf-8")
+    call_count = {"n": 0}
+
+    def fake_urlopen(req, timeout=None):
+        call_count["n"] += 1
+        if call_count["n"] == 1:
+            err = urllib.error.HTTPError("url", 429, "rate limit", {}, None)
+            err.read = lambda: b""
+            raise err
+        cm = MagicMock()
+        cm.__enter__.return_value.read.return_value = good
+        cm.__exit__.return_value = False
+        return cm
+
+    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr("time.sleep", lambda _: None)
+    client = NotionClient()
+    res = client._request_with_retry("GET", "/test")
+    assert res == {"ok": True}
+
+def test_retry_non_retryable_raises(api_key_env, monkeypatch):
+    err = urllib.error.HTTPError("url", 403, json.dumps({"message": "forbidden"}), {}, None)
+    err.read = lambda: b""
+    monkeypatch.setattr(urllib.request, "urlopen", MagicMock(side_effect=err))
+    monkeypatch.setattr("time.sleep", lambda _: None)
+    client = NotionClient()
+    with pytest.raises(Exception, match="403"):
+        client._request_with_retry("GET", "/test")
+
+def test_retry_url_error_then_succeed(api_key_env, monkeypatch):
+    good = json.dumps({"data": "x"}).encode("utf-8")
+    call_count = {"n": 0}
+
+    def fake_urlopen(req, timeout=None):
+        call_count["n"] += 1
+        if call_count["n"] == 1:
+            raise urllib.error.URLError("timeout")
+        cm = MagicMock()
+        cm.__enter__.return_value.read.return_value = good
+        cm.__exit__.return_value = False
+        return cm
+
+    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr("time.sleep", lambda _: None)
+    client = NotionClient()
+    res = client._request_with_retry("GET", "/test")
+    assert "data" in res
+
+def test_retry_exhausted_raises(api_key_env, monkeypatch):
+    monkeypatch.setattr(
+        urllib.request, "urlopen",
+        MagicMock(side_effect=urllib.error.URLError("always fails"))
+    )
+    monkeypatch.setattr("time.sleep", lambda _: None)
+    client = NotionClient()
+    with pytest.raises(Exception):
+        client._request_with_retry("GET", "/test")
+
+
+# ─── query_database pagination ───────────────────────────────────────────────
+
+@patch.object(NotionClient, '_request_with_retry')
+def test_query_database_pagination(mock_req, api_key_env):
+    """has_more=True on first page triggers a second request with start_cursor."""
+    page = {"id": "1", "url": "u", "properties": {"Name": {"type": "title", "title": [{"plain_text": "P"}]}}}
+    mock_req.side_effect = [
+        {"results": [page], "has_more": True, "next_cursor": "cur1"},
+        {"results": [page], "has_more": False},
+    ]
+    client = NotionClient()
+    results = client.query_database("DB1")
+    assert len(results) == 2
+    assert mock_req.call_count == 2
+
+
+# ─── _extract_page_title fallback ────────────────────────────────────────────
+
+def test_extract_page_title_no_title_property(api_key_env):
+    """Returns fallback string when no title property exists."""
+    client = NotionClient()
+    page = {"properties": {"Status": {"type": "select", "select": {"name": "Done"}}}}
+    assert client._extract_page_title(page) == "(無標題)"
