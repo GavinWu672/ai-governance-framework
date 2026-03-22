@@ -245,10 +245,12 @@ def adopt_existing(
         if dry_run:
             print(f"  [dry-run] PLAN.md — would copy from template (missing)")
         else:
-            import shutil
-            shutil.copy2(baseline_source / "PLAN.md", target_plan)
+            today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+            plan_text = (baseline_source / "PLAN.md").read_text(encoding="utf-8")
+            plan_text = plan_text.replace("YYYY-MM-DD", today)
+            plan_text = plan_text.replace("<repo-owner>", "TODO")
+            target_plan.write_text(plan_text, encoding="utf-8")
             print(f"  PLAN.md — copied from template (was missing)")
-            print(f"  ⚠ Edit PLAN.md: fill in 最後更新, Owner, Freshness fields and section content")
 
     # ── AGENTS.base.md — always copy (protected) ─────────────────────────────
     target_agents_base = repo_root / "AGENTS.base.md"
@@ -268,11 +270,13 @@ def adopt_existing(
             if dry_run:
                 print(f"  [dry-run] {fname} — would copy from template (missing)")
             else:
-                import shutil
-                shutil.copy2(baseline_source / fname, target)
-                print(f"  {fname} — copied from template (was missing)")
+                template_text = (baseline_source / fname).read_text(encoding="utf-8")
                 if fname == "contract.yaml":
-                    print(f"  ⚠ Edit contract.yaml: replace <repo-name> and <domain> placeholders")
+                    slug = repo_root.name.lower().replace(" ", "-")
+                    template_text = template_text.replace("<repo-name>-contract", f"{slug}-contract")
+                    template_text = template_text.replace("<domain>", slug)
+                target.write_text(template_text, encoding="utf-8")
+                print(f"  {fname} — copied from template (was missing)")
 
     # ── Detect plan inventory ─────────────────────────────────────────────────
     effective_plan = repo_root / plan_rel

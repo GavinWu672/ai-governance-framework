@@ -7,45 +7,53 @@
 This file extends `AGENTS.base.md`.
 All rules in `AGENTS.base.md` are non-negotiable and apply to this repo unconditionally.
 
-Add repo-specific rules below. Leave sections empty if not yet needed —
-populate them as incidents, decisions, or domain requirements emerge.
+Add repo-specific rules below.
+Fill in each section below, or write `N/A` if the section is not applicable to this repo.
 
 ---
 
 ## Repo-Specific Risk Levels
 <!-- governance:key=risk_levels -->
 
-<!-- Define what makes a change HIGH / MEDIUM / LOW risk in this repo. -->
-<!-- Example:
+<!-- Define what makes a change HIGH / MEDIUM / LOW risk in this repo.
+Example:
 - HIGH: any change to auth, payment, or data migration paths
 - MEDIUM: adding a new API endpoint or external dependency
 - LOW: documentation, config comments, test-only changes
 -->
 
+N/A — fill in or replace with repo-specific risk levels
+
 ## Must-Test Paths
 <!-- governance:key=must_test_paths -->
 
-<!-- List modules or code paths that require tests before merge. -->
-<!-- Example:
+<!-- List modules or code paths that require tests before merge.
+Example:
 - src/auth/       any change here needs integration tests
 - src/migrations/ schema changes need a rollback test
 -->
 
+N/A — fill in or replace with paths that must have tests before merge
+
 ## L1 → L2 Escalation Triggers
 <!-- governance:key=escalation_triggers -->
 
-<!-- When does this repo's work need the full L2 evidence checklist? -->
-<!-- Example:
+<!-- When does this repo's work need the full L2 evidence checklist?
+Example:
 - Changing shared database schema
 - Modifying public API contracts
 - Any change touching >3 modules simultaneously
 -->
 
+N/A — fill in or replace with escalation conditions for this repo
+
 ## Repo-Specific Forbidden Behaviors
 <!-- governance:key=forbidden_behaviors -->
 
-<!-- Add restrictions beyond the framework baseline. -->
-<!-- Example:
+<!-- Add restrictions beyond the framework baseline.
+Example:
 - Do not write directly to the production database from tests
 - Do not commit .env files even if .gitignored
 -->
+
+N/A — fill in or replace with forbidden behaviors specific to this repo

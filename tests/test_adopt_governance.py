@@ -398,3 +398,42 @@ def test_read_baseline_state_reads_required_sections(tmp_path):
 
     state = _read_baseline_state(repo)
     assert state["required"] == ["## Phase", "## Sprint"]
+
+
+def test_adopt_contract_template_has_no_placeholders(tmp_path):
+    """contract.yaml from template must have repo-slug substituted, no <...> tokens."""
+    repo = _make_git_repo(tmp_path / "my-service")
+
+    adopt_existing(repo, FRAMEWORK_ROOT, dry_run=False)
+
+    contract_text = (repo / "contract.yaml").read_text(encoding="utf-8")
+    import re
+    placeholders = re.findall(r"<[^>]+>", contract_text)
+    assert not placeholders, f"contract.yaml still contains placeholder(s): {placeholders}"
+    assert "my-service" in contract_text
+
+
+def test_adopt_plan_template_has_no_date_placeholder(tmp_path):
+    """PLAN.md from template must have today's date, not YYYY-MM-DD."""
+    repo = _make_git_repo(tmp_path / "repo")
+
+    adopt_existing(repo, FRAMEWORK_ROOT, dry_run=False)
+
+    plan_text = (repo / "PLAN.md").read_text(encoding="utf-8")
+    assert "YYYY-MM-DD" not in plan_text
+    import re
+    assert re.search(r"\d{4}-\d{2}-\d{2}", plan_text), "PLAN.md must contain an ISO date"
+
+
+def test_adopt_minimal_repo_drift_ok(tmp_path):
+    """Empty git repo + adopt should produce drift ok=True (no critical failures)."""
+    repo = _make_git_repo(tmp_path / "empty-repo")
+
+    adopt_existing(repo, FRAMEWORK_ROOT, dry_run=False)
+
+    from governance_tools.governance_drift_checker import check_governance_drift
+    result = check_governance_drift(repo, framework_root=FRAMEWORK_ROOT)
+    assert result.ok is True, (
+        f"adopt on empty repo must yield ok=True; failed: "
+        f"{[k for k, v in result.checks.items() if v is False]}"
+    )
