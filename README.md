@@ -3,7 +3,7 @@
 > Move from "asking AI to help write code" to "making AI work inside a governance framework."
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.0.0--alpha-orange.svg)](docs/releases/v1.0.0-alpha.md)
+[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](CHANGELOG.md)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
 ## What This Is
@@ -25,54 +25,56 @@ to:
 
 The most precise current positioning is:
 
-- a runnable `AI Coding Runtime Governance Framework prototype`
+- a runnable `AI Coding Runtime Governance Framework` — past prototype, now adoption-ready for real repos
 - a framework with a real runtime governance spine, not just static policy documents
 - an established external domain validator seam, with the first firmware vertical slice already running
-- an explicit v2.6 decision-model draft for moving from mixed enforcement to runtime-centered enforcement
+- a cross-platform adopt toolchain (`adopt_governance.py`) validated against multiple real repos (Hearth, Mirra)
+- a drift checker with 16 named checks and a minimum-legal schema reference that lets users onboard without reading source code
 - still actively strengthening:
   - semantic verification depth
   - practical git-hook / CI-gate interception coverage
-  - lower-friction workflow embedding around contract discovery, smoke, handoff, and change-control flows
+  - rule classification (core vs optional) to reduce governance overhead on minimal repos
 
-## Alpha Status
+## Status
 
 Current release-facing status:
 
-- version: `v1.0.0-alpha`
-- release notes: [docs/releases/v1.0.0-alpha.md](docs/releases/v1.0.0-alpha.md)
-- release index: [docs/releases/README.md](docs/releases/README.md)
+- version: `v1.1.0` (2026-03-22)
+- previous release: [docs/releases/v1.0.0-alpha.md](docs/releases/v1.0.0-alpha.md)
 - changelog: [CHANGELOG.md](CHANGELOG.md)
 - known limits: [docs/LIMITATIONS.md](docs/LIMITATIONS.md)
 - status index: [docs/status/README.md](docs/status/README.md)
 - trust signal dashboard: [docs/status/trust-signal-dashboard.md](docs/status/trust-signal-dashboard.md)
 - domain enforcement matrix: [docs/status/domain-enforcement-matrix.md](docs/status/domain-enforcement-matrix.md)
-- current governance-friction notes: [memory/2026-03-20.md](memory/2026-03-20.md)
+- schema reference: [docs/minimum-legal-schema.md](docs/minimum-legal-schema.md)
 
-This alpha is suitable for evaluation, internal adoption trials, and domain-contract experimentation.
-It should still be treated as a governance framework prototype rather than a fully closed enforcement platform.
+This framework is suitable for evaluation, internal adoption trials, and domain-contract experimentation.
+It should still be treated as an early-stage framework rather than a fully closed enforcement platform —
+semantic verification depth and rule classification remain open fronts.
 
-Recent governance simplification direction:
+### What Changed in v1.1.0
 
-- `L0 fast-track` is being treated as a real lightweight path for bounded
-  presentation-only and prototype work
-- root `AGENTS.md` and `governance/AGENT.md` are now explicitly split into
-  workspace behavior vs repo governance roles to reduce document-conflict load
-- failure-mode testing is now being defined as an explicit runtime trust gate,
-  not left as an implicit future concern
+- **Cross-platform adopt toolchain** — `adopt_governance.py` replaces bash-only `init-governance.sh` for Windows; validated against Hearth (service) and Mirra (Next.js/Supabase product)
+- **Schema visibility** — adopt now substitutes repo slug and today's date into templates; empty repo + adopt → `ok=True` (15/16 PASS) without manual editing
+- **16-check drift checker** — checks 13–16 added (placeholder detection, template copy guard, inventory staleness, AGENTS.md fill check); all hints are now platform-aware
+- **Freshness threshold** — framework default raised to 14d; CONTRACT-layer override auditable in drift output; guardrail warning when override > 14d
+- **Framework root auto-discovery** — `GOVERNANCE_FRAMEWORK_ROOT` env var + upward scan; consistent across Python tools and bash scripts
+- **Minimum legal schema reference** — [docs/minimum-legal-schema.md](docs/minimum-legal-schema.md); surfaced at three onboarding touch points
+- **898 tests passing**
 
 ### Validation Status
 
 | What Has Been Validated | Status |
 |-------------------------|--------|
-| Core governance tools pass automated test suite (444 tests) | ✅ Done |
+| Core governance tools pass automated test suite (898 tests) | ✅ Done |
 | Runtime hooks work across Claude / Codex / Gemini adapters | ✅ Done |
 | External domain contract seam (firmware, kernel-driver, IC-verification) | ✅ Done |
 | CI pipeline runs governance checks on every push | ✅ Done |
 | Quickstart smoke reproducible in < 5 minutes | ✅ Done |
-| **External adopter trial: end-to-end session lifecycle in a real project** | **⏳ Next Gate** |
-| Independent human reviewer successfully onboards without author guidance | ⏳ Not yet |
-
-The next gate before moving out of alpha is: **at least one external project completes a full session lifecycle (session_start → pre_task → post_task → session_end → memory promotion) using this framework without author intervention.**
+| Real-repo adoption validated (Hearth + Mirra — different repo types) | ✅ Done |
+| Empty repo + adopt → `ok=True` without manual editing | ✅ Done |
+| **Independent reviewer onboards without author guidance** | **⏳ Next Gate** |
+| Rule classification: core vs optional checks per repo type | ⏳ Not yet |
 
 ## Comparison & Differentiation
 
@@ -542,13 +544,13 @@ summary=ok=True | pre_task_ok=True | session_start_ok=True | contract=firmware/m
 The highest-level reviewer view — combines trust signals, release state, and governance posture:
 
 ```bash
-python governance_tools/reviewer_handoff_summary.py --project-root . --plan PLAN.md --release-version v1.0.0-alpha --contract examples/usb-hub-contract/contract.yaml --format human
+python governance_tools/reviewer_handoff_summary.py --project-root . --plan PLAN.md --release-version v1.1.0 --contract examples/usb-hub-contract/contract.yaml --format human
 ```
 
 For a release/adoption overview across external contract repos:
 
 ```bash
-python governance_tools/trust_signal_overview.py --project-root . --plan PLAN.md --release-version v1.0.0-alpha --contract examples/usb-hub-contract/contract.yaml --format human
+python governance_tools/trust_signal_overview.py --project-root . --plan PLAN.md --release-version v1.1.0 --contract examples/usb-hub-contract/contract.yaml --format human
 ```
 
 ### Tool Reference
@@ -704,9 +706,9 @@ python governance_tools/driver_evidence_validator.py --file checks.json --format
 python governance_tools/refactor_evidence_validator.py --file checks.json --format json
 python governance_tools/rule_pack_suggester.py --project-root . --task "Refactor Avalonia view model boundary"
 python governance_tools/governance_auditor.py --format json
-python governance_tools/trust_signal_snapshot.py --project-root . --plan PLAN.md --release-version v1.0.0-alpha --contract examples/usb-hub-contract/contract.yaml --write-bundle artifacts/trust-signals --format human
+python governance_tools/trust_signal_snapshot.py --project-root . --plan PLAN.md --release-version v1.1.0 --contract examples/usb-hub-contract/contract.yaml --write-bundle artifacts/trust-signals --format human
 python governance_tools/trust_signal_publication_reader.py --file artifacts/trust-signals/PUBLICATION_MANIFEST.json --format human
-python governance_tools/trust_signal_overview.py --project-root . --plan PLAN.md --release-version v1.0.0-alpha --contract examples/usb-hub-contract/contract.yaml --format human
+python governance_tools/trust_signal_overview.py --project-root . --plan PLAN.md --release-version v1.1.0 --contract examples/usb-hub-contract/contract.yaml --format human
 ```
 
 ### Runtime Hooks
