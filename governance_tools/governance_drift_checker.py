@@ -346,17 +346,27 @@ def check_governance_drift(
         if all_match:
             _pass("protected_files_unmodified")
 
-    # Sentinel check for AGENTS.base.md
+    # Sentinel check for AGENTS.base.md.
+    # AGENTS.base.md must be present in every governed repo regardless of whether
+    # it is listed in the baseline's overridable.* keys. Failing here (not skipping)
+    # closes the gap with external_repo_readiness.contract_files_complete, which
+    # also fails when AGENTS.base.md is absent.
     agents_path = repo_root / "AGENTS.base.md"
-    if agents_path.exists():
-        if "governance-baseline: protected" in agents_path.read_text(encoding="utf-8"):
-            _pass("protected_file_sentinel_present")
-        else:
-            _fail(
-                "protected_file_sentinel_present",
-                "warning",
-                "AGENTS.base.md is missing the <!-- governance-baseline: protected --> sentinel",
-            )
+    if not agents_path.exists():
+        _fail(
+            "protected_file_sentinel_present",
+            "critical",
+            "AGENTS.base.md not found — copy from framework: "
+            "python governance_tools/adopt_governance.py --target .",
+        )
+    elif "governance-baseline: protected" in agents_path.read_text(encoding="utf-8"):
+        _pass("protected_file_sentinel_present")
+    else:
+        _fail(
+            "protected_file_sentinel_present",
+            "warning",
+            "AGENTS.base.md is missing the <!-- governance-baseline: protected --> sentinel",
+        )
 
     # ── Category 3: Overridable File Required Fields ──────────────────────────
 

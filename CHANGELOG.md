@@ -1,5 +1,20 @@
 # Changelog
 
+## post-alpha hardening (continued) - 2026-03-22 (part 5)
+
+**Tool inconsistency fix — drift_checker now agrees with readiness on AGENTS.base.md (摩擦點 #4)**
+- `protected_file_sentinel_present` now fails with severity=critical when AGENTS.base.md is
+  absent (previously silently skipped), closing the gap with `readiness.contract_files_complete`
+  which already failed in this case — both tools now agree
+- Root cause: manually-created baseline.yaml (no `overridable.*` keys) caused drift_checker to
+  skip the protected-file existence check entirely while readiness still caught it via contract.yaml
+- Error message includes remediation: `python governance_tools/adopt_governance.py --target .`
+- `format_human` in `external_repo_readiness`: `[governance_drift]` section moved to appear
+  immediately after `[checks]`, labelled as "authoritative governance compliance check" — users
+  see drift findings before per-tool details
+- 2 new tests: absent AGENTS.base.md → critical in drift_checker; governance_drift section
+  appears before [contract] in readiness human output
+
 ## post-alpha hardening (continued) - 2026-03-22 (part 4)
 
 **Cross-platform adopt tool (摩擦點 #2/#3)**

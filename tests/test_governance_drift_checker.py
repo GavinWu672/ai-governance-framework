@@ -306,6 +306,29 @@ def test_clean_repo_is_ok(clean_repo):
     assert result.checks["plan_required_sections_present"] is True
 
 
+def test_missing_agents_base_fails_sentinel_check(tmp_path):
+    """AGENTS.base.md absent → protected_file_sentinel_present=critical, not silent skip.
+
+    This closes the gap with external_repo_readiness.contract_files_complete:
+    both tools now fail when AGENTS.base.md is missing.
+    """
+    plan = _write_plan(tmp_path)
+    contract = _write_contract(tmp_path, include_agents_base=False)
+    # Deliberately do NOT write AGENTS.base.md
+    _write_baseline_yaml(
+        tmp_path,
+        agents_hash="0" * 64,
+        plan_hash=_compute_hash(plan),
+        contract_hash=_compute_hash(contract),
+    )
+    result = check_governance_drift(tmp_path, framework_root=FRAMEWORK_ROOT, skip_hash=True)
+    assert result.checks.get("protected_file_sentinel_present") is False
+    assert result.severity == "critical"
+    findings = [f for f in result.findings if f["check"] == "protected_file_sentinel_present"]
+    assert findings and findings[0]["severity"] == "critical"
+    assert any("AGENTS.base.md not found" in f["detail"] for f in findings)
+
+
 def test_skip_hash_still_passes(clean_repo):
     result = check_governance_drift(clean_repo, framework_root=FRAMEWORK_ROOT, skip_hash=True)
     assert result.ok is True

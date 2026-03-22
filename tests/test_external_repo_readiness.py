@@ -389,7 +389,13 @@ def test_governance_drift_surfaces_in_format_human() -> None:
     rendered = format_human(result)
 
     assert "[governance_drift]" in rendered
+    assert "authoritative" in rendered  # role label present
     assert "severity" in rendered
+    # governance_drift must appear before [contract] in output
+    drift_pos = rendered.find("[governance_drift]")
+    contract_pos = rendered.find("[contract]")
+    if contract_pos != -1:
+        assert drift_pos < contract_pos, "governance_drift section must appear before [contract]"
 
 
 def test_governance_drift_surfaces_in_format_json() -> None:

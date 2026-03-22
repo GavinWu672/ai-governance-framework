@@ -287,6 +287,22 @@ def format_human(result: ExternalRepoReadiness) -> str:
     for key in sorted(result.checks):
         lines.append(f"{key:<24} = {result.checks[key]}")
 
+    # governance_drift is the authoritative compliance check — surface it before
+    # per-tool details so users see drift findings immediately after the check list.
+    if result.governance_drift:
+        lines.extend(
+            [
+                "",
+                "[governance_drift]  ← authoritative governance compliance check",
+                f"severity           = {result.governance_drift.get('severity')}",
+                f"baseline_version   = {result.governance_drift.get('baseline_version')}",
+            ]
+        )
+        for finding in result.governance_drift.get("findings") or []:
+            lines.append(f"  [{finding['severity']}] {finding['check']}: {finding['detail']}")
+        for hint in result.governance_drift.get("remediation_hints") or []:
+            lines.append(f"  hint: {hint}")
+
     if result.contract:
         lines.extend(
             [
@@ -338,20 +354,6 @@ def format_human(result: ExternalRepoReadiness) -> str:
                 f"framework_root     = {result.hooks.get('framework_root')}",
             ]
         )
-
-    if result.governance_drift:
-        lines.extend(
-            [
-                "",
-                "[governance_drift]",
-                f"severity           = {result.governance_drift.get('severity')}",
-                f"baseline_version   = {result.governance_drift.get('baseline_version')}",
-            ]
-        )
-        for finding in result.governance_drift.get("findings") or []:
-            lines.append(f"  [{finding['severity']}] {finding['check']}: {finding['detail']}")
-        for hint in result.governance_drift.get("remediation_hints") or []:
-            lines.append(f"  hint: {hint}")
 
     if result.project_facts:
         lines.extend(
