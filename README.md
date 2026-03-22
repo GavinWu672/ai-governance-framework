@@ -25,7 +25,7 @@ to:
 
 The most precise current positioning is:
 
-- a runnable `AI Coding Runtime Governance Framework` — past prototype, now adoption-ready for real repos
+- a runnable `AI Coding Runtime Governance Framework` — adoption-ready (validated on real repos)
 - a framework with a real runtime governance spine, not just static policy documents
 - an established external domain validator seam, with the first firmware vertical slice already running
 - a cross-platform adopt toolchain (`adopt_governance.py`) validated against multiple real repos (Hearth, Mirra)
@@ -75,6 +75,27 @@ semantic verification depth and rule classification remain open fronts.
 | Empty repo + adopt → `ok=True` without manual editing | ✅ Done |
 | **Independent reviewer onboards without author guidance** | **⏳ Next Gate** |
 | Rule classification: core vs optional checks per repo type | ⏳ Not yet |
+
+### Tested Scope
+
+Adoption has been validated on:
+
+| Repo type | Example | Result |
+|-----------|---------|--------|
+| Service (minimal backend) | ziwei-service (Express HTTP wrapper) | adoption friction identified → fixed |
+| Tooling (Python validator collection) | governance_tools subset | adoption friction identified → fixed |
+| Product (Next.js + Supabase + Claude) | Mirra | `ready=True`, drift 16/16 PASS |
+| Governance-heavy (this repo) | ai-governance-framework | self-hosting |
+
+Not yet validated on:
+
+- large monorepos or multi-package workspaces
+- data pipelines or ML repos
+- repos with no PLAN / contract concept and no intention to add one
+- repos in languages other than TypeScript / Python / C#
+
+If your repo falls outside the validated scope, treat adoption as an experiment rather than a guaranteed path.
+The schema reference ([docs/minimum-legal-schema.md](docs/minimum-legal-schema.md)) and the `--dry-run` flag are your safest starting points.
 
 ## Comparison & Differentiation
 
