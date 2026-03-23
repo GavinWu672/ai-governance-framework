@@ -70,6 +70,56 @@ def _discover_plan_path(repo_root: Path) -> Path | None:
     return None
 
 
+def _ensure_contract_agents_base_reference(contract_path: Path, dry_run: bool) -> bool:
+    """
+    Ensure existing contract.yaml references AGENTS.base.md in ai_behavior_override.
+
+    Returns True when the file was modified.
+    """
+    from governance_tools.domain_contract_loader import _as_list, _parse_contract_yaml
+
+    text = contract_path.read_text(encoding="utf-8")
+    data = _parse_contract_yaml(text)
+    referenced = set(_as_list(data.get("documents"))) | set(_as_list(data.get("ai_behavior_override")))
+    if "AGENTS.base.md" in referenced:
+        print("  contract.yaml — AGENTS.base.md reference already present")
+        return False
+
+    lines = text.splitlines()
+    inserted = False
+    for index, raw_line in enumerate(lines):
+        stripped = raw_line.strip()
+        if stripped == "ai_behavior_override: []":
+            lines[index] = "ai_behavior_override:"
+            lines.insert(index + 1, "  - AGENTS.base.md")
+            inserted = True
+            break
+        if stripped == "ai_behavior_override:":
+            insert_at = index + 1
+            while insert_at < len(lines):
+                candidate = lines[insert_at]
+                if candidate.startswith("  - ") or not candidate.strip():
+                    insert_at += 1
+                    continue
+                break
+            lines.insert(insert_at, "  - AGENTS.base.md")
+            inserted = True
+            break
+
+    if not inserted:
+        if lines and lines[-1].strip():
+            lines.append("")
+        lines.extend(["ai_behavior_override:", "  - AGENTS.base.md"])
+
+    if dry_run:
+        print("  [dry-run] contract.yaml — would add AGENTS.base.md to ai_behavior_override")
+        return True
+
+    contract_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print("  contract.yaml — added AGENTS.base.md to ai_behavior_override")
+    return True
+
+
 # ── File hashing ──────────────────────────────────────────────────────────────
 
 def _sha256(path: Path) -> str:
@@ -266,6 +316,8 @@ def adopt_existing(
         target = repo_root / fname
         if target.exists():
             print(f"  {fname} — kept as-is (already exists)")
+            if fname == "contract.yaml":
+                _ensure_contract_agents_base_reference(target, dry_run=dry_run)
         else:
             if dry_run:
                 print(f"  [dry-run] {fname} — would copy from template (missing)")

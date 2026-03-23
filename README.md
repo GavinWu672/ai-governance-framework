@@ -670,6 +670,7 @@ and report back with a [Governance Contract] block.
 ### Adopting into an Existing Repo
 
 Use `adopt_governance.py` to onboard an existing project — it copies required framework files, creates missing templates, and generates `.governance/baseline.yaml` without overwriting anything you already have.
+When an existing `contract.yaml` is kept, adopt now still performs one framework-required repair: if `AGENTS.base.md` is not referenced in `documents` or `ai_behavior_override`, it adds `AGENTS.base.md` to `ai_behavior_override` so first-run drift does not fail on that single missing baseline reference.
 
 **Cross-platform (macOS / Linux / Windows):**
 

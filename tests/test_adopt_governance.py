@@ -19,6 +19,7 @@ from governance_tools.adopt_governance import (
 
 FRAMEWORK_ROOT = Path(__file__).parent.parent.resolve()
 BASELINE_SOURCE = FRAMEWORK_ROOT / "baselines" / "repo-min"
+FIXTURE_ROOT = Path("tests/_tmp_adopt_governance")
 
 
 # ── Fixtures ──────────────────────────────────────────────────────────────────
@@ -29,6 +30,14 @@ def _make_git_repo(path: Path) -> Path:
     (path / ".git").mkdir(exist_ok=True)
     (path / ".git" / "HEAD").write_text("ref: refs/heads/main\n", encoding="utf-8")
     return path
+
+
+def _reset_fixture(name: str) -> Path:
+    root = FIXTURE_ROOT / name
+    if root.exists():
+        shutil.rmtree(root)
+    root.mkdir(parents=True, exist_ok=True)
+    return root
 
 
 def _write_plan(repo: Path, content: str | None = None) -> Path:
@@ -126,6 +135,52 @@ def test_adopt_keeps_existing_contract(tmp_path):
     original = contract.read_text(encoding="utf-8")
 
     adopt_existing(repo, FRAMEWORK_ROOT, dry_run=False)
+
+    assert contract.read_text(encoding="utf-8") == original
+
+
+def test_adopt_repairs_existing_contract_with_missing_agents_base_reference():
+    """Existing contract.yaml keeps custom content but gains AGENTS.base.md reference."""
+    repo = _make_git_repo(_reset_fixture("repair_contract_reference") / "repo")
+    _write_plan(repo)
+    contract = repo / "contract.yaml"
+    contract.write_text(
+        "name: test-repo\n"
+        'plugin_version: "1.0.0"\n'
+        'framework_interface_version: "1"\n'
+        'framework_compatible: ">=1.0.0,<2.0.0"\n'
+        "domain: test\n"
+        "documents:\n  - PLAN.md\n"
+        "ai_behavior_override:\n  - governance_project/AGENTS.md\n"
+        "validators:\n",
+        encoding="utf-8",
+    )
+
+    adopt_existing(repo, FRAMEWORK_ROOT, dry_run=False)
+
+    repaired = contract.read_text(encoding="utf-8")
+    assert "  - governance_project/AGENTS.md" in repaired
+    assert "  - AGENTS.base.md" in repaired
+
+
+def test_adopt_dry_run_does_not_repair_existing_contract():
+    """Dry-run reports the repair but does not mutate contract.yaml."""
+    repo = _make_git_repo(_reset_fixture("dry_run_contract_reference") / "repo")
+    _write_plan(repo)
+    contract = repo / "contract.yaml"
+    original = (
+        "name: test-repo\n"
+        'plugin_version: "1.0.0"\n'
+        'framework_interface_version: "1"\n'
+        'framework_compatible: ">=1.0.0,<2.0.0"\n'
+        "domain: test\n"
+        "documents:\n  - PLAN.md\n"
+        "ai_behavior_override:\n  - governance_project/AGENTS.md\n"
+        "validators:\n"
+    )
+    contract.write_text(original, encoding="utf-8")
+
+    adopt_existing(repo, FRAMEWORK_ROOT, dry_run=True)
 
     assert contract.read_text(encoding="utf-8") == original
 
