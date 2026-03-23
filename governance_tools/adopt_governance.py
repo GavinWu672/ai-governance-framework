@@ -18,8 +18,9 @@ What adopt-existing does:
     1. Copies AGENTS.base.md from framework baseline (always; protected file)
     2. Creates AGENTS.md, contract.yaml from template (only if missing)
     3. Creates PLAN.md from template (only if not found in common locations)
-    4. Generates .governance/baseline.yaml with hashes + inventory
-    5. Runs drift checker inline and prints findings
+    4. Creates .github/workflows/governance-drift.yml (only if missing)
+    5. Generates .governance/baseline.yaml with hashes + inventory
+    6. Runs drift checker inline and prints findings
 
 What adopt-existing does NOT do:
     - Set plan_required_sections (no mandate imposed on existing repos)
@@ -310,6 +311,19 @@ def adopt_existing(
         import shutil
         shutil.copy2(baseline_source / "AGENTS.base.md", target_agents_base)
         print(f"  Copied AGENTS.base.md (protected baseline)")
+
+    # Minimal CI drift workflow - copy from template only if missing
+    target_drift_workflow = repo_root / ".github" / "workflows" / "governance-drift.yml"
+    source_drift_workflow = baseline_source / ".github" / "workflows" / "governance-drift.yml"
+    if target_drift_workflow.exists():
+        print("  .github/workflows/governance-drift.yml -- kept as-is (already exists)")
+    else:
+        if dry_run:
+            print("  [dry-run] .github/workflows/governance-drift.yml -- would copy from template (missing)")
+        else:
+            target_drift_workflow.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source_drift_workflow, target_drift_workflow)
+            print("  .github/workflows/governance-drift.yml -- copied from template (was missing)")
 
     # ── Overridable files — copy from template only if missing ────────────────
     for fname in ("AGENTS.md", "contract.yaml"):

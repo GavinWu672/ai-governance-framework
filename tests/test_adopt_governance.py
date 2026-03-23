@@ -196,6 +196,35 @@ def test_adopt_creates_agents_md_from_template_when_missing(tmp_path):
     assert (repo / "AGENTS.md").exists()
 
 
+def test_adopt_creates_governance_drift_workflow_when_missing():
+    """Adopt should seed the minimal drift workflow for new repos."""
+    repo = _make_git_repo(_reset_fixture("drift_workflow_created") / "repo")
+    _write_plan(repo)
+    _write_contract(repo)
+
+    adopt_existing(repo, FRAMEWORK_ROOT, dry_run=False)
+
+    workflow = repo / ".github" / "workflows" / "governance-drift.yml"
+    assert workflow.exists()
+    content = workflow.read_text(encoding="utf-8")
+    assert "governance_drift_checker.py" in content
+    assert "--framework-root governance" in content
+
+
+def test_adopt_keeps_existing_governance_drift_workflow():
+    """Adopt should not overwrite a repo's existing drift workflow."""
+    repo = _make_git_repo(_reset_fixture("drift_workflow_kept") / "repo")
+    _write_plan(repo)
+    _write_contract(repo)
+    workflow = repo / ".github" / "workflows" / "governance-drift.yml"
+    workflow.parent.mkdir(parents=True, exist_ok=True)
+    workflow.write_text("# custom workflow\n", encoding="utf-8")
+
+    adopt_existing(repo, FRAMEWORK_ROOT, dry_run=False)
+
+    assert workflow.read_text(encoding="utf-8") == "# custom workflow\n"
+
+
 def test_adopt_keeps_existing_agents_md(tmp_path):
     """Existing AGENTS.md is never overwritten."""
     repo = _make_git_repo(tmp_path / "repo")
