@@ -171,6 +171,34 @@ def _placeholder_agents_sections(repo_root: Path) -> list[str]:
     return placeholders
 
 
+def _print_refresh_delta_summary(
+    *,
+    previous_hashes: dict[str, str],
+    current_hashes: dict[str, str],
+    previous_inventory: list[str],
+    current_inventory: list[str],
+) -> None:
+    changed_files = [
+        name
+        for name, current_hash in current_hashes.items()
+        if previous_hashes.get(name) and previous_hashes.get(name) != current_hash
+    ]
+    added_sections = [item for item in current_inventory if item not in previous_inventory]
+    removed_sections = [item for item in previous_inventory if item not in current_inventory]
+
+    if not changed_files and not added_sections and not removed_sections:
+        print("  Refresh delta: no tracked hash or plan inventory changes detected")
+        return
+
+    print("  Refresh delta summary:")
+    if changed_files:
+        print(f"    - tracked hash changes: {', '.join(changed_files)}")
+    if added_sections:
+        print(f"    - plan sections added: {', '.join(added_sections)}")
+    if removed_sections:
+        print(f"    - plan sections removed: {', '.join(removed_sections)}")
+
+
 # ── File hashing ──────────────────────────────────────────────────────────────
 
 def _sha256(path: Path) -> str:
@@ -472,17 +500,12 @@ def adopt_existing(
 # ── Baseline reader (for --refresh) ──────────────────────────────────────────
 
 def _read_baseline_state(repo_root: Path) -> dict:
-    """Read plan_path and plan_required_sections from existing baseline.yaml.
-
-    Returns a dict with keys:
-        plan_rel        str   — relative path to PLAN.md (default: "PLAN.md")
-        required        list  — plan_required_sections values (may be empty)
-    """
+    """Read key baseline state from existing baseline.yaml."""
     from governance_tools.domain_contract_loader import _parse_contract_yaml
 
     baseline_path = repo_root / ".governance" / "baseline.yaml"
     if not baseline_path.exists():
-        return {"plan_rel": "PLAN.md", "required": []}
+        return {"plan_rel": "PLAN.md", "required": [], "inventory": [], "hashes": {}}
 
     data = _parse_contract_yaml(baseline_path.read_text(encoding="utf-8"))
     plan_rel = str(data.get("plan_path") or "PLAN.md")
@@ -493,7 +516,21 @@ def _read_baseline_state(repo_root: Path) -> dict:
     else:
         required = []
 
-    return {"plan_rel": plan_rel, "required": required}
+    raw_inventory = data.get("plan_section_inventory")
+    if isinstance(raw_inventory, list):
+        inventory = [str(s) for s in raw_inventory]
+    else:
+        inventory = []
+
+    hashes = {
+        "AGENTS.base.md": str(data.get("sha256.AGENTS.base.md") or ""),
+        "PLAN.md": str(data.get("sha256.PLAN.md") or ""),
+        "contract.yaml": str(data.get("sha256.contract.yaml") or ""),
+        "AGENTS.md": str(data.get("sha256.AGENTS.md") or ""),
+    }
+
+    return {"plan_rel": plan_rel, "required": required, "inventory": inventory, "hashes": hashes}
+
 
 
 # ── Refresh baseline ──────────────────────────────────────────────────────────
@@ -526,6 +563,8 @@ def refresh_baseline(
     state = _read_baseline_state(repo_root)
     plan_rel = state["plan_rel"]
     required = state["required"]
+    previous_inventory = state.get("inventory", [])
+    previous_hashes = state.get("hashes", {})
 
     if required:
         print(f"  Preserved {len(required)} plan_required_sections from existing baseline")
@@ -559,6 +598,21 @@ def refresh_baseline(
         inventory=inventory,
         dry_run=False,
         plan_required_sections=required,
+    )
+
+    current_hashes = {
+        "AGENTS.base.md": _sha256(repo_root / "AGENTS.base.md") if (repo_root / "AGENTS.base.md").exists() else "",
+        "PLAN.md": _sha256(repo_root / plan_rel) if (repo_root / plan_rel).exists() else "",
+        "contract.yaml": _sha256(repo_root / "contract.yaml") if (repo_root / "contract.yaml").exists() else "",
+        "AGENTS.md": _sha256(repo_root / "AGENTS.md") if (repo_root / "AGENTS.md").exists() else "",
+    }
+
+    print()
+    _print_refresh_delta_summary(
+        previous_hashes=previous_hashes,
+        current_hashes=current_hashes,
+        previous_inventory=previous_inventory,
+        current_inventory=inventory,
     )
 
     print()

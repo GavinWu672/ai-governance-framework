@@ -429,6 +429,31 @@ def test_refresh_updates_inventory(tmp_path):
     assert "## New Section" in content
 
 
+def test_refresh_reports_changed_tracked_hashes(capsys):
+    """Refresh should summarize which tracked files changed."""
+    repo = _adopt_repo(_reset_fixture("refresh_hash_delta"))
+    (repo / "AGENTS.md").write_text("# Custom AGENTS\n", encoding="utf-8")
+
+    refresh_baseline(repo, FRAMEWORK_ROOT, dry_run=False)
+    output = capsys.readouterr().out
+
+    assert "Refresh delta summary:" in output
+    assert "tracked hash changes: AGENTS.md" in output
+
+
+def test_refresh_reports_plan_inventory_delta(capsys):
+    """Refresh should summarize added or removed PLAN headings."""
+    repo = _adopt_repo(_reset_fixture("refresh_inventory_delta"))
+    plan = repo / "PLAN.md"
+    plan.write_text(plan.read_text(encoding="utf-8") + "\n## New Section\n\n- item\n", encoding="utf-8")
+
+    refresh_baseline(repo, FRAMEWORK_ROOT, dry_run=False)
+    output = capsys.readouterr().out
+
+    assert "Refresh delta summary:" in output
+    assert "plan sections added: ## New Section" in output
+
+
 def test_refresh_does_not_copy_template_files(tmp_path):
     """--refresh must not copy AGENTS.md, contract.yaml, or PLAN.md templates."""
     repo = _adopt_repo(tmp_path)

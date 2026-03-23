@@ -695,6 +695,8 @@ python governance_tools/adopt_governance.py --target /path/to/your/repo
 python governance_tools/adopt_governance.py --target /path/to/your/repo --refresh
 ```
 
+`--refresh` now prints a delta summary after rewriting `.governance/baseline.yaml`, including tracked governance files whose hashes changed and PLAN heading inventory sections that were added or removed.
+
 > **Windows note:** `scripts/init-governance.sh` requires bash. Use `adopt_governance.py` instead — it is the canonical cross-platform equivalent.
 
 **After adoption, expect the baseline drift checks to PASS or reduce to repo-specific follow-up only.** If a check is still failing, consult the schema reference:
