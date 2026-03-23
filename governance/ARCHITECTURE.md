@@ -1,3 +1,11 @@
+---
+audience: agent-on-demand
+authority: reference
+can_override: false
+overridden_by: SYSTEM_PROMPT.md
+default_load: on-demand
+---
+
 # ARCHITECTURE.md
 **Architecture Governance and Boundary Rules - v4.2**
 

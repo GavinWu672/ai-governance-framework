@@ -47,3 +47,20 @@ freshness:
   last_updated: "2026-03-05"
   days_since_update: 0
   threshold_days: 7
+authority:
+  version: "1.0.0"
+  table_path: "governance/AUTHORITY.md"
+  loader_path: "governance_tools/authority_loader.py"
+  step_status: "complete"
+  updated: "2026-03-23"
+memory_source_authority:
+  version: "1.0.0"
+  step3_status: "slim_complete"
+  step3b_note: "Full incremental refactor deferred to post-Step-4"
+  updated: "2026-03-23"
+payload_audit:
+  last_audit_id: "26a92fc22783"
+  last_audit_time: "2026-03-23T03:40:09.064077+00:00"
+  last_task_level: "L1"
+  last_grand_total_tokens: 0
+  token_method: "estimate"

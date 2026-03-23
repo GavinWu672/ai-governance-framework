@@ -1,3 +1,11 @@
+---
+audience: human-only
+authority: reference
+can_override: false
+overridden_by: ~
+default_load: never
+---
+
 # HUMAN-OVERSIGHT.md
 **Human Escalation and Oversight Protocol - v3.1**
 

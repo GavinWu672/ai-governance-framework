@@ -1,3 +1,11 @@
+---
+audience: agent-runtime
+authority: canonical
+can_override: false
+overridden_by: ~
+default_load: always
+---
+
 # AGENT.md
 **AI Agent Behavioral Contract - v4.3**
 

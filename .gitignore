@@ -87,5 +87,8 @@ ai-governance-framework/
 .claude/settings.local.json
 *.code-workspace
 
+# Payload audit raw log（含路徑資訊，不 commit）
+docs/payload-audit/audit_log.jsonl
+
 # Documentation build
 docs/_build/

@@ -1,3 +1,11 @@
+---
+audience: human-only
+authority: reference
+can_override: false
+overridden_by: ~
+default_load: never
+---
+
 # REVIEW_CRITERIA.md
 **Code Review and Audit Protocol - v1.2**
 

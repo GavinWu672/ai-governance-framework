@@ -13,6 +13,16 @@ from pathlib import Path
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
+from governance_tools.authority_loader import (
+    filter_for_session,
+    load_authority_table,
+    validate_session_payload,
+)
+from governance_tools.payload_audit_logger import (
+    build_audit_record,
+    is_audit_enabled,
+    write_audit_record,
+)
 from governance_tools.change_proposal_builder import build_change_proposal
 from governance_tools.domain_governance_metadata import domain_risk_tier
 from governance_tools.domain_validator_loader import preflight_domain_validators
@@ -33,9 +43,19 @@ def build_session_start_context(
     impact_before_files: list[Path] | None = None,
     impact_after_files: list[Path] | None = None,
     contract_file: Path | None = None,
+    task_level: str = "L1",
+    task_type: str = "general",
 ) -> dict:
     impact_before_files = impact_before_files or []
     impact_after_files = impact_after_files or []
+
+    # Authority filter: determine allowed governance files for this session.
+    # L0 → always-load only; L1/L2 → always + on-demand.
+    governance_dir = project_root / "governance"
+    authority_table = load_authority_table(governance_dir)
+    include_on_demand = task_level != "L0"
+    allowed_governance_files = filter_for_session(authority_table, include_on_demand=include_on_demand)
+    authority_validation = validate_session_payload(allowed_governance_files, authority_table)
 
     state = generate_state(
         plan_path=plan_path,
@@ -72,9 +92,34 @@ def build_session_start_context(
     domain_contract = pre_task.get("domain_contract")
     validator_preflight = preflight_domain_validators(resolved_contract_file) if resolved_contract_file else None
 
+    # Payload audit hook — zero overhead when disabled (env var not set)
+    if is_audit_enabled():
+        _audit_contracts = [str(resolved_contract_file)] if resolved_contract_file else []
+        _audit_record = build_audit_record(
+            task_level=task_level,
+            task_type=task_type,
+            files_loaded=allowed_governance_files,
+            domain_contracts=_audit_contracts,
+            memory_files=[],  # session_start does not directly load memory files
+            extra_context={
+                "rules": rules,
+                "risk": risk,
+                "has_domain_contract": domain_contract is not None,
+                "rule_pack_suggestions_count": len(pre_task.get("rule_pack_suggestions", {})),
+            },
+        )
+        write_audit_record(_audit_record)
+
     return {
-        "ok": state.get("error") is None and pre_task["ok"],
+        "ok": state.get("error") is None and pre_task["ok"] and authority_validation["ok"],
         "project_root": str(project_root),
+        "task_level": task_level,
+        "authority_filter": {
+            "allowed_count": len(allowed_governance_files),
+            "include_on_demand": include_on_demand,
+            "validation_ok": authority_validation["ok"],
+            "violations": authority_validation["violations"],
+        },
         "task_text": task_text,
         "runtime_contract": pre_task["runtime_contract"],
         "suggested_rules_preview": pre_task.get("suggested_rules_preview", []),
@@ -211,6 +256,10 @@ def main() -> None:
     parser.add_argument("--impact-before", action="append", default=[])
     parser.add_argument("--impact-after", action="append", default=[])
     parser.add_argument("--contract")
+    parser.add_argument("--task-level", choices=["L0", "L1", "L2"], default="L1",
+                        help="Task level for authority filter and audit (default: L1)")
+    parser.add_argument("--task-type", default="general",
+                        help="Task type for audit log (ui/schema/api/domain/test/general)")
     parser.add_argument("--format", choices=["human", "json"], default="human")
     parser.add_argument("--output")
     args = parser.parse_args()
@@ -226,6 +275,8 @@ def main() -> None:
         impact_before_files=[Path(path) for path in args.impact_before],
         impact_after_files=[Path(path) for path in args.impact_after],
         contract_file=Path(args.contract).resolve() if args.contract else None,
+        task_level=args.task_level,
+        task_type=args.task_type,
     )
 
     rendered = json.dumps(result, ensure_ascii=False, indent=2) if args.format == "json" else format_human_result(result)

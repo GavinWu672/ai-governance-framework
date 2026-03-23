@@ -1,3 +1,11 @@
+---
+audience: agent-runtime
+authority: canonical
+can_override: false
+overridden_by: ~
+default_load: always
+---
+
 # SYSTEM_PROMPT.md
 **AI Core Consciousness - v5.3**
 

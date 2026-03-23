@@ -1,3 +1,11 @@
+---
+audience: agent-runtime
+authority: canonical
+can_override: false
+overridden_by: ~
+default_load: always
+---
+
 # PLAN.md — 專案規劃治理規範
 
 > ⚠️ **這是「規範文件」，不是專案計畫**

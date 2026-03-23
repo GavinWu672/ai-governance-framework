@@ -1,3 +1,11 @@
+---
+audience: agent-on-demand
+authority: reference
+can_override: false
+overridden_by: AGENT.md
+default_load: on-demand
+---
+
 # 🛠 NATIVE-INTEROP.md
 **Native Interop Protocol — v3.0**
 
