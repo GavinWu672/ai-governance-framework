@@ -7,6 +7,34 @@
 
 ---
 
+## Step 7 Rebaseline -- ai-governance-framework (2026-03-23)
+
+> Task: `Refactor state generator module`
+> Commit: `37b2331`
+
+| Field | Value |
+|------|------|
+| session_type | `L1` |
+| ok | `true` |
+| combined_estimate | `21564` |
+| result_dict_total | `9345` |
+| rendered_output | `12219` |
+| warning_count | `5` |
+| top fields | `pre_task_check`, `domain_contract`, `state`, `change_proposal`, `rule_pack_suggestions` |
+
+### Delta vs prior L1 baseline
+
+| Metric | Prior | Step 7 | Delta |
+|------|------:|--------:|------:|
+| combined_estimate | `20539` | `21564` | `+1025` |
+
+Interpretation:
+- Step 7 did not reduce the generic L1 path by itself.
+- The dominant costs are still `pre_task_check` and `domain_contract`, not the old free-form output surface.
+- The next meaningful optimization target remains domain-summary/onboarding shaping rather than more output-tier work alone.
+
+---
+
 ## Step 5b+6 最終量測（ai-governance-framework，2026-03-23）
 
 > L1 baseline（domain_contract auto-discovered，summary-first）

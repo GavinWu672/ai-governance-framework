@@ -7,6 +7,35 @@
 
 ---
 
+## Step 7 Rebaseline -- ai-governance-framework (2026-03-23)
+
+> Task: `Update button label in UI`
+> Commit: `37b2331`
+
+| Field | Value |
+|------|------|
+| session_type | `L0` |
+| ok | `true` |
+| output_tier | `1` |
+| combined_estimate | `6550` |
+| result_dict_total | `2256` |
+| rendered_output | `4294` |
+| domain_contract_loaded | `false` |
+| tier3_artifact_ref | none |
+
+### Delta vs prior L0 baseline
+
+| Metric | Prior | Step 7 | Delta |
+|------|------:|--------:|------:|
+| combined_estimate | `6451` | `6550` | `+99` |
+
+Interpretation:
+- Step 7 preserved the low L0 budget.
+- Output-tier separation did not materially reduce this path further.
+- The L0 fast path is still operating as intended: `output_tier=1`, no domain contract load.
+
+---
+
 ## ✅ Step 5b+6 最終量測（L0 domain gate 生效後）
 
 > Task: UI 純改動任務 → 自動偵測為 L0，domain_contract 跳過

@@ -7,6 +7,36 @@
 
 ---
 
+## Step 7 Rebaseline -- framework self-onboarding-shaped run (2026-03-23)
+
+> Task: `Adopt governance baseline for external repo`
+> Commit: `37b2331`
+
+| Field | Value |
+|------|------|
+| logged_session_type | `L1` |
+| ok | `true` |
+| combined_estimate | `21088` |
+| result_dict_total | `9208` |
+| rendered_output | `11880` |
+| warning_count | `4` |
+| top fields | `pre_task_check`, `domain_contract`, `state`, `change_proposal`, `rule_pack_suggestions` |
+
+### Delta vs prior onboarding baseline
+
+| Metric | Prior | Step 7 | Delta |
+|------|------:|--------:|------:|
+| combined_estimate | `60623` | `21088` | `-39535` |
+| reduction | - | - | `-65.2%` |
+
+Interpretation:
+- This path is now dramatically lower than the old Kernel-Driver-Contract onboarding baseline.
+- The main gain is from summary-first / framework-self contract shape, not from generic L1 compression alone.
+- The audit logger still records this run under `L1-*.jsonl` because it keys off explicit `task_level`; it does not yet emit a dedicated `onboarding-*.jsonl` file for this path.
+- On Windows terminals, `session_start.py` can still hit a `cp950` `UnicodeEncodeError` when printing large JSON; the audit record is written before that output failure, and `PYTHONIOENCODING=utf-8` avoids it.
+
+---
+
 ## Step 4+5 對 Onboarding 的影響說明
 
 ### 新增能力
