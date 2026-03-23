@@ -2,18 +2,17 @@
 
 > A runnable AI governance runtime for multi-repo engineering workflows, now in the cost-and-efficiency hardening stage before full productization.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](CHANGELOG.md)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
 ## What This Is
 
-In long-lived projects, the most common AI failure modes are not "the answer was not smart enough once," but:
+In long-lived projects, the most common AI failure modes are not one-off intelligence misses, but:
 
 - gradually forgetting context
 - drifting away from the current sprint or phase
 - breaking architectural boundaries
-- finishing tasks without leaving reviewable knowledge behind
+- finishing work without leaving reviewable knowledge behind
 
 This repository provides governance documents, validation tools, and runtime hooks that move an AI coding workflow from:
 
@@ -25,15 +24,15 @@ to:
 
 The most precise current positioning is:
 
-- a runnable `AI Coding Runtime Governance Framework` — adoption-ready (validated on real repos)
+- a runnable `AI Coding Runtime Governance Framework`, already exercised on real repos
 - a framework with a real runtime governance spine, not just static policy documents
-- an established external domain validator seam, with the first firmware vertical slice already running
-- a cross-platform adopt toolchain (`adopt_governance.py`) validated against multiple real repos (Hearth, Mirra)
+- an established external domain validator seam with firmware, kernel-driver, and IC-verification slices already running
+- a cross-platform adopt toolchain (`adopt_governance.py`) validated against multiple repo types and self-hosting paths
 - a drift checker with 16 named checks and a minimum-legal schema reference that lets users onboard without reading source code
 - still actively strengthening:
   - semantic verification depth
   - practical git-hook / CI-gate interception coverage
-  - rule classification (core vs optional) to reduce governance overhead on minimal repos
+  - repo-type-specific rule classification to reduce governance overhead on minimal repos
 
 ## Status
 
@@ -49,32 +48,33 @@ Current release-facing status:
 - schema reference: [docs/minimum-legal-schema.md](docs/minimum-legal-schema.md)
 
 This framework is suitable for evaluation, internal adoption trials, and domain-contract experimentation.
-It should still be treated as an early-stage framework rather than a fully closed enforcement platform —
-semantic verification depth and rule classification remain open fronts.
+It should still be treated as an early-stage framework rather than a fully closed enforcement platform:
+semantic verification depth, adoption smoothness, and rule classification remain open fronts.
 
-### What Changed in v1.1.0
+### What Changed in v1.1.0 and Since
 
-- **Cross-platform adopt toolchain** — `adopt_governance.py` replaces bash-only `init-governance.sh` for Windows; validated against Hearth (service) and Mirra (Next.js/Supabase product)
-- **Schema visibility** — adopt now substitutes repo slug and today's date into templates; empty repo + adopt → `ok=True` (15/16 PASS) without manual editing
-- **16-check drift checker** — checks 13–16 added (placeholder detection, template copy guard, inventory staleness, AGENTS.md fill check); all hints are now platform-aware
-- **Freshness threshold** — framework default raised to 14d; CONTRACT-layer override auditable in drift output; guardrail warning when override > 14d
-- **Framework root auto-discovery** — `GOVERNANCE_FRAMEWORK_ROOT` env var + upward scan; consistent across Python tools and bash scripts
-- **Minimum legal schema reference** — [docs/minimum-legal-schema.md](docs/minimum-legal-schema.md); surfaced at three onboarding touch points
-- **898 tests passing**
+- **Cross-platform adopt toolchain** - `adopt_governance.py` replaces bash-only `init-governance.sh` for Windows and now seeds a minimal drift CI workflow when missing
+- **Schema visibility** - adopt substitutes repo slug and today's date into templates, repairs the required `AGENTS.base.md` seam, and surfaces repo-specific `AGENTS.md` follow-up prompts
+- **16-check drift checker** - placeholder detection, template-copy guard, inventory staleness, and `AGENTS.md` fill checks are part of the named baseline
+- **Freshness threshold** - framework default raised to 14d; CONTRACT-layer override remains auditable in drift output, with a warning when override > 14d
+- **Framework root auto-discovery** - `GOVERNANCE_FRAMEWORK_ROOT` env var + upward scan are consistent across Python tools and bash scripts
+- **Minimum legal schema reference** - [docs/minimum-legal-schema.md](docs/minimum-legal-schema.md) is surfaced at multiple onboarding touch points
+- **Current test count** - `1,333 tests` at the end of the Step 7 token-optimization roadmap
+- **Recent hardening** - onboarding now has its own audit lane, Windows terminal output is safer, and `kernel-driver-adapter-summary.md` is live for summary-first contract loading
 
 ### Validation Status
 
 | What Has Been Validated | Status |
 |-------------------------|--------|
-| Core governance tools pass automated test suite (898 tests) | ✅ Done |
-| Runtime hooks work across Claude / Codex / Gemini adapters | ✅ Done |
-| External domain contract seam (firmware, kernel-driver, IC-verification) | ✅ Done |
-| CI pipeline runs governance checks on every push | ✅ Done |
-| Quickstart smoke reproducible in < 5 minutes | ✅ Done |
-| Real-repo adoption validated (Hearth + Mirra — different repo types) | ✅ Done |
-| Empty repo + adopt → `ok=True` without manual editing | ✅ Done |
-| **Independent reviewer onboards without author guidance** | **⏳ Next Gate** |
-| Rule classification: core vs optional checks per repo type | ⏳ Not yet |
+| Core governance tools pass automated test suite (`1,333 tests`) | Done |
+| Runtime hooks work across Claude / Codex / Gemini adapters | Done |
+| External domain contract seam (firmware, kernel-driver, IC-verification) | Done |
+| CI pipeline runs governance checks on every push | Done |
+| Quickstart smoke reproducible in < 5 minutes | Done |
+| Real-repo adoption validated across multiple repo types | Done |
+| Empty repo + adopt reaches a drift-clean or repo-specific-follow-up baseline without source edits | Done |
+| **Independent reviewer onboards without author guidance** | **Next Gate** |
+| Rule classification: core vs optional checks per repo type | Not yet |
 
 ### Tested Scope
 
@@ -82,86 +82,34 @@ Adoption has been validated on:
 
 | Repo type | Example | Result |
 |-----------|---------|--------|
-| Service (minimal backend) | ziwei-service (Express HTTP wrapper) | adoption friction identified → fixed |
-| Tooling (Python validator collection) | governance_tools subset | adoption friction identified → fixed |
+| Service (minimal backend) | ziwei-service (Express HTTP wrapper) | adoption friction identified, then fixed |
+| Tooling (Python validator collection) | governance_tools subset | adoption friction identified, then fixed |
 | Product (Next.js + Supabase + Claude) | Mirra | `ready=True`, drift 16/16 PASS |
 | Governance-heavy (this repo) | ai-governance-framework | self-hosting |
+| Low-level contract repo | Kernel-Driver-Contract | contract loading, validator preflight, and summary-first onboarding path validated |
 
 Not yet validated on:
 
 - large monorepos or multi-package workspaces
 - data pipelines or ML repos
 - repos with no PLAN / contract concept and no intention to add one
-- repos in languages other than TypeScript / Python / C#
+- large validated adopter sets outside the current Python / TypeScript / C# / C/C++ governance surfaces
 
 If your repo falls outside the validated scope, treat adoption as an experiment rather than a guaranteed path.
 The schema reference ([docs/minimum-legal-schema.md](docs/minimum-legal-schema.md)) and the `--dry-run` flag are your safest starting points.
 
 ## Comparison & Differentiation
 
-The closest open-source comparison set currently includes:
-
-- `AI-Governor-Framework`
-- `GAAI-framework`
-- `agentic-engineering-framework`
-- `TinySDLC`
-
 The simplest way to describe the difference is:
 
-- this repository is designed around a **multi-repo runtime-governance stack** with:
+- this repository is designed around a multi-repo runtime-governance stack with:
   - external domain contracts
-  - a transitional mixed-enforcement seam moving toward runtime-centered enforcement
-  - reviewer / trust / release publication surfaces
-- and it operates primarily at the **task/session boundary**
+  - runtime policy input and runtime policy reclassification
+  - reviewer, trust, and release publication surfaces
+- and it operates primarily at the task/session boundary
   - rather than trying to govern every agent action or every generation token inside the model runtime
 
-See [docs/competitive-landscape.md](docs/competitive-landscape.md) for the fuller comparison memo and the scope note on how those comparisons should be read.
-
-## Cross-Domain Governance Map
-
-```mermaid
-flowchart TB
-
-AI["AI Coding Agent<br/>(Claude / Copilot / Codex)"]
-
-subgraph GOV["AI Governance Framework"]
-    S["Session Start<br/>session_start"]
-    P["Pre-Task Check<br/>pre_task_check"]
-    R["Rule Pack Activation"]
-    V["Domain Validators"]
-    E["Evidence Ingestion"]
-    T["Post-Task Check<br/>post_task_check"]
-    A["Change-Control Artifacts"]
-    M["Memory Pipeline"]
-end
-
-subgraph FW["USB Hub Firmware Contract"]
-    F1["Firmware Architecture Rules"]
-    F2["ISR / Interrupt Constraints"]
-    F3["Topology & Hardware Facts"]
-end
-
-subgraph DRV["Kernel Driver Contract"]
-    D1["IRQL Safety Rules"]
-    D2["Locking & Concurrency Checks"]
-    D3["Driver Architecture Facts"]
-end
-
-Reviewer["Human Reviewer"]
-
-AI --> S
-S --> P
-P --> R
-R --> V
-V --> E
-E --> T
-T --> A
-A --> Reviewer
-T --> M
-
-R --> FW
-R --> DRV
-```
+See [docs/competitive-landscape.md](docs/competitive-landscape.md) for the fuller comparison memo.
 
 ## Core Capabilities
 
@@ -178,140 +126,59 @@ The `governance/` directory defines AI roles, boundaries, and stop conditions in
 - `NATIVE-INTEROP.md`
 - `PLAN.md`
 
-The `.github/` directory also provides a pre-runtime interaction layer:
-
-- `copilot-instructions.md` as a repo-wide baseline
-- `.github/agents/*.agent.md` as role definitions
-- `.github/skills/*/skill.md` as behavior-level skill policies
-
-The repo now also carries Claude-local workflow skills under [`.claude/skills/`](./.claude/skills/), with a small index at [`.claude/README.md`](./.claude/README.md).
-
-Current local skills:
-
-- `external-onboarding`
-- `reviewer-handoff`
-- `domain-contract-authoring`
-- `runtime-smoke`
-
-These are intentionally narrow workflow skills for common repo-local tasks such as external repo onboarding, reviewer packet generation, domain contract scaffolding, and runtime smoke validation.
+The repo also carries local workflow skills under [`.claude/skills/`](./.claude/skills/) with an index at [`.claude/README.md`](./.claude/README.md).
 
 ### 2. Static Governance Tooling
 
-`governance_tools/` currently includes:
+`governance_tools/` includes contract validation, drift checking, readiness/onboarding, payload auditing, reviewer handoff, release/trust surfaces, and domain-specific evidence tooling.
 
-- `contract_validator.py`
-- `plan_freshness.py`
-- `memory_janitor.py`
-- `state_generator.py`
-- `rule_pack_loader.py`
-- `test_result_ingestor.py`
-- `failure_test_validator.py`
-- `failure_completeness_validator.py`
-- `public_api_diff_checker.py`
-- `driver_evidence_validator.py`
-- `rule_pack_suggester.py`
-- `architecture_drift_checker.py`
-- `governance_auditor.py`
-- `change_proposal_builder.py`
-- `change_control_summary.py`
+Key entry points:
+
+- `adopt_governance.py`
+- `governance_drift_checker.py`
+- `external_repo_readiness.py`
+- `external_repo_onboarding_report.py`
+- `trust_signal_overview.py`
+- `reviewer_handoff_summary.py`
 
 ### 3. Runtime Governance
 
-`runtime_hooks/` currently supports:
+`runtime_hooks/` supports:
 
-- a shared event contract
-- a dispatcher
 - `session_start`
 - `pre_task_check`
 - `post_task_check`
 - `session_end`
-- Claude Code / Codex / Gemini adapters
-- `session_start -> pre_task_check -> post_task_check -> session_end -> memory pipeline`
+- Claude / Codex / Gemini adapters
+- verdict and trace artifact emission under `artifacts/runtime/`
 
 This runtime governance loop is real and operational, but interception coverage is still not fully closed. Some IDE, local-edit, or direct-commit paths can still bypass it.
 
-More precisely, the remaining runtime hardening work is:
-
-- `interception coverage`
-  - strengthen practical governance entrypoints such as git hooks, CI gates, and external onboarding flows
-  - reduce the chance that direct commit or non-standard workflows bypass the framework
-- `workflow embedding`
-  - keep lowering day-to-day friction through contract auto-discovery, contract-aware smoke paths, reviewer handoff, and change-control flows
-
-This hardening direction is about **commit/merge-time governance**.
-It is **not** a plan to intercept every IDE action or every generation token inside the AI tool itself.
-
 ### 4. Memory Pipeline
 
-`memory_pipeline/` currently supports:
+`memory_pipeline/` supports:
 
-- `session_snapshot.py`
-- `memory_curator.py`
-- `promotion_policy.py`
-- `memory_promoter.py`
-- `session_end.py` / `memory_curator.py` now also preserve domain contract metadata
-  - for example: `contract_source`, `contract_name`, `contract_domain`, `plugin_version`
-  - so external domain governance context can survive into summaries and curated artifacts
+- session snapshots
+- memory curation
+- promotion policy
+- memory promotion
+- preservation of domain contract metadata into curated artifacts
 
-### 5. Rule Packs
+### 5. Rule Packs and Decision Model
 
-Built-in rule packs currently include:
+Built-in rule packs include:
 
-Scope packs:
+- scope packs: `common`, `refactor`
+- language packs: `python`, `cpp`, `csharp`, `swift`
+- framework packs: `avalonia`
+- platform packs: `kernel-driver`
 
-- `common`
-- `refactor`
+The next runtime step is captured in:
 
-Language packs:
+- [docs/governance-runtime-v2.6.md](docs/governance-runtime-v2.6.md)
+- [governance/governance_decision_model.v2.6.json](governance/governance_decision_model.v2.6.json)
 
-- `python`
-- `cpp`
-- `csharp`
-- `swift`
-
-Framework packs:
-
-- `avalonia`
-
-Platform packs:
-
-- `kernel-driver`
-
-Highlights:
-
-- `cpp` includes build-boundary rules such as forbidding cross-project private includes and incorrect `AdditionalIncludeDirectories` usage
-- `csharp` focuses on thread and native boundaries
-- `avalonia` focuses on UI thread and ViewModel boundaries
-- `swift` focuses on concurrency and native interop boundaries
-- `kernel-driver` focuses on IRQL, memory boundaries, cleanup, unwind, and other privileged-risk concerns
-- `kernel-driver` evidence should come primarily from SDV / SAL / WDK analysis outputs and driver-focused tests, not from a homemade "do everything" parser
-- rule packs currently behave more like a policy activation layer than a full policy engine
-- the next runtime step is captured in `governance/governance_decision_model.v2.6.json`, which defines ownership, policy precedence, evidence trust, violation handling, and a determinism contract as machine-checkable spec inputs
-- `test_result_ingestor.py` now normalizes not only `pytest-text` / `junit-xml`, but also `sdv-text`, `msbuild-warning-text`, `sarif`, and `wdk-analysis-text`
-- `architecture_drift_checker.py` now supports before/after dependency edge diffs in addition to high-signal heuristics
-- `state_generator.py` now emits advisory `rule_pack_suggestions`, but does not silently rewrite `runtime_contract.rules`
-- `pre_task_check.py` now surfaces the same advisory suggestions so runtime entrypoints and state views stay aligned
-- when a high-confidence language/framework suggestion is not loaded, `pre_task_check.py` emits an advisory warning instead of auto-rewriting the contract
-- `rule_pack_suggester.py`, `state_generator.py`, and `pre_task_check.py` now all expose `suggested_rules_preview` for quick adoption
-- those same tools also expose advisory `suggested_skills` and `suggested_agent`
-- `pre_task_check --format human` now prints `suggested_rules_preview=...`
-  - and also prints `suggested_skills=...` and `suggested_agent=...`
-- `pre_task_check.py` / `state_generator.py` can now include `architecture_impact_preview`
-  - when proposal risk exceeds the current contract, the result remains advisory and does not auto-rewrite `RULES`, `RISK`, or `OVERSIGHT`
-  - both tools now also include proposal guidance such as `expected_validators` and `required_evidence`
-- `pre_task_check --format human` now prints `impact_validators=...` and `impact_evidence=...`
-- `session_end.py` / `memory_curator.py` now preserve `architecture_impact_preview`
-  - proposal-time concerns and expected evidence are carried into summary and curated artifacts as part of the audit trail
-- `session_end.py` / `memory_curator.py` now preserve `proposal_summary`
-  - proposal-time risk / oversight guidance, concerns, and required evidence are carried into summary and curated artifacts
-- `session_end.py` now also emits minimal `verdict` and `trace` artifacts under
-  `artifacts/runtime/verdicts/` and `artifacts/runtime/traces/`
-- `post_task_check --format human` now prints evidence summaries such as `public_api_ok=...` and `failure_completeness_ok=...`
-- `architecture_impact_estimator.py` can now produce a structured `Governance Impact Report` during the proposal phase
-  - path-based layer heuristics (`touched_layers`, `boundary_risk`)
-  - evidence forecasting (`expected_validators`, `required_evidence`)
-  - impact signals (`concerns`, `recommended_risk`, `recommended_oversight`)
-  - it remains an advisory estimator, not a replacement for governance judgment
+That decision model defines ownership, policy precedence, evidence trust, violation handling, and a determinism contract as machine-checkable spec inputs.
 
 ### 6. External Domain Seam
 
@@ -324,223 +191,15 @@ The framework currently supports an external domain extension seam with:
 - contract-level policy inputs for selected validator rule IDs via `hard_stop_rules`
 - versioned validator payload envelopes with backward-compatible legacy fields
 
-This is the current transitional seam, not the final decision architecture.
-v2.6 keeps the domain assets in external repos, but moves final verdict
-computation, violation handling, and fallback behavior into the runtime's
-explicit decision model:
+This is the current transitional seam, not the final decision architecture. Final verdict computation, violation handling, and fallback behavior are being pulled into the runtime decision model.
 
-- design note: `docs/governance-runtime-v2.6.md`
-- machine-readable draft: `governance/governance_decision_model.v2.6.json`
-
-The built-in example is `examples/usb-hub-contract/`, which can currently:
-
-- load firmware domain documents and behavior overrides
-- activate an external `hub-firmware` rule pack
-- run `interrupt_safety_validator.py`
-- infer interrupt context from `diff_text`, unified diffs, changed source files, and file-based `checks-file` / `diff_file` evidence
-
-This seam has already been validated with three external contract repos:
+Validated external slices currently include:
 
 - `USB-Hub-Firmware-Architecture-Contract`
-  - the first real firmware vertical slice
-  - already running through `session_start`, `pre_task_check`, and `post_task_check`
-  - now also demonstrates contract-driven runtime policy input for `HUB-004` interrupt-safety violations
 - `Kernel-Driver-Contract`
-  - the second low-level domain slice
-  - already running through contract loading, validator preflight, external rule activation, and a multi-validator post-task loop where contract `hard_stop_rules` are classified by the runtime policy layer
-  - current tested coverage includes:
-    - synthetic fixture coverage for dispatch registration, IRQL safety, DPC/ISR blocking behavior, pageable-section checks, pool-allocation policy, sync primitives, static-analysis evidence ingestion, and WDF interrupt lifecycle handling
-    - ground-truth callback classification against real Windows sample-driver families including KMDF PCI/NDIS-style samples (`pcidrv_*`), KMDF USB FX2 samples (`fx2_*`), a WDM cancel-safe IRP queue sample (`cancel_cancel`), and the `kbfiltr` keyboard-filter sample
-  - it has not yet been connected to one real product driver repository as the source of truth; current validation is still based on fixtures plus sample-driver ground truth rather than intake from a live driver codebase
 - `IC-Verification-Contract`
-  - the third domain slice, focused on Cocotb-style signal-map verification
-  - already running through contract loading, validator preflight, external rule activation, and a mixed policy-input/advisory post-task loop driven by machine-readable DUT facts
 
-To reduce adoption friction, runtime hooks now support contract auto-discovery:
-
-- use explicit `--contract` first
-- otherwise read `AI_GOVERNANCE_CONTRACT`
-- otherwise search upward from `project_root` or evidence file paths for `contract.yaml`
-- discovery ascends at most 3 levels and stops at a `.git` boundary
-- when multiple candidates are found, it does not silently pick one; it returns a warning and asks for an explicit path
-
-For multi-domain reviewer flows, the framework also preserves minimal contract governance metadata:
-
-- `contract_source`
-- `contract_name`
-- `contract_domain`
-- `plugin_version`
-- `contract_risk_tier`
-
-Current built-in risk-tier defaults:
-
-- `kernel-driver` -> `high`
-- `firmware` -> `medium`
-
-## Local Execution Requirements
-
-The governance tools and runtime hooks in this repo require Python 3.9+.
-
-If `python`, `python3`, or `py -3` is not on `PATH`, set:
-
-```bash
-export AI_GOVERNANCE_PYTHON=/path/to/python
-```
-
-Windows PowerShell:
-
-```powershell
-$env:AI_GOVERNANCE_PYTHON='C:\Path\To\python.exe'
-```
-
-`scripts/run-runtime-governance.sh`, `scripts/verify_phase_gates.sh`, and installed git hooks all prefer this variable.
-
-When hooks are installed into another repo, the install script now writes a framework-root pointer under the target repo's `.git/hooks/` directory so the copied hooks can call back into `ai-governance-framework` instead of assuming all governance scripts live inside the target repo.
-After installation, you can also run `governance_tools/hook_install_validator.py --repo /path/to/repo` to verify copied hooks and framework-root wiring.
-By default, `scripts/install-hooks.sh` now runs this validator automatically after installation; if you only want installation without verification, use `--no-verify`.
-If you want a single readiness check for an external repo's hook / PLAN / contract state, run `governance_tools/external_repo_readiness.py --repo /path/to/repo`.
-If you want a single onboarding entrypoint, run `scripts/onboard-external-repo.sh --target /path/to/repo`, which combines hook installation, readiness checks, governance smoke, and onboarding report emission.
-That onboarding flow now includes a minimal governance smoke test by default, so onboarding checks that `session_start` and `pre_task_check` can actually run against the external contract instead of only verifying static setup.
-By default it writes onboarding artifacts under `memory/governance_onboarding/` inside the target repo, including `latest.json`, `latest.txt`, `history/*.json`, `history/*.txt`, and `INDEX.txt`, so external repo setup state remains reviewable after the terminal session ends.
-If you are tracking multiple external repos, you can aggregate their latest onboarding states with `governance_tools/external_repo_onboarding_index.py --repo /path/to/repo1 --repo /path/to/repo2`.
-If you want to intake an external repo's `memory/02_project_facts.md` or `memory/02_tech_stack.md` into a provenance-rich framework artifact, run `governance_tools/external_project_facts_intake.py --repo /path/to/repo`.
-That tool writes a framework-side JSON artifact under `artifacts/external-project-facts/<repo>.json` and records source file provenance, sync direction, and content hash so external facts become reviewable input instead of only an accepted alias.
-`external_repo_readiness.py` and the onboarding report now also surface this external fact-source metadata, so external `project_facts` become visible in readiness/onboarding output even when they are not yet a hard gate.
-Those surfaces now also expose the canonical framework-side `artifact_path` and `artifact_exists` state, so reviewers can tell where the intake artifact should live before treating external facts as reusable framework input.
-They also surface a minimal drift signal: when an existing framework-side intake artifact has a different `content_sha256` than the current external `project_facts`, readiness/onboarding now mark that as `artifact_drift` without turning it into a hard readiness failure yet.
-The `project_facts` surface now also carries a small status model: `available`, `missing`, `drifted`, or `intake-error`, so external fact gaps are machine-readable instead of being implied only by warning strings.
-For non-healthy states (`missing`, `drifted`, `intake-error`), readiness/onboarding now also emit a `remediation_hint` that points back to `external_project_facts_intake.py`.
-Human-readable readiness/onboarding output now also surfaces a one-line `project_facts` summary near the top, so reviewers do not need to scroll into the detailed section just to see whether facts are `available`, `missing`, or `drifted`.
-That same `project_facts` summary now also appears in the cross-repo onboarding index, so multi-repo review can spot missing or drifted fact baselines without opening each repo's full onboarding report.
-The trust-signal overview now propagates that same summary into its external top-issue lines, so release/adoption review can see fact drift without switching surfaces.
-Reviewer handoff summary surfaces now also carry those external fact-state summaries, so the highest-level handoff view does not lose them after trust-signal aggregation.
-Reviewer handoff snapshot/publication artifacts now also preserve the same summaries, so generated handoff bundles and publication manifests keep external fact drift visible after publication.
-Example:
-
-```bash
-bash scripts/onboard-external-repo.sh --target /path/to/Kernel-Driver-Contract --format human
-```
-If you also want to know whether an adopter repo is still on the latest framework release, record its adoption state in `governance/framework.lock.json` inside the target repo.
-The lock file should include at least `adopted_release`, `adopted_commit`, `framework_interface_version`, and `framework_compatible`.
-`external_repo_readiness.py` now surfaces that version state as `current`, `outdated`, `incompatible`, or `unknown`.
-If you want a fleet-level version drift view, run `governance_tools/external_repo_version_audit.py --repo /path/to/repo1 --repo /path/to/repo2`.
-If you want to catch "feature surface moved ahead but docs did not" drift, run `governance_tools/doc_drift_checker.py --project-root /path/to/repo`.
-That checker uses `governance_tools/feature_surface_snapshot.py` to scan app routes, API routes, and migrations, then compares them against `PLAN.md` and README coverage.
-
-Example:
-
-```text
-RULES = common,csharp,avalonia,refactor
-```
-
-- `common`: global governance baseline
-- `csharp`: language-level boundary, threading, and native contract rules
-- `avalonia`: UI / Dispatcher / ViewModel boundaries
-- `refactor`: change-type governance requiring behavior lock and boundary safety, then gradually asking for interface stability, regression evidence, and cleanup / rollback evidence
-
-A high-risk platform example:
-
-```text
-RULES = common,cpp,kernel-driver,refactor
-RISK = high
-OVERSIGHT = human-approval
-MEMORY_MODE = candidate
-```
-
-## Runtime Governance Overview
-
-Core Governance Contract fields:
-
-```text
-RULES       = <comma-separated rule packs>
-RISK        = <low|medium|high>
-OVERSIGHT   = <auto|review-required|human-approval>
-MEMORY_MODE = <stateless|candidate|durable>
-```
-
-### Architecture Overview
-
-```mermaid
-flowchart TB
-    A["AI Tools<br/>Claude / Codex / Gemini"]
-
-    subgraph B["Adapter Layer"]
-        B1["Event Normalization<br/>normalize_event"]
-        B2["Tool Adapters"]
-    end
-
-    subgraph C["Runtime Governance"]
-        C1["Dispatcher"]
-        C2["Pre-Task Check<br/>pre_task_check"]
-        C3["Post-Task Check<br/>post_task_check"]
-    end
-
-    subgraph D["Rule Packs"]
-        D1["common"]
-        D2["python"]
-        D3["cpp"]
-    end
-
-    subgraph E["Session Lifecycle"]
-        E1["Session End<br/>session_end"]
-        E2["Snapshot / Summary"]
-    end
-
-    subgraph F["Memory Pipeline"]
-        F1["Candidate Memory"]
-        F2["Memory Curator"]
-        F3["Promotion Policy"]
-    end
-
-    G["Durable Project Memory<br/>memory/ facts / decisions / tasks"]
-
-    A --> B1
-    A --> B2
-    B1 --> C1
-    B2 --> C1
-    C1 --> C2
-    C1 --> C3
-    C2 --> D
-    C3 --> D
-    C3 --> E1
-    E1 --> E2
-    E2 --> F1
-    F1 --> F2
-    F2 --> F3
-    F3 --> G
-```
-
-### Runtime Flow
-
-```mermaid
-flowchart TD
-    A["Task Start"]
-    B["Normalize Event"]
-    C["Pre-Task Check<br/>plan freshness / rule validation"]
-    D["Task Execution"]
-    E["Post-Task Check<br/>runtime checks / rule violations"]
-    F["Session End"]
-    G["Create Snapshot / Summary<br/>contract / event log / checks"]
-    H["Memory Curator"]
-    I["Promotion Policy"]
-    J["AUTO_PROMOTE"]
-    K["REVIEW_REQUIRED"]
-    L["DO_NOT_PROMOTE"]
-    M["Durable Memory Update"]
-
-    A --> B
-    B --> C
-    C --> D
-    D --> E
-    E --> F
-    F --> G
-    G --> H
-    H --> I
-    I --> J
-    I --> K
-    I --> L
-    J --> M
-```
+To reduce adoption friction, runtime hooks support contract auto-discovery and summary-first domain loading. The `kernel-driver` path now resolves [kernel-driver-adapter-summary.md](docs/domain-summaries/kernel-driver-adapter-summary.md) as a live low-token adapter rather than a placeholder.
 
 ## Quick Start
 
@@ -554,133 +213,32 @@ python governance_tools/quickstart_smoke.py --project-root . --plan PLAN.md --co
 
 Expected output:
 
-```
+```text
 [quickstart_smoke]
 ok=True
 summary=ok=True | pre_task_ok=True | session_start_ok=True | contract=firmware/medium
 ```
 
-### Core Workflow
+## Adopting into an Existing Repo
 
-The highest-level reviewer view — combines trust signals, release state, and governance posture:
+Use `adopt_governance.py` to onboard an existing project. It copies required framework files, creates missing templates, and generates `.governance/baseline.yaml` without overwriting anything you already have.
 
-```bash
-python governance_tools/reviewer_handoff_summary.py --project-root . --plan PLAN.md --release-version v1.1.0 --contract examples/usb-hub-contract/contract.yaml --format human
-```
+When an existing `contract.yaml` is kept, adopt still performs one framework-required repair: if `AGENTS.base.md` is not referenced in `documents` or `ai_behavior_override`, it adds `AGENTS.base.md` to `ai_behavior_override` so first-run drift does not fail on that single missing baseline reference.
 
-For a release/adoption overview across external contract repos:
+Adopt also:
 
-```bash
-python governance_tools/trust_signal_overview.py --project-root . --plan PLAN.md --release-version v1.1.0 --contract examples/usb-hub-contract/contract.yaml --format human
-```
+- seeds a minimal `.github/workflows/governance-drift.yml` when the target repo does not already have one
+- points out which `AGENTS.md` repo-specific sections are still at template `N/A` defaults
+- supports refresh delta summaries after baseline rewrites
+- works cross-platform on macOS, Linux, and Windows
 
-### Tool Reference
-
-#### Onboarding
-
-| Tool | Purpose |
-|------|---------|
-| `adopt_governance.py` | Cross-platform adopt-existing + refresh-baseline (Windows-safe) |
-| `external_repo_readiness.py` | Assess whether an external repo is governance-ready |
-| `governance_drift_checker.py` | Authoritative compliance check against baseline |
-
-#### Trust Signals
-
-| Tool | Purpose |
-|------|---------|
-| `trust_signal_overview.py` | Single-command release/adoption overview |
-| `trust_signal_snapshot.py` | Persist as latest/history/index bundle |
-| `trust_signal_publication_reader.py` | Read stable publication metadata |
-
-#### Release Package
-
-| Tool | Purpose |
-|------|---------|
-| `release_surface_overview.py` | Roll readiness + package + publication into one view |
-| `release_package_summary.py` | Alpha docs + status surfaces + verification commands |
-| `release_package_snapshot.py` | Persist as a versioned bundle |
-| `release_package_reader.py` | Read a versioned bundle |
-| `release_package_publication_reader.py` | Read stable repo-local release root |
-
-#### Reviewer Handoff
-
-| Tool | Purpose |
-|------|---------|
-| `reviewer_handoff_summary.py` | Trust + release summary in one reviewer handoff |
-| `reviewer_handoff_snapshot.py` | Persist as a versioned bundle |
-| `reviewer_handoff_reader.py` | Read a versioned bundle |
-| `reviewer_handoff_publication_reader.py` | Read publication-layer summary |
-
-### CI Artifacts
-
-CI generates the following on every push:
-
-| Path | Contents |
-|------|----------|
-| `artifacts/trust-signals/` | Trust-signal snapshot with history/index, publication manifest, and external fact-state summaries |
-| `artifacts/release-package/` | Release-package bundle (docs, status surfaces, verification commands) |
-| `artifacts/release-surface/` | Release-surface overview (readiness + package + publication posture) |
-| `artifacts/reviewer-handoff/` | Highest-level reviewer handoff bundle |
-| `docs/releases/generated/README.md` | Stable in-repo landing page for generated release packages |
-| `docs/status/reviewer-handoff.md` | Stable in-repo landing page for the reviewer handoff packet |
-
-### Minimum Viable Setup
-
-Install the documented local dependencies first:
-
-```bash
-pip install -r requirements.txt
-```
-
-The core framework stays largely stdlib-first, but `requirements.txt` covers:
-
-- local validation via `pytest`
-- the runnable FastAPI demo under `examples/todo-app-demo`
-
-If you want to bring this governance framework into an existing project, the simplest path is:
-
-```bash
-git clone https://github.com/GavinWu672/ai-governance-framework.git
-cd ai-governance-framework
-
-./deploy_to_memory.sh /path/to/your/project
-```
-
-Or copy the essentials manually:
-
-```bash
-cp -r governance /path/to/your/project/
-cp -r governance_tools /path/to/your/project/
-```
-
-At minimum, prepare:
-
-- `governance/`
-- `PLAN.md`
-- `memory/`
-
-Then, when starting a new conversation or a new agent session, ask the agent to do this first:
-
-```text
-Please read governance/SYSTEM_PROMPT.md in full,
-follow the initialization process in section 2,
-and report back with a [Governance Contract] block.
-```
-
-### Adopting into an Existing Repo
-
-Use `adopt_governance.py` to onboard an existing project — it copies required framework files, creates missing templates, and generates `.governance/baseline.yaml` without overwriting anything you already have.
-When an existing `contract.yaml` is kept, adopt now still performs one framework-required repair: if `AGENTS.base.md` is not referenced in `documents` or `ai_behavior_override`, it adds `AGENTS.base.md` to `ai_behavior_override` so first-run drift does not fail on that single missing baseline reference.
-Adopt now also seeds a minimal `.github/workflows/governance-drift.yml` when the target repo does not already have one, so a first-pass CI drift gate is available without hand-copying the workflow from documentation.
-Its post-adoption summary now also points out which `AGENTS.md` repo-specific sections are still sitting at template `N/A` defaults, so teams get a concrete next customization step instead of only generic follow-up advice.
-
-**Cross-platform (macOS / Linux / Windows):**
+Onboarding-shaped payload audits now emit a dedicated `onboarding-*.jsonl` lane, and Windows terminal output falls back safely when the active code page cannot encode some Unicode characters.
 
 ```bash
 python governance_tools/adopt_governance.py --target /path/to/your/repo
 ```
 
-**Options:**
+Common options:
 
 | Flag | Effect |
 |------|--------|
@@ -689,28 +247,15 @@ python governance_tools/adopt_governance.py --target /path/to/your/repo
 | `--refresh` | Re-hash existing baseline without copying template files |
 | `--dry-run` | Preview planned actions without writing anything |
 
-**After initial adoption, refresh the baseline when governance files change:**
+Refresh after governance files change:
 
 ```bash
 python governance_tools/adopt_governance.py --target /path/to/your/repo --refresh
 ```
 
-`--refresh` now prints a delta summary after rewriting `.governance/baseline.yaml`, including tracked governance files whose hashes changed and PLAN heading inventory sections that were added or removed.
+> **Windows note:** `scripts/init-governance.sh` requires bash. Use `adopt_governance.py` instead - it is the canonical cross-platform equivalent.
 
-> **Windows note:** `scripts/init-governance.sh` requires bash. Use `adopt_governance.py` instead — it is the canonical cross-platform equivalent.
-
-**After adoption, expect the baseline drift checks to PASS or reduce to repo-specific follow-up only.** If a check is still failing, consult the schema reference:
-
-- [docs/minimum-legal-schema.md](docs/minimum-legal-schema.md) — minimum valid form of each governance file, which fields not to hand-edit, and which `False` states are non-blocking by design
-
-### Example Projects
-
-See:
-
-- `examples/README.md`
-- `examples/starter-pack/`
-- `examples/todo-app-demo/`
-- `examples/chaos-demo/`
+If a drift check is still failing after adoption, consult [docs/minimum-legal-schema.md](docs/minimum-legal-schema.md).
 
 ## Common Entry Points
 
@@ -719,21 +264,9 @@ See:
 ```bash
 python governance_tools/contract_validator.py --file ai_response.txt
 python governance_tools/plan_freshness.py --plan PLAN.md
-python governance_tools/state_generator.py --rules common,python,cpp --risk medium --oversight review-required --memory-mode candidate
-python governance_tools/state_generator.py --rules common,refactor --impact-before before.cs --impact-after after.cs --format json
-python governance_tools/memory_janitor.py --memory-root ./memory --check
-python governance_tools/failure_test_validator.py --file test_names.json --format json
-python governance_tools/failure_completeness_validator.py --file checks.json --format json
-python governance_tools/public_api_diff_checker.py --before before.cs --after after.cs --format json
-python governance_tools/architecture_impact_estimator.py --before before.cs --after after.cs --rules common,refactor --scope refactor --format human
-python governance_tools/change_proposal_builder.py --project-root . --task-text "Refactor Avalonia boundary" --rules common,refactor --impact-before before.cs --impact-after after.cs --format human
-python governance_tools/change_control_summary.py --session-start-file session_start.json --session-end-file session_end_summary.json --format human
-python governance_tools/driver_evidence_validator.py --file checks.json --format json
-python governance_tools/refactor_evidence_validator.py --file checks.json --format json
-python governance_tools/rule_pack_suggester.py --project-root . --task "Refactor Avalonia view model boundary"
-python governance_tools/governance_auditor.py --format json
-python governance_tools/trust_signal_snapshot.py --project-root . --plan PLAN.md --release-version v1.1.0 --contract examples/usb-hub-contract/contract.yaml --write-bundle artifacts/trust-signals --format human
-python governance_tools/trust_signal_publication_reader.py --file artifacts/trust-signals/PUBLICATION_MANIFEST.json --format human
+python governance_tools/governance_drift_checker.py --repo . --framework-root .
+python governance_tools/external_repo_readiness.py --repo /path/to/repo
+python governance_tools/reviewer_handoff_summary.py --project-root . --plan PLAN.md --release-version v1.1.0 --contract examples/usb-hub-contract/contract.yaml --format human
 python governance_tools/trust_signal_overview.py --project-root . --plan PLAN.md --release-version v1.1.0 --contract examples/usb-hub-contract/contract.yaml --format human
 ```
 
@@ -741,214 +274,36 @@ python governance_tools/trust_signal_overview.py --project-root . --plan PLAN.md
 
 ```bash
 python runtime_hooks/core/pre_task_check.py --rules common,python,cpp --risk high --oversight review-required
-python runtime_hooks/core/session_start.py --project-root . --plan PLAN.md --rules common,refactor --task-text "Refactor Avalonia boundary" --impact-before before.cs --impact-after after.cs
-python runtime_hooks/smoke_test.py --event-type session_start
-python runtime_hooks/smoke_test.py --event-type session_start --contract examples/usb-hub-contract/contract.yaml
-python runtime_hooks/dispatcher.py --file runtime_hooks/examples/shared/session_start.shared.json --contract examples/usb-hub-contract/contract.yaml
-python runtime_hooks/core/pre_task_check.py --rules common,refactor --risk medium --oversight review-required --impact-before before.cs --impact-after after.cs
-python runtime_hooks/core/post_task_check.py --file ai_response.txt --risk medium --oversight review-required --checks-file checks.json --api-before before.cs --api-after after.cs
-python runtime_hooks/core/session_end.py --project-root . --session-id 2026-03-12-01 --runtime-contract-file contract.json --checks-file checks.json --impact-preview-file impact.json --proposal-summary-file proposal_summary.json --event-log-file event_log.json --response-file ai_response.txt
-```
-
-For refactor tasks, `checks.json` can now also include:
-
-- `error_path_inventory`
-- `error_behavior_diff`
-
-This makes error-path behavior explicit before and after a refactor. The framework validates structure and reviewer-facing traceability, but it does not prove that the inventory is exhaustive or semantically correct.
-
-Kernel-driver evidence flow:
-
-```text
-SDV / SAL / WDK diagnostics
-        ↓
-normalized checks payload
-        ↓
-driver_evidence_validator.py
-        ↓
-post_task_check.py
-```
-
-Public API diff audit flow:
-
-```text
-public_api_diff_checker.py
-        ↓
-post_task_check.py
-        ↓
-session_end summary / curated artifact
-```
-
-Architecture impact audit flow:
-
-```text
-architecture_impact_estimator.py
-        ↓
-pre_task_check.py / state_generator.py
-        ↓
-session_end summary / curated artifact
-```
-
-Change proposal flow:
-
-```text
-task text + project signals + impact files
-        ↓
-change_proposal_builder.py
-        ↓
-suggested rules + proposal guidance + impact preview + proposal_summary
-```
-
-Session-start handoff flow:
-
-```text
-state_generator.py + pre_task_check.py + change_proposal_builder.py
-        ↓
-session_start.py
-        ↓
-agent start context + proposal_summary
-```
-
-Session-end audit flow:
-
-```text
-proposal_summary + runtime checks + impact preview
-        ↓
-session_end.py
-        ↓
-summary artifact + curated artifact
-```
-
-Change-control summary flow:
-
-```text
-session_start context + session_end summary
-        ↓
-change_control_summary.py
-        ↓
-reviewable change-control summary
-```
-
-`change_control_summary.py --format human` now starts with a reviewer-first summary line, then drills into proposal and runtime sections.
-`change_control_index.py` also enriches artifacts with contract context from the corresponding `*_session_start.json`, so reviewers can see which domain contract drove each session when scanning across sessions.
-`session_end.py` human output, summary artifacts, and curated artifacts preserve the same contract metadata, so the reviewer chain stays consistent in multi-domain environments.
-
-### Adapters
-
-```bash
-python runtime_hooks/adapters/claude_code/normalize_event.py --event-type pre_task --file claude_event.json
-python runtime_hooks/adapters/codex/normalize_event.py --event-type post_task --file codex_event.json
-python runtime_hooks/adapters/gemini/normalize_event.py --event-type pre_task --file gemini_event.json
-```
-
-### Memory Pipeline
-
-```bash
-python memory_pipeline/session_snapshot.py --memory-root memory --task "Runtime governance" --summary "Captured a candidate snapshot"
-python memory_pipeline/memory_curator.py --candidate-file artifacts/runtime/candidates/<session_id>.json --output artifacts/runtime/curated/<session_id>.json
-python memory_pipeline/memory_promoter.py --memory-root memory --candidate-file memory/candidates/session_*.json --approved-by reviewer-01
+python runtime_hooks/core/session_start.py --project-root . --plan PLAN.md --rules common,refactor --task-text "Refactor Avalonia boundary"
+python runtime_hooks/core/post_task_check.py --file ai_response.txt --risk medium --oversight review-required --checks-file checks.json
+python runtime_hooks/core/session_end.py --project-root . --session-id 2026-03-12-01 --runtime-contract-file contract.json --checks-file checks.json --response-file ai_response.txt
 ```
 
 ### Smoke Test
 
 ```bash
 python runtime_hooks/smoke_test.py --harness claude_code --event-type pre_task
-python runtime_hooks/smoke_test.py --harness claude_code --event-type session_start
-python runtime_hooks/smoke_test.py --harness codex --event-type post_task
 python runtime_hooks/smoke_test.py --harness codex --event-type session_start
-python runtime_hooks/smoke_test.py --harness gemini --event-type post_task
-python runtime_hooks/smoke_test.py --harness gemini --event-type session_start
 python runtime_hooks/smoke_test.py --event-type session_start
 ```
 
-`runtime_hooks/smoke_test.py` now also accepts `--contract`, `--project-root`, and `--plan-path`, so the built-in example payloads can be replayed against an external contract repo without editing the example JSON files first.
-If only `--contract` is supplied, it now defaults `project_root` and `plan_path` from the contract repo only when that contract root also contains `PLAN.md`; otherwise it preserves the example payload's original root/plan.
-The shared shell wrapper `scripts/run-runtime-governance.sh` now forwards the same overrides into its smoke flows, so the common hook/CI entrypoint can replay those examples against an external contract repo too.
-`runtime_hooks/dispatcher.py` now mirrors the same override pattern for shared event JSON, so the lowest-level shared-event path no longer requires hand-editing the payload just to point at a different contract or repo root.
-Both runtime entrypoints now also accept `--response-file` and `--checks-file`, making it easier to replay file-based post-task evidence against a real domain contract instead of only the bundled response fixture.
+## Payload Audit and Token Work
 
-`session_start` smoke output now shows startup handoff summaries directly, including the active contract, expected validators, and required evidence.
-Shared enforcement now also preserves:
+The Step 1-Step 7 roadmap and rebaseline outputs live under [docs/payload-audit/](docs/payload-audit/README.md).
 
-- `*_session_start.txt` handoff notes
-- `*_session_start.json` machine-readable startup envelopes
-- `*_change_control_summary.txt` proposal-to-startup review summaries
-- `INDEX.txt` change-control artifact index
+Current headline numbers:
 
-Among these, `*_session_start.json` can be used directly as input to `change_control_summary.py --session-start-file ...`.
+- strict comparable reduction (`L0 + L1`): `44073 -> 28114` (`-15959`, `-36.2%`)
+- observed total reduction: `104696 -> 49202` (`-55494`, `-53.0%`)
+- KDC summary-first onboarding recheck: `60623 -> 37142` (`-23481`, `-38.7%`)
 
-### Shared Enforcement
-
-```bash
-bash scripts/run-runtime-governance.sh --mode enforce
-```
-
-## Multi-Tool Support
-
-The runtime layer currently supports multiple AI tools:
-
-- Claude Code
-- Codex
-- Gemini
-
-These tools all normalize native payloads into the same shared event contract before entering governance checks.
-
-`session_start` currently exists first as a shared governance event for agent startup and handoff context; native harness adapters can be added on top later.
-The shared adapter runner can now already process `session_start`, so startup chains can be exercised through shared/native examples today.
-
-Related files:
-
-- `runtime_hooks/event_contract.md`
-- `runtime_hooks/event_schema.json`
-- `runtime_hooks/examples/shared/`
-- `runtime_hooks/examples/claude_code/`
-- `runtime_hooks/examples/codex/`
-- `runtime_hooks/examples/gemini/`
-
-## CI and Validation
-
-The GitHub Actions workflow lives at:
-
-- `.github/workflows/governance.yml`
-
-It now includes the shared runtime enforcement path and verifies:
-
-- native payload normalization
-- shared event dispatch
-- pre/post-task checks
-- session close and curated memory flow
-- the focused runtime governance test suite
-- uploaded `artifacts/runtime/smoke/` handoff summaries from `session_start` smoke flows
-- uploaded JSON startup envelopes and derived change-control summaries from `session_start` smoke flows
-
-## Current Boundary
-
-This repo is positioned as a **runtime governance framework prototype**, not a general-purpose agent platform.
-
-It is focused on:
-
-- governance constitution
-- runtime governance lifecycle
-- session lifecycle closeout
-- memory governance
-- reviewable project truth
-
-It is not currently trying to become:
-
-- a plugin marketplace
-- a large command registry
-- a general-purpose subagent orchestration platform
-- an IDE-native or token-level AI generation interception system
+The next high-leverage optimization target is not the kernel-driver summary itself anymore; it is the `pre_task_check` and rendered-output cost on the KDC onboarding path.
 
 ## Further Reading
 
-- `docs/competitive-landscape.md`
-- `docs/runtime-governance-update.md`
-- `runtime_hooks/README.md`
-- `memory_pipeline/README.md`
-- `governance_tools/README.md`
-- `CONTRIBUTING.md`
-
-## License
-
-This project is licensed under the MIT License. See `LICENSE`.
+- [docs/competitive-landscape.md](docs/competitive-landscape.md)
+- [docs/runtime-governance-update.md](docs/runtime-governance-update.md)
+- [runtime_hooks/README.md](runtime_hooks/README.md)
+- [memory_pipeline/README.md](memory_pipeline/README.md)
+- [governance_tools/README.md](governance_tools/README.md)
+- [CONTRIBUTING.md](CONTRIBUTING.md)
