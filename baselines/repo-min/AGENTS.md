@@ -33,7 +33,7 @@ Prompt yourself:
 - What changes are safe enough to keep in a fast path?
 -->
 
-N/A — fill in or replace with repo-specific risk levels
+N/A
 
 ## Must-Test Paths
 <!-- governance:key=must_test_paths -->
@@ -49,7 +49,7 @@ Prompt yourself:
 - Which user-visible or hardware-facing flows need explicit coverage?
 -->
 
-N/A — fill in or replace with paths that must have tests before merge
+N/A
 
 ## L1 → L2 Escalation Triggers
 <!-- governance:key=escalation_triggers -->
@@ -66,7 +66,7 @@ Prompt yourself:
 - What changes become risky mainly because they are broad, not because they touch one file?
 -->
 
-N/A — fill in or replace with escalation conditions for this repo
+N/A
 
 ## Repo-Specific Forbidden Behaviors
 <!-- governance:key=forbidden_behaviors -->
@@ -82,4 +82,4 @@ Prompt yourself:
 - What "cleanup" or "shortcut" behaviors have already caused pain here?
 -->
 
-N/A — fill in or replace with forbidden behaviors specific to this repo
+N/A

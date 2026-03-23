@@ -130,6 +130,7 @@ def build_session_start_context(
         impact_after_files=impact_after_files,
         contract_file=contract_file,
         skip_domain_contract=not load_domain,
+        task_level=final_level,
     )
 
     proposal = build_change_proposal(

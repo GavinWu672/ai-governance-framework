@@ -566,32 +566,35 @@ def adopt_existing(
         print("Dry-run complete. No files were written.")
         return 0
 
-    # ── Post-adoption drift summary ───────────────────────────────────────────
+    # ── Post-adoption drift summary (summary-first) ───────────────────────────
     print()
     print("─" * 60)
     print("Post-adoption drift check:")
     print("─" * 60)
+    drift_ok = False
+    drift_severity = "unknown"
+    drift_checks: dict[str, bool] = {}
+    drift_warnings: list[str] = []
     try:
-        result = subprocess.run(
-            [
-                sys.executable,
-                str(framework_root / "governance_tools" / "governance_drift_checker.py"),
-                "--repo", str(repo_root),
-                "--framework-root", str(framework_root),
-                "--format", "human",
-            ],
-            capture_output=True,
-            text=True,
-            timeout=30,
-        )
-        output = result.stdout
-        # Print checks section and any findings
-        in_checks = False
-        for line in output.splitlines():
-            if line.strip().startswith("[checks]"):
-                in_checks = True
-            if in_checks or line.strip().startswith("FAIL") or line.strip().startswith("WARNING"):
-                print(line)
+        from governance_tools.governance_drift_checker import check_governance_drift
+        drift = check_governance_drift(repo_root, framework_root=framework_root)
+        drift_ok = drift.ok
+        drift_severity = drift.severity
+        drift_checks = drift.checks
+        drift_warnings = drift.warnings or []
+        checks_passed = sum(1 for v in drift_checks.values() if v)
+        checks_total = len(drift_checks)
+        # ── Summary-first header ──────────────────────────────────────────────
+        print(f"[adopt_governance]")
+        print(f"ok={drift_ok} | severity={drift_severity} | checks={checks_passed}/{checks_total}")
+        if drift_warnings:
+            for w in drift_warnings[:5]:
+                print(f"  warning: {w}")
+        print()
+        # ── Per-check detail ──────────────────────────────────────────────────
+        for check_name, passed in sorted(drift_checks.items()):
+            status = "PASS" if passed else "FAIL"
+            print(f"  {status}: {check_name}")
     except Exception as exc:
         print(f"  (drift check failed: {exc})")
 

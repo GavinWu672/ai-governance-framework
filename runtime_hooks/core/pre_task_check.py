@@ -18,6 +18,13 @@ from governance_tools.architecture_impact_estimator import estimate_architecture
 from governance_tools.contract_resolver import resolve_contract
 from governance_tools.domain_governance_metadata import domain_risk_tier
 from governance_tools.domain_contract_loader import load_domain_contract
+from governance_tools.output_tier import (
+    OutputTier,
+    TieredOutput,
+    generate_trace_id,
+    get_default_tier,
+)
+from governance_tools.reasoning_compressor import compress_fragments
 from governance_tools.rule_pack_loader import describe_rule_selection, load_rule_content, parse_rule_list
 from governance_tools.rule_pack_suggester import suggest_rule_packs
 from runtime_hooks.core.human_summary import build_summary_line, format_contract_summary_label
@@ -85,6 +92,8 @@ def run_pre_task_check(
     impact_after_files: list[Path] | None = None,
     contract_file: Path | None = None,
     skip_domain_contract: bool = False,
+    task_level: str = "L1",
+    output_tier: "OutputTier | None" = None,
 ) -> dict:
     plan_path = project_root / "PLAN.md"
     freshness = check_freshness(plan_path)
@@ -134,7 +143,32 @@ def run_pre_task_check(
         )
         _append_impact_warnings(warnings, impact_preview, risk, oversight)
 
-    return {
+    # ── Tier-aware output ─────────────────────────────────────────────────────
+    trace_id = generate_trace_id(task_text, task_level)
+    effective_tier = output_tier or get_default_tier(task_level)
+
+    reasoning_fragments: list[dict] = []
+    if effective_tier >= OutputTier.TIER2:
+        reasoning_fragments = compress_fragments([*errors, *warnings])
+
+    tier3_artifact_ref: str | None = None
+    if effective_tier >= OutputTier.TIER3:
+        verdict = "fail" if errors else ("warn" if warnings else "pass")
+        tiered = TieredOutput(
+            verdict=verdict,
+            violations=[{"rule_id": "UNKNOWN", "severity": "high", "evidence": e} for e in errors],
+            evidence_ids=[],
+            trace_id=trace_id,
+            task_level=task_level,
+            repo_type=str(project_root),
+            reasoning_fragments=reasoning_fragments,
+            policy_refs=[],
+            decision_path=[f"risk={risk}", f"oversight={oversight}", f"rules={rules}"],
+        )
+        rendered = tiered.render(OutputTier.TIER3)
+        tier3_artifact_ref = rendered.get("full_trace_ref")
+
+    result: dict = {
         "ok": len(errors) == 0,
         "project_root": str(project_root),
         "plan_path": str(plan_path),
@@ -166,7 +200,14 @@ def run_pre_task_check(
         "resolved_contract_file": str(resolved_contract_file) if resolved_contract_file else None,
         "errors": errors,
         "warnings": warnings,
+        # ── Tier-aware fields ──────────────────────────────────────────────
+        "trace_id": trace_id,
+        "output_tier": int(effective_tier),
+        "reasoning_fragments": reasoning_fragments,
     }
+    if tier3_artifact_ref is not None:
+        result["tier3_artifact_ref"] = tier3_artifact_ref
+    return result
 
 
 def format_human_result(result: dict) -> str:

@@ -884,8 +884,12 @@ def test_agents_sections_filled_passes_when_content_present(tmp_path):
     assert result.checks.get("agents_sections_filled") is True
 
 
-def test_agents_sections_filled_fails_for_template_agents_md(tmp_path):
-    """Unmodified baseline AGENTS.md (all sections empty) is a warning."""
+def test_agents_sections_filled_passes_for_template_agents_md(tmp_path):
+    """Unmodified baseline AGENTS.md with plain N/A stubs passes the check.
+
+    The template uses plain 'N/A' (not 'N/A — fill in or replace...') so that
+    fresh adoptions pass agents_sections_filled by default.
+    """
     agents = _write_agents_base(tmp_path)
     plan = _write_plan(tmp_path)
     contract = _write_contract(tmp_path)
@@ -897,8 +901,7 @@ def test_agents_sections_filled_fails_for_template_agents_md(tmp_path):
         contract_hash=_compute_hash(contract),
     )
     result = check_governance_drift(tmp_path, framework_root=FRAMEWORK_ROOT, skip_hash=True)
-    assert result.checks.get("agents_sections_filled") is False
-    assert any("risk_levels" in w for w in result.warnings)
+    assert result.checks.get("agents_sections_filled") is True
 
 
 def test_agents_sections_filled_passes_when_agents_md_absent(tmp_path):

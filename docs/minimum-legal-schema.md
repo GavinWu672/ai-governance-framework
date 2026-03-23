@@ -157,19 +157,19 @@ plan_required_sections:
 ```markdown
 ## Repo-Specific Risk Levels
 <!-- governance:key=risk_levels -->
-N/A — fill in or replace with repo-specific risk levels
+N/A
 
 ## Must-Test Paths
 <!-- governance:key=must_test_paths -->
-N/A — fill in or replace with paths that must have tests before merge
+N/A
 
 ## L1 → L2 Escalation Triggers
 <!-- governance:key=escalation_triggers -->
-N/A — fill in or replace with escalation conditions for this repo
+N/A
 
 ## Repo-Specific Forbidden Behaviors
 <!-- governance:key=forbidden_behaviors -->
-N/A — fill in or replace with forbidden behaviors specific to this repo
+N/A
 ```
 
 ### `governance:key` 的作用
@@ -177,7 +177,10 @@ N/A — fill in or replace with forbidden behaviors specific to this repo
 這些 anchor 讓 drift checker（check #14 `agents_sections_filled`）知道哪些 section 代表「repo-specific 內容」。
 
 **通過的條件**：section 內有任何一行非空、非 HTML comment 的文字。
-`N/A — ...` 這行就足以讓 check 通過。
+`N/A`（純文字，不含 "fill in or replace" 尾綴）就足以讓 check 通過。
+
+> ⚠️ **注意**：`N/A — fill in or replace with ...` 這種帶模板尾綴的寫法會被 checker 識別為未填寫的占位符，**不算通過**。
+> adopt 工具生成的模板已使用純 `N/A`（2026-03-23 後的版本）。
 
 **什麼時候需要填真實內容**：
 
@@ -265,7 +268,7 @@ Drift output 會標示來源：
 | `contract_no_placeholders` | ✅ PASS | 工具自動替換 `<repo-name>` / `<domain>` |
 | `contract_not_framework_copy` | ✅ PASS | 工具替換後名稱不同 |
 | `plan_required_sections_present` | ✅ PASS | 無 mandate 預設通過 |
-| `agents_sections_filled` | ✅ PASS | template 預設含 N/A 內容 |
+| `agents_sections_filled` | ✅ PASS | template 預設含純 `N/A`（不含模板尾綴） |
 | `plan_freshness` | ✅ PASS | 工具寫入當天日期 |
 | `plan_inventory_current` | ✅ PASS | 剛 adopt，inventory 與 PLAN.md 一致 |
 | `baseline_yaml_freshness` | ✅ PASS | 剛生成 |
