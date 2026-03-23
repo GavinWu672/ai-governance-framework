@@ -8,6 +8,12 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from governance_tools.rule_classifier import (
+    detect_repo_type,
+    filter_rule_packs,
+    load_rule_registry,
+)
+
 
 DEFAULT_RULES_ROOT = Path(__file__).resolve().parent.parent / "governance" / "rules"
 
@@ -110,6 +116,54 @@ def load_rule_content(requested_rules: list[str], rules_root: Path | list[Path] 
         "active_rules": active_rules,
         "missing": missing,
         "valid": not missing,
+    }
+
+
+_REGISTRY_CACHE: list[dict] | None = None
+
+
+def get_rule_registry(registry_path: Path | str | None = None) -> list[dict]:
+    """Return the rule registry, using a module-level cache after the first load."""
+    global _REGISTRY_CACHE
+    if _REGISTRY_CACHE is None:
+        _REGISTRY_CACHE = load_rule_registry(registry_path)
+    return _REGISTRY_CACHE
+
+
+def invalidate_registry_cache() -> None:
+    """Invalidate the cached rule registry (useful for testing)."""
+    global _REGISTRY_CACHE
+    _REGISTRY_CACHE = None
+
+
+def get_context_aware_rule_packs(
+    project_root: Path,
+    task_type: str = "general",
+    risk_level: str = "medium",
+    rules_root: "Path | list[Path] | tuple[Path, ...] | None" = None,
+) -> dict:
+    """
+    Return context-aware rule packs based on detected repo type and task type.
+
+    Returns a dict with:
+        repo_type      — detected repo type (firmware/product/service/tooling)
+        task_type      — the task type passed in
+        active_packs   — list of rule pack names that should be activated
+        registry_count — number of packs in the registry
+    """
+    registry = get_rule_registry()
+    repo_type = detect_repo_type(project_root)
+    active_packs = filter_rule_packs(
+        registry,
+        repo_type=repo_type,
+        task_type=task_type,
+        risk_level=risk_level,
+    )
+    return {
+        "repo_type": repo_type,
+        "task_type": task_type,
+        "active_packs": active_packs,
+        "registry_count": len(registry),
     }
 
 

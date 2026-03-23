@@ -47,6 +47,7 @@ def run_quickstart_smoke(
         memory_mode="candidate",
         task_text=task_text,
         contract_file=contract_file,
+        task_level="L1",
     )
 
     contract_context = extract_contract_context(session_start)

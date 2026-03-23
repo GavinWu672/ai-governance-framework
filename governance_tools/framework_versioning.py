@@ -12,6 +12,10 @@ from pathlib import Path
 
 
 _README_VERSION_PATTERN = re.compile(r"- version:\s*`([^`]+)`")
+# Badge format: [![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)]
+_README_BADGE_VERSION_PATTERN = re.compile(r"badge/version-(\d+\.\d+\.\d+(?:-[^-\s]+)?)-")
+# CHANGELOG.md: ## v1.1.0 or ## 1.1.0 (first match = latest release)
+_CHANGELOG_VERSION_RE = re.compile(r"^##\s+v?(\d+\.\d+\.\d+(?:-[^\s]+)?)", re.MULTILINE)
 
 
 @dataclass
@@ -77,12 +81,29 @@ def repo_root_from_tooling() -> Path:
 
 
 def current_framework_release(project_root: Path | None = None) -> str | None:
+    """Return the current framework version string.
+
+    Resolution order:
+    1. README.md list format:  ``- version: `1.1.0` ``
+    2. README.md badge format: ``badge/version-1.1.0-blue``
+    3. CHANGELOG.md first heading: ``## v1.1.0``
+    """
     root = project_root.resolve() if project_root else repo_root_from_tooling()
     readme = root / "README.md"
-    if not readme.exists():
-        return None
-    match = _README_VERSION_PATTERN.search(readme.read_text(encoding="utf-8"))
-    return match.group(1).strip() if match else None
+    if readme.exists():
+        text = readme.read_text(encoding="utf-8")
+        match = _README_VERSION_PATTERN.search(text)
+        if match:
+            return match.group(1).strip()
+        match = _README_BADGE_VERSION_PATTERN.search(text)
+        if match:
+            return match.group(1).strip()
+    changelog = root / "CHANGELOG.md"
+    if changelog.exists():
+        match = _CHANGELOG_VERSION_RE.search(changelog.read_text(encoding="utf-8"))
+        if match:
+            return match.group(1).strip()
+    return None
 
 
 def load_framework_lock(repo_root: Path) -> dict[str, object] | None:

@@ -58,9 +58,37 @@ memory_source_authority:
   step3_status: "slim_complete"
   step3b_note: "Full incremental refactor deferred to post-Step-4"
   updated: "2026-03-23"
+rule_classification:
+  version: "1.0.0"
+  step4_status: "complete"
+  registry_path: "governance/RULE_REGISTRY.md"
+  registry_packs: 14
+  classifier_path: "governance_tools/rule_classifier.py"
+  domain_summary_path: "governance_tools/domain_summary_loader.py"
+  domain_summaries_dir: "docs/domain-summaries/"
+  updated: "2026-03-23"
+task_level_detection:
+  version: "1.0.0"
+  step5_status: "complete"
+  step5b_status: "complete"
+  detector_path: "governance_tools/task_level_detector.py"
+  l0_domain_gate_path: "governance_tools/l0_domain_gate.py"
+  l0_token_before_gate: 10264
+  l0_token_after_gate: 6451
+  l0_target: 9665
+  l0_target_met: true
+  l0_vs_l1_reduction_pct: 68.6
+  updated: "2026-03-23"
+adoption_packaging:
+  version: "1.0.0"
+  step6_status: "complete"
+  onboarding_rule_pack_fixed: true
+  payload_config_written: true
+  payload_config_path: ".governance-payload-config.yaml"
+  updated: "2026-03-23"
 payload_audit:
-  last_audit_id: "26a92fc22783"
-  last_audit_time: "2026-03-23T03:40:09.064077+00:00"
+  last_audit_id: "c6f1cd1d80e9"
+  last_audit_time: "2026-03-23T07:27:45.302246+00:00"
   last_task_level: "L1"
   last_grand_total_tokens: 0
   token_method: "estimate"

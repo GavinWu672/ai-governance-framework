@@ -944,6 +944,73 @@ def test_agents_sections_partially_filled_reports_empty_keys(tmp_path):
     assert "risk_levels" not in warning_text
 
 
+def test_agents_sections_filled_fails_for_stub_na_lines(tmp_path):
+    """Sections containing only 'N/A — fill in...' stubs are treated as empty."""
+    agents = _write_agents_base(tmp_path)
+    plan = _write_plan(tmp_path)
+    contract = _write_contract(tmp_path)
+    stub_text = (
+        "# AGENTS.md\n"
+        "<!-- governance-baseline: overridable -->\n\n"
+        "## Repo-Specific Risk Levels\n"
+        "<!-- governance:key=risk_levels -->\n\n"
+        "N/A \u2014 fill in or replace with repo-specific risk levels\n\n"
+        "## Must-Test Paths\n"
+        "<!-- governance:key=must_test_paths -->\n\n"
+        "N/A \u2014 fill in or replace with paths that must have tests before merge\n\n"
+        "## L1 \u2192 L2 Escalation Triggers\n"
+        "<!-- governance:key=escalation_triggers -->\n\n"
+        "N/A \u2014 fill in or replace with escalation conditions for this repo\n\n"
+        "## Repo-Specific Forbidden Behaviors\n"
+        "<!-- governance:key=forbidden_behaviors -->\n\n"
+        "N/A \u2014 fill in or replace with forbidden behaviors specific to this repo\n"
+    )
+    (tmp_path / "AGENTS.md").write_text(stub_text, encoding="utf-8")
+    _write_baseline_yaml(
+        tmp_path,
+        agents_hash=_compute_hash(agents),
+        plan_hash=_compute_hash(plan),
+        contract_hash=_compute_hash(contract),
+    )
+    result = check_governance_drift(tmp_path, framework_root=FRAMEWORK_ROOT, skip_hash=True)
+    assert result.checks.get("agents_sections_filled") is False
+    warning_text = " ".join(result.warnings)
+    assert "risk_levels" in warning_text
+
+
+def test_agents_sections_filled_passes_with_content_alongside_stub(tmp_path):
+    """A section with one real line and one stub line counts as filled."""
+    agents = _write_agents_base(tmp_path)
+    plan = _write_plan(tmp_path)
+    contract = _write_contract(tmp_path)
+    text = (
+        "# AGENTS.md\n"
+        "<!-- governance-baseline: overridable -->\n\n"
+        "## Repo-Specific Risk Levels\n"
+        "<!-- governance:key=risk_levels -->\n\n"
+        "N/A \u2014 fill in or replace with repo-specific risk levels\n"
+        "- HIGH: changes to auth paths\n\n"  # real content alongside stub
+        "## Must-Test Paths\n"
+        "<!-- governance:key=must_test_paths -->\n\n"
+        "- src/auth/\n\n"
+        "## L1 \u2192 L2 Escalation Triggers\n"
+        "<!-- governance:key=escalation_triggers -->\n\n"
+        "- Any schema migration\n\n"
+        "## Repo-Specific Forbidden Behaviors\n"
+        "<!-- governance:key=forbidden_behaviors -->\n\n"
+        "- No .env files\n"
+    )
+    (tmp_path / "AGENTS.md").write_text(text, encoding="utf-8")
+    _write_baseline_yaml(
+        tmp_path,
+        agents_hash=_compute_hash(agents),
+        plan_hash=_compute_hash(plan),
+        contract_hash=_compute_hash(contract),
+    )
+    result = check_governance_drift(tmp_path, framework_root=FRAMEWORK_ROOT, skip_hash=True)
+    assert result.checks.get("agents_sections_filled") is True
+
+
 # ── plan_inventory_current ────────────────────────────────────────────────────
 
 def _write_baseline_yaml_with_inventory(

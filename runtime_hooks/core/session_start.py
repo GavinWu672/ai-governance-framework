@@ -25,9 +25,16 @@ from governance_tools.payload_audit_logger import (
 )
 from governance_tools.change_proposal_builder import build_change_proposal
 from governance_tools.domain_governance_metadata import domain_risk_tier
+from governance_tools.domain_summary_loader import inject_domain_summary
 from governance_tools.domain_validator_loader import preflight_domain_validators
 from governance_tools.l0_domain_gate import get_l0_domain_skip_reason, should_load_domain_contract
+from governance_tools.rule_pack_loader import get_context_aware_rule_packs
 from governance_tools.state_generator import generate_state
+from governance_tools.task_level_detector import (
+    apply_upgrade_triggers,
+    detect_task_level,
+    get_l0_context_limits,
+)
 from runtime_hooks.core.human_summary import build_summary_line, format_contract_summary_label
 from runtime_hooks.core.payload_audit_logger import log_session_payload
 from runtime_hooks.core.pre_task_check import run_pre_task_check
@@ -45,17 +52,34 @@ def build_session_start_context(
     impact_before_files: list[Path] | None = None,
     impact_after_files: list[Path] | None = None,
     contract_file: Path | None = None,
-    task_level: str = "L1",
-    task_type: str = "general",
+    task_level: str | None = None,
     force_domain: bool = False,
+    task_type: str = "general",
 ) -> dict:
     impact_before_files = impact_before_files or []
     impact_after_files = impact_after_files or []
 
-    # Step 6 (5b): L0 domain contract gate — skip domain contract for L0 unless
-    # force_domain flag is set or task description contains domain keywords.
+    # ── Task level detection ─────────────────────────────────────────────────
+    # Explicit task_level takes priority; None triggers keyword-based auto-detection.
+    detected_level = detect_task_level(task_description=task_text, explicit_level=task_level)
+    final_level, additional_loads = apply_upgrade_triggers(
+        task_level=detected_level,
+        task_description=task_text,
+        risk_level=risk,
+    )
+    level_decision = {
+        "requested": task_level,
+        "detected": detected_level,
+        "final": final_level,
+        "upgraded": final_level != detected_level,
+        "additional_loads": additional_loads,
+    }
+
+    # ── L0 domain contract gate ──────────────────────────────────────────────
+    # Skip domain contract for L0 unless force_domain is set or task description
+    # contains domain keywords.
     load_domain, _load_mode = should_load_domain_contract(
-        task_level=task_level,
+        task_level=final_level,
         force_domain=force_domain,
         task_description=task_text,
     )
@@ -68,8 +92,19 @@ def build_session_start_context(
     # L0 → always-load only; L1/L2 → always + on-demand.
     governance_dir = project_root / "governance"
     authority_table = load_authority_table(governance_dir)
-    include_on_demand = task_level != "L0"
+    include_on_demand = final_level != "L0"
     allowed_governance_files = filter_for_session(authority_table, include_on_demand=include_on_demand)
+
+    # ── L0 forbidden load guard ──────────────────────────────────────────────
+    # Belt-and-suspenders: ensure forbidden files are not in allowed set.
+    if final_level == "L0":
+        limits = get_l0_context_limits()
+        forbidden = limits["forbidden_load"]
+        allowed_governance_files = [
+            f for f in allowed_governance_files
+            if not any(fb.replace("governance/", "") in f for fb in forbidden)
+        ]
+
     authority_validation = validate_session_payload(allowed_governance_files, authority_table)
 
     state = generate_state(
@@ -105,14 +140,28 @@ def build_session_start_context(
         impact_after_files=impact_after_files,
     )
     resolved_contract_file = Path(pre_task["resolved_contract_file"]) if pre_task.get("resolved_contract_file") else None
+
+    # ── Context-aware rule pack classification ─────────────────────────────
+    # Detects repo_type from project structure and filters rule packs accordingly.
+    context_rule_info = get_context_aware_rule_packs(
+        project_root=project_root,
+        task_type=task_type,
+    )
+
+    # ── Domain summary loader ──────────────────────────────────────────────
+    # Replaces full inline documents with slim summary when available,
+    # reducing domain_contract token usage by ≥ 50% for rich contracts.
     domain_contract = pre_task.get("domain_contract")
+    if domain_contract and resolved_contract_file:
+        domain_contract = inject_domain_summary(domain_contract, resolved_contract_file)
+
     validator_preflight = preflight_domain_validators(resolved_contract_file) if resolved_contract_file else None
 
     # Payload audit hook — zero overhead when disabled (env var not set)
     if is_audit_enabled():
         _audit_contracts = [str(resolved_contract_file)] if resolved_contract_file else []
         _audit_record = build_audit_record(
-            task_level=task_level,
+            task_level=final_level,
             task_type=task_type,
             files_loaded=allowed_governance_files,
             domain_contracts=_audit_contracts,
@@ -130,7 +179,10 @@ def build_session_start_context(
     return {
         "ok": state.get("error") is None and pre_task["ok"] and authority_validation["ok"],
         "project_root": str(project_root),
-        "task_level": task_level,
+        "task_level": final_level,
+        "level_decision": level_decision,
+        "repo_type": context_rule_info["repo_type"],
+        "context_aware_rules": context_rule_info["active_packs"],
         "authority_filter": {
             "allowed_count": len(allowed_governance_files),
             "include_on_demand": include_on_demand,
@@ -274,8 +326,8 @@ def main() -> None:
     parser.add_argument("--impact-before", action="append", default=[])
     parser.add_argument("--impact-after", action="append", default=[])
     parser.add_argument("--contract")
-    parser.add_argument("--task-level", choices=["L0", "L1", "L2"], default="L1",
-                        help="Task level for authority filter and audit (default: L1)")
+    parser.add_argument("--task-level", choices=["L0", "L1", "L2"], default=None,
+                        help="Task level for authority filter and audit (auto-detected from task text if omitted)")
     parser.add_argument("--task-type", default="general",
                         help="Task type for audit log (ui/schema/api/domain/test/general)")
     parser.add_argument("--force-domain", action="store_true", default=False,
@@ -296,8 +348,8 @@ def main() -> None:
         impact_after_files=[Path(path) for path in args.impact_after],
         contract_file=Path(args.contract).resolve() if args.contract else None,
         task_level=args.task_level,
-        task_type=args.task_type,
         force_domain=args.force_domain,
+        task_type=args.task_type,
     )
 
     rendered = json.dumps(result, ensure_ascii=False, indent=2) if args.format == "json" else format_human_result(result)
