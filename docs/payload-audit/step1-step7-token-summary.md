@@ -67,13 +67,14 @@ That said, the rebaseline shows the effect is uneven:
 
 Highest-value next candidates:
 
-1. Fill [kdc-adapter-summary.md](/e:/BackUp/Git_EE/ai-governance-framework/docs/domain-summaries/kdc-adapter-summary.md) with real content
+1. Reduce `pre_task_check` / rendered-output cost on the KDC onboarding path now that summary-first has already cut the domain slice
 2. Decide whether onboarding deserves its own explicit short-circuit path
 3. Re-evaluate whether `Step 3b` full memory refactor is still worth the cost
-4. Fix the Windows `cp950` JSON output issue in [session_start.py](/e:/BackUp/Git_EE/ai-governance-framework/runtime_hooks/core/session_start.py)
+4. Extend the new Windows-safe output path to any other CLI surfaces that still assume terminal Unicode support
 
 ## Caveats
 
 - The onboarding comparison is operationally useful but not fully like-for-like.
-- `session_start.py` can still hit a Windows `UnicodeEncodeError` when printing large JSON to a `cp950` terminal.
-- The audit record is still reliable even when that terminal output fails.
+- Windows CLI output now uses a safe fallback when the active terminal code page cannot encode some Unicode characters.
+
+- A true external-repo onboarding rerun currently needs write access to the external repo's `docs/payload-audit/` directory; the summary-first KDC recheck above was measured in-process instead.

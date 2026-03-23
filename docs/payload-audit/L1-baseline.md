@@ -126,10 +126,10 @@ Interpretation:
 
 | 狀態 | 詳情 |
 |------|------|
-| kdc-adapter-summary.md | ✅ 已建立（PLACEHOLDER，需人工填寫） |
+| kernel-driver-adapter-summary.md | ✅ 已建立，且 `kernel-driver` summary loader 會實際解析這份 live adapter |
 | inject_domain_summary | ✅ 已實作，session_start 注入點已接入 |
-| KDC 實際啟用 | ⏳ 需填寫真實內容後才會替換 full contract |
-| 預估效益（KDC） | ~13,605 → ~1,500 tok（−89%） |
+| KDC 實際啟用 | ✅ summary-first 已在 `Kernel-Driver-Contract` 上量到實際效果 |
+| 已量測效益（KDC） | `13605` → `1840` tok（`-86.5%`） |
 
 ---
 

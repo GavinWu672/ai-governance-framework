@@ -97,7 +97,7 @@ For each run, capture:
 After the three reruns, answer these before doing more optimization work:
 
 1. Did Step 7 materially reduce `L1` and `Onboarding`, or mostly just `L0` presentation?
-2. Is `kdc-adapter-summary.md` still the highest-yield deferred item?
+2. After `kernel-driver-adapter-summary.md` is in place, is the next bottleneck `pre_task_check` / rendered output rather than `domain_contract` itself?
 3. Is `Step 3b` full memory refactor still justified after the new baseline?
 4. Does `Onboarding` still deserve its own short-circuit, or is `summary-first` enough?
 

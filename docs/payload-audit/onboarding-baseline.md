@@ -1,8 +1,7 @@
 # Onboarding Payload Baseline
 
-> 產出日期: 2026-03-23（Step 4+5 更新說明）
-> 樣本數: 2 筆（Kernel-Driver-Contract — ok × 1 + fail × 1）
-> Token 計算方式: estimate
+> Date: 2026-03-23
+> Scope: onboarding / adoption-shaped payload measurements
 > Tool: `governance_tools/payload_audit_logger.py`
 
 ---
@@ -14,7 +13,7 @@
 
 | Field | Value |
 |------|------|
-| logged_session_type | `L1` |
+| session_type | `onboarding` |
 | ok | `true` |
 | combined_estimate | `21088` |
 | result_dict_total | `9208` |
@@ -32,108 +31,77 @@
 Interpretation:
 - This path is now dramatically lower than the old Kernel-Driver-Contract onboarding baseline.
 - The main gain is from summary-first / framework-self contract shape, not from generic L1 compression alone.
-- The audit logger still records this run under `L1-*.jsonl` because it keys off explicit `task_level`; it does not yet emit a dedicated `onboarding-*.jsonl` file for this path.
-- On Windows terminals, `session_start.py` can still hit a `cp950` `UnicodeEncodeError` when printing large JSON; the audit record is written before that output failure, and `PYTHONIOENCODING=utf-8` avoids it.
+- The runtime now emits a dedicated `onboarding-*.jsonl` lane for onboarding tasks.
+- Windows terminal output now falls back safely when the active code page cannot encode some Unicode characters.
 
 ---
 
-## Step 4+5 對 Onboarding 的影響說明
+## Step 1 Initial KDC Onboarding Baseline (2026-03-23)
 
-### 新增能力
+### Session A -- onboarding ok=True
 
-| 變更 | 影響 |
+| Component | Tokens | Share |
+|------|-------:|------:|
+| Governance + Domain Contract | `27640` | `45.6%` |
+| Rendered output overhead | `32983` | `54.4%` |
+| **Session total** | **`60623`** | `100%` |
+
+### Session B -- onboarding ok=False
+
+> Failure reason: `Unknown rule packs: ['onboarding']`
+
+| Component | Tokens | Share |
+|------|-------:|------:|
+| Governance + Domain Contract | `27215` | `45.2%` |
+| Rendered output overhead | `32983` | `54.8%` |
+| **Session total** | **`60198`** | `100%` |
+
+Interpretation:
+- The old KDC onboarding path was dominated by a heavy inline domain contract plus large rendered output.
+- Even the failure case stayed expensive because the rendered response surface was still large.
+
+---
+
+## KDC Summary-First Recheck (2026-03-23)
+
+> Target: `Kernel-Driver-Contract`
+> Mode: in-process `build_session_start_context()` measurement with `summary_first`
+
+| Field | Value |
 |------|------|
-| **Step 4：repo_type 偵測** | Onboarding session 現在自動辨別 KDC 為 `firmware` repo，context_aware_rules = `["common","cpp","firmware_isr"]` |
-| **Step 4：inject_domain_summary** | 若 `kdc-adapter-summary.md` 填寫完整，domain_contract 可從 ~13,605 → ~1,500 tok（節省 ~89%）|
-| **Step 5：task_level 自動偵測** | Onboarding task 文字若含 `schema/auth/firmware` 等 veto 關鍵字，自動升到 L1；含 `breaking change` → L2 |
-| **Step 5：level_decision 欄位** | Payload 新增 `level_decision` (requested/detected/final/upgraded) 提升可審查性 |
+| combined_estimate | `37142` |
+| result_dict_total | `17170` |
+| rendered_output | `19972` |
+| domain_contract_tokens | `1840` |
+| domain_contract_slim | `true` |
+| summary_source | `kernel-driver-adapter-summary.md` |
 
-### domain_contract 優化路徑（KDC）
+### Delta vs old KDC onboarding baseline
 
-KDC adapter summary 目前仍為 **PLACEHOLDER**（需人工填寫），所以 onboarding session
-的 domain_contract token 仍為 ~13,605。填寫後預估效益：
+| Metric | Prior | Summary-first | Delta |
+|------|------:|-------------:|------:|
+| combined_estimate | `60623` | `37142` | `-23481` |
+| domain_contract field | `13605` | `1840` | `-11765` |
+| reduction | - | - | `-38.7%` |
 
-| 狀態 | domain_contract token | Session 總計 |
-|------|----------------------|-------------|
-| 現在（full contract） | ~13,605 | ~60,623 |
-| summary 填寫後（目標） | ~1,500 | **~48,518**（−20%）|
-
----
-
-## Step 1–3 初始 baseline（Kernel-Driver-Contract，2026-03-23）
-
-### Session A — Onboarding ok=True（KDC）
-
-| 類別 | Token 數 | 占比 |
-|------|---------|------|
-| Governance 文件 + Domain Contract | ~27,640 | ~46% |
-| Rendered output overhead | ~32,983 | ~54% |
-| **Session 總計** | **~60,623** | 100% |
-
-### Session B — Onboarding ok=False（KDC，unknown rule pack: `onboarding`）
-
-| 類別 | Token 數 | 占比 |
-|------|---------|------|
-| Governance 文件 + Domain Contract | ~27,215 | ~45% |
-| Rendered output overhead | ~32,983 | ~55% |
-| **Session 總計** | **~60,198** | 100% |
-
-**差異：ok=False session 比 ok=True 少 ~425 tokens**（error 路徑提前終止部分 proposal 計算）
+Interpretation:
+- Filling `kernel-driver-adapter-summary.md` produced a real reduction, not just a projected one.
+- The biggest direct gain is the domain-contract slice itself.
+- Total onboarding cost is still substantial because `pre_task_check` and rendered output remain large.
+- External-repo audit artifact emission for this rerun was blocked by sandbox write permissions, so this measurement was captured in-process rather than by writing a new external JSONL line.
 
 ---
 
-## Governance Health（Onboarding Sessions）
+## Key Takeaways
 
-| 指標 | 值 |
-|------|-----|
-| ok=False sessions | 1 / 2（50%） |
-| 失敗原因 | `Unknown rule packs: ['onboarding']` |
-| 警告 | PLAN.md is STALE（KDC repo 的 PLAN.md 未更新） |
-| 建議 | 對 KDC 跑 `adopt_governance.py --refresh` |
+1. The old KDC onboarding path was not mainly expensive because of adoption logic; it was expensive because of contract and output shape.
+2. `kernel-driver-adapter-summary.md` is now live and materially lowers the KDC onboarding path.
+3. The next optimization target is not "fill the KDC summary" anymore; it is `pre_task_check` and rendered output on the onboarding path.
+4. A dedicated onboarding short-circuit may still be worth testing, but only after measuring whether it reduces those two remaining dominant slices.
 
----
+## Next Actions
 
-## Top 3 Token 黑洞（onboarding sessions）
-
-與 L1 KDC session 相同（因為 onboarding session 的 payload 結構與 L1 domain session 相同）：
-
-| 排名 | 欄位 | Token | 占比 |
-|------|------|-------|------|
-| 🥇 1 | `pre_task_check`（含 domain contract validation） | ~14,035 | ~23% |
-| 🥈 2 | `domain_contract`（KDC full contract inline） | ~13,605 | ~22% |
-| 🥉 3 | rendered output overhead | ~32,338 | ~53% |
-
----
-
-## 關鍵發現
-
-1. **Onboarding session 的 token 分布與 L1 domain session 相同** — 說明 adopt_governance.py 跑完後的 session_start 沒有特殊優化
-2. **`onboarding` 不是有效 rule pack 名稱** — adopt_governance.py 的預設 rule 設定需修正，不應傳入 `onboarding` 作為 rule pack
-3. **KDC PLAN.md 需要更新** — 對外部 repo 的 adopt 後應自動提示 PLAN.md 過期
-4. **Step 4 新增：KDC repo_type = firmware**（CMakeLists.txt + .c 檔案，無 package.json）→ context_aware_rules 應包含 `["common","cpp","firmware_isr"]`
-
-## 優化建議
-
-1. 修正 `adopt_governance.py` 的預設 rule pack 設定（移除 `onboarding` 這個無效名稱）
-2. 填寫 `docs/domain-summaries/kdc-adapter-summary.md` 真實內容（最高優先級 token 優化）
-3. Onboarding session 可以用 L0 payload（只需確認 authority/contract 存在，不需要完整 architecture analysis）
-4. 建立 onboarding-specific short-circuit（Step 5 的 upgrade_trigger 可加入 `"task_type": "onboarding"` 案例）
-
-## 執行命令（重現此 baseline）
-
-```bash
-# Session A（ok=True）
-export GOVERNANCE_PAYLOAD_AUDIT=1
-python governance_tools/adopt_governance.py --target /e/BackUp/Git_EE/Kernel-Driver-Contract --refresh
-python runtime_hooks/core/session_start.py \
-  --project-root /e/BackUp/Git_EE/Kernel-Driver-Contract \
-  --risk medium --task-level L1 --task-type onboarding \
-  --contract /e/BackUp/Git_EE/Kernel-Driver-Contract/contract.yaml
-
-# Session B（ok=False，rule pack 錯誤）
-python runtime_hooks/core/session_start.py \
-  --project-root /e/BackUp/Git_EE/Kernel-Driver-Contract \
-  --risk medium --task-level L1 --task-type onboarding \
-  --rules "onboarding" \
-  --contract /e/BackUp/Git_EE/Kernel-Driver-Contract/contract.yaml
-```
+1. Reduce `pre_task_check` cost on the KDC onboarding path.
+2. Reduce rendered-output size on the same path.
+3. Decide whether onboarding deserves its own short-circuit now that summary-first is live.
+4. Re-run a true external-repo onboarding audit once write access to the external repo's `docs/payload-audit/` directory is available.
