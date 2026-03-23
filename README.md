@@ -672,6 +672,7 @@ and report back with a [Governance Contract] block.
 Use `adopt_governance.py` to onboard an existing project — it copies required framework files, creates missing templates, and generates `.governance/baseline.yaml` without overwriting anything you already have.
 When an existing `contract.yaml` is kept, adopt now still performs one framework-required repair: if `AGENTS.base.md` is not referenced in `documents` or `ai_behavior_override`, it adds `AGENTS.base.md` to `ai_behavior_override` so first-run drift does not fail on that single missing baseline reference.
 Adopt now also seeds a minimal `.github/workflows/governance-drift.yml` when the target repo does not already have one, so a first-pass CI drift gate is available without hand-copying the workflow from documentation.
+Its post-adoption summary now also points out which `AGENTS.md` repo-specific sections are still sitting at template `N/A` defaults, so teams get a concrete next customization step instead of only generic follow-up advice.
 
 **Cross-platform (macOS / Linux / Windows):**
 

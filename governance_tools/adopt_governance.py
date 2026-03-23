@@ -121,6 +121,56 @@ def _ensure_contract_agents_base_reference(contract_path: Path, dry_run: bool) -
     return True
 
 
+def _empty_agents_sections(repo_root: Path) -> list[str]:
+    agents_path = repo_root / "AGENTS.md"
+    if not agents_path.exists():
+        return []
+    from governance_tools.governance_drift_checker import _find_empty_governance_sections
+
+    return _find_empty_governance_sections(agents_path.read_text(encoding="utf-8"))
+
+
+def _placeholder_agents_sections(repo_root: Path) -> list[str]:
+    agents_path = repo_root / "AGENTS.md"
+    if not agents_path.exists():
+        return []
+
+    import re
+
+    key_re = re.compile(r"<!--\s*governance:key=(\S+)\s*-->")
+    lines = agents_path.read_text(encoding="utf-8").splitlines()
+    placeholders: list[str] = []
+    i = 0
+    while i < len(lines):
+        match = key_re.match(lines[i].strip())
+        if not match:
+            i += 1
+            continue
+        key = match.group(1)
+        i += 1
+        content_lines: list[str] = []
+        in_comment = False
+        while i < len(lines) and not lines[i].strip().startswith("##"):
+            stripped = lines[i].strip()
+            i += 1
+            if not stripped:
+                continue
+            if in_comment:
+                if "-->" in stripped:
+                    in_comment = False
+                continue
+            if stripped.startswith("<!--"):
+                if "-->" not in stripped:
+                    in_comment = True
+                continue
+            content_lines.append(stripped)
+        if not content_lines:
+            continue
+        if all(line.startswith("N/A") for line in content_lines):
+            placeholders.append(key)
+    return placeholders
+
+
 # ── File hashing ──────────────────────────────────────────────────────────────
 
 def _sha256(path: Path) -> str:
@@ -406,6 +456,13 @@ def adopt_existing(
     print(f"  2. When files change: python governance_tools/adopt_governance.py --target {repo_root} --refresh")
     print(f"  3. Commit: git add AGENTS.base.md AGENTS.md PLAN.md contract.yaml .governance/baseline.yaml")
     print(f"  4. Verify: python governance_tools/governance_drift_checker.py --repo {repo_root}")
+    placeholder_agents_sections = _placeholder_agents_sections(repo_root)
+    if placeholder_agents_sections:
+        print()
+        print("  Repo-specific AGENTS.md sections still worth filling:")
+        for key in placeholder_agents_sections:
+            print(f"    - {key}")
+        print("  (Keeping N/A is valid, but these are the first repo-specific prompts to customize.)")
     print()
     print("  Reference: docs/minimum-legal-schema.md — expected check states, field semantics, and")
     print("             which False results are non-blocking by design")

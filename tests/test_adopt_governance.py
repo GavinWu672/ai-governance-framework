@@ -225,6 +225,22 @@ def test_adopt_keeps_existing_governance_drift_workflow():
     assert workflow.read_text(encoding="utf-8") == "# custom workflow\n"
 
 
+def test_adopt_surfaces_repo_specific_agents_prompts_in_next_steps(capsys):
+    """Adopt should point out template AGENTS.md sections that are still uncustomized."""
+    repo = _make_git_repo(_reset_fixture("agents_prompt_summary") / "repo")
+    _write_plan(repo)
+    _write_contract(repo)
+
+    adopt_existing(repo, FRAMEWORK_ROOT, dry_run=False)
+    output = capsys.readouterr().out
+
+    assert "Repo-specific AGENTS.md sections still worth filling:" in output
+    assert "risk_levels" in output
+    assert "must_test_paths" in output
+    assert "escalation_triggers" in output
+    assert "forbidden_behaviors" in output
+
+
 def test_adopt_keeps_existing_agents_md(tmp_path):
     """Existing AGENTS.md is never overwritten."""
     repo = _make_git_repo(tmp_path / "repo")
